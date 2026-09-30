@@ -1,0 +1,1297 @@
+[
+  {
+    "Source": "寻宝战利品",
+    "TraditionalChinese": "尋寶戰利品",
+    "English": "Treasure loot"
+  },
+  {
+    "Source": "共 ",
+    "TraditionalChinese": "共 ",
+    "English": "Total: "
+  },
+  {
+    "Source": " 次",
+    "TraditionalChinese": " 次",
+    "English": " runs"
+  },
+  {
+    "Source": "全部",
+    "TraditionalChinese": "全部",
+    "English": "All"
+  },
+  {
+    "Source": "今日",
+    "TraditionalChinese": "今日",
+    "English": "Today"
+  },
+  {
+    "Source": "本周",
+    "TraditionalChinese": "本週",
+    "English": "This week"
+  },
+  {
+    "Source": "本月",
+    "TraditionalChinese": "本月",
+    "English": "This month"
+  },
+  {
+    "Source": "筛选结果 ",
+    "TraditionalChinese": "篩選結果 ",
+    "English": "Filtered: "
+  },
+  {
+    "Source": " 次  ·  本周 ",
+    "TraditionalChinese": " 次  ·  本週 ",
+    "English": " runs  ·  This week: "
+  },
+  {
+    "Source": " 次  ·  本月 ",
+    "TraditionalChinese": " 次  ·  本月 ",
+    "English": " runs  ·  This month: "
+  },
+  {
+    "Source": "物品获得统计",
+    "TraditionalChinese": "物品獲得統計",
+    "English": "Loot totals"
+  },
+  {
+    "Source": "仅展示稀有物品",
+    "TraditionalChinese": "只顯示稀有物品",
+    "English": "Rare items only"
+  },
+  {
+    "Source": "当前筛选范围内暂无战利品记录",
+    "TraditionalChinese": "目前篩選範圍內沒有戰利品紀錄",
+    "English": "No loot records in this date range"
+  },
+  {
+    "Source": "物品",
+    "TraditionalChinese": "物品",
+    "English": "Item"
+  },
+  {
+    "Source": "累计获得",
+    "TraditionalChinese": "累計獲得",
+    "English": "Total obtained"
+  },
+  {
+    "Source": "寻宝记录明细",
+    "TraditionalChinese": "尋寶紀錄明細",
+    "English": "Run history"
+  },
+  {
+    "Source": "最新在前",
+    "TraditionalChinese": "最新在前",
+    "English": "Newest first"
+  },
+  {
+    "Source": "最早在前",
+    "TraditionalChinese": "最早在前",
+    "English": "Oldest first"
+  },
+  {
+    "Source": "时间排序",
+    "TraditionalChinese": "時間排序",
+    "English": "Sort by time"
+  },
+  {
+    "Source": "完成时间",
+    "TraditionalChinese": "完成時間",
+    "English": "Completed at"
+  },
+  {
+    "Source": "副本",
+    "TraditionalChinese": "副本",
+    "English": "Duty"
+  },
+  {
+    "Source": "战利品",
+    "TraditionalChinese": "戰利品",
+    "English": "Loot"
+  },
+  {
+    "Source": "南征之章（南岛）",
+    "TraditionalChinese": "南征之章（南島）",
+    "English": "South Horn"
+  },
+  {
+    "Source": "北征之章（北岛）",
+    "TraditionalChinese": "北征之章（北島）",
+    "English": "North Horn"
+  },
+  {
+    "Source": "蜃景幻界新月岛 南征之章",
+    "TraditionalChinese": "蜃景幻界新月島 南征之章",
+    "English": "Occult Crescent: South Horn"
+  },
+  {
+    "Source": "蜃景幻界新月岛 北征之章",
+    "TraditionalChinese": "蜃景幻界新月島 北征之章",
+    "English": "Occult Crescent: North Horn"
+  },
+  {
+    "Source": "南征之章",
+    "TraditionalChinese": "南征之章",
+    "English": "South Horn"
+  },
+  {
+    "Source": "北征之章",
+    "TraditionalChinese": "北征之章",
+    "English": "North Horn"
+  },
+  {
+    "Source": "未检测到获得物品消息",
+    "TraditionalChinese": "未收到獲得物品訊息",
+    "English": "No item acquisition messages detected"
+  },
+  {
+    "Source": "自动购买配置",
+    "TraditionalChinese": "自動購買設定",
+    "English": "Automatic purchases"
+  },
+  {
+    "Source": "搜索商品",
+    "TraditionalChinese": "搜尋商品",
+    "English": "Search items"
+  },
+  {
+    "Source": "仅显示已启用商品",
+    "TraditionalChinese": "只顯示已啟用商品",
+    "English": "Enabled items only"
+  },
+  {
+    "Source": "购买状态：",
+    "TraditionalChinese": "購買狀態：",
+    "English": "Purchase status: "
+  },
+  {
+    "Source": "未检测",
+    "TraditionalChinese": "未檢測",
+    "English": "Not scanned"
+  },
+  {
+    "Source": "触发钱币数量",
+    "TraditionalChinese": "觸發錢幣數量",
+    "English": "Currency threshold"
+  },
+  {
+    "Source": "启用",
+    "TraditionalChinese": "啟用",
+    "English": "Enabled"
+  },
+  {
+    "Source": "商品",
+    "TraditionalChinese": "商品",
+    "English": "Item"
+  },
+  {
+    "Source": "单价",
+    "TraditionalChinese": "單價",
+    "English": "Unit cost"
+  },
+  {
+    "Source": "数量",
+    "TraditionalChinese": "數量",
+    "English": "Quantity"
+  },
+  {
+    "Source": "优先级",
+    "TraditionalChinese": "優先次序",
+    "English": "Priority"
+  },
+  {
+    "Source": "唯一物品",
+    "TraditionalChinese": "唯一物品",
+    "English": "Unique item"
+  },
+  {
+    "Source": "触发钱币数量不足以兑换此商品",
+    "TraditionalChinese": "觸發錢幣數量不足以兌換此商品",
+    "English": "The currency threshold is too low for this item"
+  },
+  {
+    "Source": "数值越大，越先购买",
+    "TraditionalChinese": "數值越大，越先購買",
+    "English": "Higher priority items are purchased first"
+  },
+  {
+    "Source": "已启用 ",
+    "TraditionalChinese": "已啟用 ",
+    "English": "Enabled: "
+  },
+  {
+    "Source": " 项",
+    "TraditionalChinese": " 項",
+    "English": " items"
+  },
+  {
+    "Source": "无法读取商店目录：",
+    "TraditionalChinese": "無法讀取商店目錄：",
+    "English": "Could not read shop catalog: "
+  },
+  {
+    "Source": "目标副本",
+    "TraditionalChinese": "目標副本",
+    "English": "Target duty"
+  },
+  {
+    "Source": "支持 OCBFR",
+    "TraditionalChinese": "支持 OCBFR",
+    "English": "Support OCBFR"
+  },
+  {
+    "Source": "启动插件",
+    "TraditionalChinese": "啟動插件",
+    "English": "Start plugin"
+  },
+  {
+    "Source": "紧急停止",
+    "TraditionalChinese": "緊急停止",
+    "English": "Emergency stop"
+  },
+  {
+    "Source": "切换至完整界面",
+    "TraditionalChinese": "切換至完整介面",
+    "English": "Switch to full view"
+  },
+  {
+    "Source": "切换至简化界面",
+    "TraditionalChinese": "切換至簡化介面",
+    "English": "Switch to compact view"
+  },
+  {
+    "Source": "银箱",
+    "TraditionalChinese": "銀箱",
+    "English": "Silver coffers"
+  },
+  {
+    "Source": "铜箱",
+    "TraditionalChinese": "銅箱",
+    "English": "Bronze coffers"
+  },
+  {
+    "Source": "● 运行中",
+    "TraditionalChinese": "● 運行中",
+    "English": "● Running"
+  },
+  {
+    "Source": "○ 已停止",
+    "TraditionalChinese": "○ 已停止",
+    "English": "○ Stopped"
+  },
+  {
+    "Source": "当前选择模式：",
+    "TraditionalChinese": "目前選擇模式：",
+    "English": "Selected duty: "
+  },
+  {
+    "Source": "当前选择模式 ",
+    "TraditionalChinese": "目前選擇模式 ",
+    "English": "Selected duty: "
+  },
+  {
+    "Source": "当前任务：",
+    "TraditionalChinese": "目前任務：",
+    "English": "Current task: "
+  },
+  {
+    "Source": "当前任务",
+    "TraditionalChinese": "目前任務",
+    "English": "Current task"
+  },
+  {
+    "Source": "寻宝副本选择",
+    "TraditionalChinese": "尋寶副本選擇",
+    "English": "Treasure duty"
+  },
+  {
+    "Source": "容量",
+    "TraditionalChinese": "容量",
+    "English": "Capacity"
+  },
+  {
+    "Source": "自动流程路线",
+    "TraditionalChinese": "自動流程路線",
+    "English": "Automatic route"
+  },
+  {
+    "Source": "自动流程",
+    "TraditionalChinese": "自動流程",
+    "English": "Automatic workflow"
+  },
+  {
+    "Source": "01 / 进入",
+    "TraditionalChinese": "01 / 進入",
+    "English": "01 / Enter"
+  },
+  {
+    "Source": "区域同步完成",
+    "TraditionalChinese": "區域同步完成",
+    "English": "Area synchronization complete"
+  },
+  {
+    "Source": "02 / 检测",
+    "TraditionalChinese": "02 / 檢測",
+    "English": "02 / Scan"
+  },
+  {
+    "Source": "钱币与宝箱",
+    "TraditionalChinese": "錢幣與寶箱",
+    "English": "Currency and coffers"
+  },
+  {
+    "Source": "03 / 战斗",
+    "TraditionalChinese": "03 / 戰鬥",
+    "English": "03 / Combat"
+  },
+  {
+    "Source": "BOCCHI 运行中",
+    "TraditionalChinese": "BOCCHI 運行中",
+    "English": "BOCCHI running"
+  },
+  {
+    "Source": "04 / 寻宝",
+    "TraditionalChinese": "04 / 尋寶",
+    "English": "04 / Treasure"
+  },
+  {
+    "Source": "等待宝箱上限",
+    "TraditionalChinese": "等待寶箱上限",
+    "English": "Waiting for full coffers"
+  },
+  {
+    "Source": "05 / 重进",
+    "TraditionalChinese": "05 / 重新進入",
+    "English": "05 / Re-enter"
+  },
+  {
+    "Source": "自动循环",
+    "TraditionalChinese": "自動循環",
+    "English": "Automatic loop"
+  },
+  {
+    "Source": "当前区域 ID",
+    "TraditionalChinese": "目前區域 ID",
+    "English": "Current territory ID"
+  },
+  {
+    "Source": "区域匹配",
+    "TraditionalChinese": "區域匹配",
+    "English": "Territory matches"
+  },
+  {
+    "Source": "区域不匹配",
+    "TraditionalChinese": "區域不匹配",
+    "English": "Territory does not match"
+  },
+  {
+    "Source": "战斗辅助职业",
+    "TraditionalChinese": "戰鬥幻境職業",
+    "English": "Combat phantom job"
+  },
+  {
+    "Source": "宝箱负载",
+    "TraditionalChinese": "寶箱負載",
+    "English": "Coffer count"
+  },
+  {
+    "Source": "银 ",
+    "TraditionalChinese": "銀 ",
+    "English": "Silver "
+  },
+  {
+    "Source": "铜 ",
+    "TraditionalChinese": "銅 ",
+    "English": "Bronze "
+  },
+  {
+    "Source": "副本与战斗配置",
+    "TraditionalChinese": "副本與戰鬥設定",
+    "English": "Duty and combat configuration"
+  },
+  {
+    "Source": "副本设置",
+    "TraditionalChinese": "副本設定",
+    "English": "Duty settings"
+  },
+  {
+    "Source": "错误：",
+    "TraditionalChinese": "錯誤：",
+    "English": "Error: "
+  },
+  {
+    "Source": "注意：有些辅助职业的辅助技能可能与魔寻宝 CD 存在冲突，不接受因此所产生问题的反馈。默认选择的辅助白魔法师无此问题",
+    "TraditionalChinese": "注意：部分幻境職業的技能可能與魔尋寶共用冷卻時間。預設的幻境白魔法師不會有此問題。",
+    "English": "Some phantom job abilities share a cooldown with treasure detection. Phantom White Mage, the default selection, avoids this conflict."
+  },
+  {
+    "Source": "DR 自动丢弃预设",
+    "TraditionalChinese": "DR 自動丟棄預設",
+    "English": "DR discard preset"
+  },
+  {
+    "Source": "如需自动丢弃跑刀垃圾，请在此处填写 DR 自动丢弃物品模块的预设名称，留空则不启用",
+    "TraditionalChinese": "如需自動丟棄尋寶垃圾，請填寫 DR 自動丟棄物品模組的預設名稱；留空則不啟用。",
+    "English": "Enter a preset name from the DR automatic discard module to discard unwanted loot. Leave empty to disable."
+  },
+  {
+    "Source": "寻宝模式选择",
+    "TraditionalChinese": "尋寶模式選擇",
+    "English": "Treasure mode"
+  },
+  {
+    "Source": "XSZ 跑刀",
+    "TraditionalChinese": "XSZ 跑刀",
+    "English": "XSZ treasure route"
+  },
+  {
+    "Source": "DR 跑刀",
+    "TraditionalChinese": "DR 跑刀",
+    "English": "DR treasure route"
+  },
+  {
+    "Source": "XSZ 跑刀为 XSZToolbox 测试码功能，如果你没有权限则不要选择这个模式。",
+    "TraditionalChinese": "XSZ 跑刀為 XSZToolbox 測試碼功能，如果你沒有權限則不要選擇這個模式。",
+    "English": "The XSZ route requires access to the XSZToolbox test feature. Select it only if you have access."
+  },
+  {
+    "Source": "寻宝记录",
+    "TraditionalChinese": "尋寶紀錄",
+    "English": "Treasure records"
+  },
+  {
+    "Source": "查看寻宝战利品记录",
+    "TraditionalChinese": "查看尋寶戰利品紀錄",
+    "English": "View treasure loot history"
+  },
+  {
+    "Source": "可能会用到的文档",
+    "TraditionalChinese": "相關文件",
+    "English": "Documentation"
+  },
+  {
+    "Source": "点击前往",
+    "TraditionalChinese": "開啟連結",
+    "English": "Open documentation"
+  },
+  {
+    "Source": "自动葡挞相关功能不接收任何反馈。",
+    "TraditionalChinese": "自動葡撻相關功能不接受意見回饋。",
+    "English": "Automatic route features are provided without support."
+  },
+  {
+    "Source": "使用说明",
+    "TraditionalChinese": "使用說明",
+    "English": "Instructions"
+  },
+  {
+    "Source": "1. 本插件功能为高危行为，如介意请勿使用；",
+    "TraditionalChinese": "1. 本插件功能為高危行為，如介意請勿使用；",
+    "English": "1. This plugin automates gameplay and carries risk. Use it only if you accept that risk."
+  },
+  {
+    "Source": "2. 使用本插件的必须条件：",
+    "TraditionalChinese": "2. 使用本插件的必須條件：",
+    "English": "2. Required setup:"
+  },
+  {
+    "Source": "   1）启用 BOCCHI 及其配套插件，并且【关闭】自动轮换副本功能；",
+    "TraditionalChinese": "   1）啟用 BOCCHI 及其配套插件，並【關閉】自動輪換副本功能；",
+    "English": "   1) Enable BOCCHI and its companion plugins. Disable automatic duty rotation."
+  },
+  {
+    "Source": "   2）启用 Daily Routines 插件，并启用下列模块：",
+    "TraditionalChinese": "   2）啟用 Daily Routines 插件及以下模組：",
+    "English": "   2) Enable Daily Routines and the following modules:"
+  },
+  {
+    "Source": "      ① 蜃景幻界新月岛 助手　② 更好的辅助职业列表　③ 辅助职业切换指令",
+    "TraditionalChinese": "      ① 蜃景幻界新月島 助手　② 更好的輔助職業列表　③ 輔助職業切換指令",
+    "English": "      1) Occult Crescent helper  2) Better phantom job list  3) Phantom job switch command"
+  },
+  {
+    "Source": "      ④ 自动任务出发确认　⑤ 即刻退本　⑥ 特殊场景探索进入指令",
+    "TraditionalChinese": "      ④ 自動任務出發確認　⑤ 即刻退本　⑥ 特殊場景探索進入指令",
+    "English": "      4) Automatic duty confirmation  5) Instant duty exit  6) Special exploration entry command"
+  },
+  {
+    "Source": "一键开启上述模块",
+    "TraditionalChinese": "一鍵啟用上述模組",
+    "English": "Enable required DR modules"
+  },
+  {
+    "Source": "已发送一键开启 Daily Routines 模块指令",
+    "TraditionalChinese": "已傳送啟用 Daily Routines 模組的指令",
+    "English": "Sent commands to enable the required Daily Routines modules"
+  },
+  {
+    "Source": "自动前往魔之塔设置",
+    "TraditionalChinese": "自動前往魔之塔設定",
+    "English": "Automatic Forked Tower travel"
+  },
+  {
+    "Source": "注意：该项功能只会在蜃景天气出现时停止插件功能前往魔之塔进入区域，不会自动进行魔之塔战斗，后续流程需要手动或者由其他插件接管。",
+    "TraditionalChinese": "注意：蜃景天氣出現時，此功能會暫停農寶並前往魔之塔入口。魔之塔戰鬥及後續流程需自行操作，或交由其他插件接管。",
+    "English": "When the required mirage weather appears, this feature pauses farming and moves to the Forked Tower entrance. Tower combat and subsequent steps require manual control or another plugin."
+  },
+  {
+    "Source": "如果你不知道上述是什么意思，则不要开启此功能，也不要就此功能进行任何反馈。",
+    "TraditionalChinese": "請先了解魔之塔進入流程，再啟用此功能。",
+    "English": "Enable this feature only if you understand the tower entry workflow."
+  },
+  {
+    "Source": "蜃景天气出现时自动前往魔之塔区域",
+    "TraditionalChinese": "蜃景天氣出現時自動前往魔之塔入口",
+    "English": "Travel to the Forked Tower during mirage weather"
+  },
+  {
+    "Source": "直接开始寻宝流程（测试用）",
+    "TraditionalChinese": "直接開始尋寶流程（測試用）",
+    "English": "Start treasure route now (test)"
+  },
+  {
+    "Source": "直接开始前往魔之塔流程（测试用）",
+    "TraditionalChinese": "直接開始前往魔之塔流程（測試用）",
+    "English": "Start tower travel now (test)"
+  },
+  {
+    "Source": "Debug: 强制视为宝箱已满（测试完整流程）",
+    "TraditionalChinese": "Debug: 強制視為寶箱已滿（測試完整流程）",
+    "English": "Debug: Treat coffers as full (test complete loop)"
+  },
+  {
+    "Source": "Debug: 不退本（只测内环+外环）",
+    "TraditionalChinese": "Debug: 不退本（只測內環+外環）",
+    "English": "Debug: Stay in duty (test inner and outer rings)"
+  },
+  {
+    "Source": "测试：立即退本并重新进岛",
+    "TraditionalChinese": "測試：立即退本並重新進島",
+    "English": "Test: Leave duty and re-enter now"
+  },
+  {
+    "Source": "运行中",
+    "TraditionalChinese": "運行中",
+    "English": "Running"
+  },
+  {
+    "Source": "已停止",
+    "TraditionalChinese": "已停止",
+    "English": "Stopped"
+  },
+  {
+    "Source": "停止运行",
+    "TraditionalChinese": "停止運行",
+    "English": "Stop"
+  },
+  {
+    "Source": "开始运行",
+    "TraditionalChinese": "開始運行",
+    "English": "Start"
+  },
+  {
+    "Source": "关闭窗口",
+    "TraditionalChinese": "關閉窗口",
+    "English": "Close window"
+  },
+  {
+    "Source": "持有：",
+    "TraditionalChinese": "持有：",
+    "English": "Owned: "
+  },
+  {
+    "Source": "每次兑换：",
+    "TraditionalChinese": "每次兌換：",
+    "English": "Received per purchase: "
+  },
+  {
+    "Source": " 个",
+    "TraditionalChinese": " 個",
+    "English": " items"
+  },
+  {
+    "Source": "当前触发值下上限：",
+    "TraditionalChinese": "目前觸發值下的購買上限：",
+    "English": "Maximum at current threshold: "
+  },
+  {
+    "Source": "首次进岛",
+    "TraditionalChinese": "首次進島",
+    "English": "Initial entry"
+  },
+  {
+    "Source": "未运行",
+    "TraditionalChinese": "未運行",
+    "English": "Not running"
+  },
+  {
+    "Source": "打开 OCBFR 设置。",
+    "TraditionalChinese": "開啟 OCBFR 設定。",
+    "English": "Open OCBFR settings."
+  },
+  {
+    "Source": "启动 OCBFR 自动流程。",
+    "TraditionalChinese": "啟動 OCBFR 自動流程。",
+    "English": "Start the OCBFR workflow."
+  },
+  {
+    "Source": "停止 OCBFR 自动流程。",
+    "TraditionalChinese": "停止 OCBFR 自動流程。",
+    "English": "Stop the OCBFR workflow."
+  },
+  {
+    "Source": "等待角色登录",
+    "TraditionalChinese": "等待角色登入",
+    "English": "Waiting for login"
+  },
+  {
+    "Source": "切换岛屿...",
+    "TraditionalChinese": "切換島嶼...",
+    "English": "Switching islands..."
+  },
+  {
+    "Source": "进入副本...",
+    "TraditionalChinese": "進入副本...",
+    "English": "Entering duty..."
+  },
+  {
+    "Source": "重新进入副本...",
+    "TraditionalChinese": "重新進入副本...",
+    "English": "Re-entering duty..."
+  },
+  {
+    "Source": "准备购买...",
+    "TraditionalChinese": "準備購買...",
+    "English": "Preparing purchases..."
+  },
+  {
+    "Source": "自动购买未能开始：",
+    "TraditionalChinese": "自動購買未能開始：",
+    "English": "Could not start automatic purchases: "
+  },
+  {
+    "Source": "自动战斗中",
+    "TraditionalChinese": "自動戰鬥中",
+    "English": "Automatic combat"
+  },
+  {
+    "Source": "战斗中，等待脱战...",
+    "TraditionalChinese": "戰鬥中，等待脫戰...",
+    "English": "In combat; waiting to disengage..."
+  },
+  {
+    "Source": "下坐骑...",
+    "TraditionalChinese": "下坐騎...",
+    "English": "Dismounting..."
+  },
+  {
+    "Source": "等待角色可动后切换自由人...",
+    "TraditionalChinese": "等待角色可移動後切換自由人...",
+    "English": "Waiting until movable before switching to Freelancer..."
+  },
+  {
+    "Source": "检测宝箱...",
+    "TraditionalChinese": "檢測寶箱...",
+    "English": "Scanning coffers..."
+  },
+  {
+    "Source": "宝箱检测未响应，暂停战斗并等待重试...",
+    "TraditionalChinese": "寶箱掃描未有回應，暫停戰鬥並等待重試...",
+    "English": "No scan response; combat paused while waiting to retry..."
+  },
+  {
+    "Source": "准备战斗...",
+    "TraditionalChinese": "準備戰鬥...",
+    "English": "Preparing combat..."
+  },
+  {
+    "Source": "准备寻宝...",
+    "TraditionalChinese": "準備尋寶...",
+    "English": "Preparing treasure route..."
+  },
+  {
+    "Source": "准备外环寻宝...",
+    "TraditionalChinese": "準備外環尋寶...",
+    "English": "Preparing outer ring..."
+  },
+  {
+    "Source": "退出副本...",
+    "TraditionalChinese": "退出副本...",
+    "English": "Leaving duty..."
+  },
+  {
+    "Source": "寻宝完成（测试模式：不退本）",
+    "TraditionalChinese": "尋寶完成（測試模式：不退本）",
+    "English": "Treasure complete (test mode: stay in duty)"
+  },
+  {
+    "Source": "寻宝完成，准备重进",
+    "TraditionalChinese": "尋寶完成，準備重新進島",
+    "English": "Treasure complete; preparing to re-enter"
+  },
+  {
+    "Source": "前往大水晶...",
+    "TraditionalChinese": "前往大水晶...",
+    "English": "Moving to the main aetheryte..."
+  },
+  {
+    "Source": "未到达小水晶区域，请检查导航功能",
+    "TraditionalChinese": "未到達小水晶區域，請檢查導航功能",
+    "English": "Could not reach the aethernet shard; check navigation"
+  },
+  {
+    "Source": "XSZ 寻宝中",
+    "TraditionalChinese": "XSZ 尋寶中",
+    "English": "XSZ treasure route active"
+  },
+  {
+    "Source": "已离岛，等待角色可动后重新进岛...",
+    "TraditionalChinese": "已離島，等待角色可移動後重新進島...",
+    "English": "Left island; waiting until movable before re-entering..."
+  },
+  {
+    "Source": "加载副本...",
+    "TraditionalChinese": "載入副本...",
+    "English": "Loading duty..."
+  },
+  {
+    "Source": "准备前往魔之塔...",
+    "TraditionalChinese": "準備前往魔之塔...",
+    "English": "Preparing tower travel..."
+  },
+  {
+    "Source": "未到达大水晶区域，请检查导航功能",
+    "TraditionalChinese": "未到達大水晶區域，請檢查導航功能",
+    "English": "Could not reach the main aetheryte; check navigation"
+  },
+  {
+    "Source": "前往魔之塔...",
+    "TraditionalChinese": "前往魔之塔...",
+    "English": "Moving to the Forked Tower..."
+  },
+  {
+    "Source": "未能召唤随机坐骑，请检查坐骑可用性",
+    "TraditionalChinese": "未能召喚隨機坐騎，請檢查坐騎可用性",
+    "English": "Could not summon a random mount; check mount availability"
+  },
+  {
+    "Source": "未到达魔之塔中转区域，请检查导航功能",
+    "TraditionalChinese": "未到達魔之塔中途區域，請檢查導航功能",
+    "English": "Could not reach the tower staging area; check navigation"
+  },
+  {
+    "Source": "未到达魔之塔进入区域，请检查导航功能",
+    "TraditionalChinese": "未到達魔之塔進入區域，請檢查導航功能",
+    "English": "Could not reach the tower entrance; check navigation"
+  },
+  {
+    "Source": "天气已结束，恢复战斗",
+    "TraditionalChinese": "天氣已結束，恢復戰鬥",
+    "English": "Weather ended; resuming combat"
+  },
+  {
+    "Source": "已到达魔之塔，等待接管",
+    "TraditionalChinese": "已到達魔之塔，等待接管",
+    "English": "Arrived at the Forked Tower; waiting for handoff"
+  },
+  {
+    "Source": "未能下坐骑，无法恢复魔寻宝流程",
+    "TraditionalChinese": "未能下坐騎，無法恢復魔尋寶流程",
+    "English": "Could not dismount; cannot resume treasure scanning"
+  },
+  {
+    "Source": "坐骑动作未完成，无法恢复魔寻宝流程",
+    "TraditionalChinese": "坐騎動作未完成，無法恢復魔尋寶流程",
+    "English": "Mount action is unfinished; cannot resume treasure scanning"
+  },
+  {
+    "Source": "检查钱币...",
+    "TraditionalChinese": "檢查錢幣...",
+    "English": "Checking currency..."
+  },
+  {
+    "Source": "前往购买地点...",
+    "TraditionalChinese": "前往購買地點...",
+    "English": "Moving to the currency vendor..."
+  },
+  {
+    "Source": "已离开",
+    "TraditionalChinese": "已離開",
+    "English": "Left "
+  },
+  {
+    "Source": "未能到达",
+    "TraditionalChinese": "未能到達",
+    "English": "Could not reach "
+  },
+  {
+    "Source": "大水晶，跳过本轮购买",
+    "TraditionalChinese": "大水晶，跳過本輪購買",
+    "English": " main aetheryte; skipping this purchase cycle"
+  },
+  {
+    "Source": "无法读取商店数据，自动购买暂不可用",
+    "TraditionalChinese": "無法讀取商店資料，自動購買暫時無法使用",
+    "English": "Could not read shop data; automatic purchases unavailable"
+  },
+  {
+    "Source": "自动购买失败：",
+    "TraditionalChinese": "自動購買失敗：",
+    "English": "Automatic purchase failed: "
+  },
+  {
+    "Source": "购买完成，重新进岛...",
+    "TraditionalChinese": "購買完成，重新進島...",
+    "English": "Purchases complete; re-entering island..."
+  },
+  {
+    "Source": "角色已离线，插件已停止",
+    "TraditionalChinese": "角色已離線，插件已停止",
+    "English": "Logged out; plugin stopped"
+  },
+  {
+    "Source": "传送至小水晶...",
+    "TraditionalChinese": "傳送至小水晶...",
+    "English": "Teleporting to an aethernet shard..."
+  },
+  {
+    "Source": "附近有人，等待寻宝",
+    "TraditionalChinese": "附近有人，等待尋寶",
+    "English": "Players nearby; waiting to begin treasure route"
+  },
+  {
+    "Source": "等待人物可动...",
+    "TraditionalChinese": "等待角色可移動...",
+    "English": "Waiting until movable..."
+  },
+  {
+    "Source": "内环寻宝中",
+    "TraditionalChinese": "內環尋寶中",
+    "English": "Inner ring treasure route active"
+  },
+  {
+    "Source": "外环寻宝中",
+    "TraditionalChinese": "外環尋寶中",
+    "English": "Outer ring treasure route active"
+  },
+  {
+    "Source": "上坐骑...",
+    "TraditionalChinese": "上坐騎...",
+    "English": "Mounting..."
+  },
+  {
+    "Source": "下坐骑，准备换点...",
+    "TraditionalChinese": "下坐騎，準備換點...",
+    "English": "Dismounting; preparing to change shards..."
+  },
+  {
+    "Source": "无可用小水晶，已停止",
+    "TraditionalChinese": "無可用小水晶，已停止",
+    "English": "No available aethernet shard; stopped"
+  },
+  {
+    "Source": "小水晶传送失败，请检查传送功能",
+    "TraditionalChinese": "小水晶傳送失敗，請檢查傳送功能",
+    "English": "Shard teleport failed; check teleport functionality"
+  },
+  {
+    "Source": "下坐骑失败，已停止",
+    "TraditionalChinese": "下坐騎失敗，已停止",
+    "English": "Dismount failed; stopped"
+  },
+  {
+    "Source": "已通过手动操作停止",
+    "TraditionalChinese": "已手動停止",
+    "English": "Stopped manually"
+  },
+  {
+    "Source": "已紧急停止",
+    "TraditionalChinese": "已緊急停止",
+    "English": "Emergency stopped"
+  },
+  {
+    "Source": "空闲",
+    "TraditionalChinese": "閒置",
+    "English": "Idle"
+  },
+  {
+    "Source": "请先完成当前确认操作",
+    "TraditionalChinese": "請先完成目前的確認操作",
+    "English": "Finish the current confirmation first"
+  },
+  {
+    "Source": "自动购买功能暂未就绪",
+    "TraditionalChinese": "自動購買功能尚未就緒",
+    "English": "Automatic purchases are not ready yet"
+  },
+  {
+    "Source": "当前无法开始自动购买",
+    "TraditionalChinese": "目前無法開始自動購買",
+    "English": "Cannot start automatic purchases in the current state"
+  },
+  {
+    "Source": "请靠近钱币商人（15 码内）",
+    "TraditionalChinese": "請靠近錢幣商人（15 碼內）",
+    "English": "Move within 15 yalms of the currency vendor"
+  },
+  {
+    "Source": "购买配置无效",
+    "TraditionalChinese": "購買設定無效",
+    "English": "Invalid purchase configuration"
+  },
+  {
+    "Source": "已取消自动购买",
+    "TraditionalChinese": "已取消自動購買",
+    "English": "Automatic purchases cancelled"
+  },
+  {
+    "Source": "自动购买超过 90 秒未取得进展",
+    "TraditionalChinese": "自動購買超過 90 秒未取得進展",
+    "English": "No purchase progress for over 90 seconds"
+  },
+  {
+    "Source": "购买中，等待过图...",
+    "TraditionalChinese": "購買中，等待區域切換...",
+    "English": "Purchasing; waiting for area transition..."
+  },
+  {
+    "Source": "购买中，等待脱战...",
+    "TraditionalChinese": "購買中，等待脫戰...",
+    "English": "Purchasing; waiting to disengage..."
+  },
+  {
+    "Source": "玩家不可用",
+    "TraditionalChinese": "玩家不可用",
+    "English": "Player unavailable"
+  },
+  {
+    "Source": "玩家实体未就绪，已中止自动购买",
+    "TraditionalChinese": "角色資料未就緒，已中止自動購買",
+    "English": "Player object not ready; automatic purchases aborted"
+  },
+  {
+    "Source": "当前状态不允许发送 EventStart，已中止自动购买",
+    "TraditionalChinese": "目前狀態無法傳送 EventStart，已中止自動購買",
+    "English": "Current state does not allow EventStart; automatic purchases aborted"
+  },
+  {
+    "Source": "EventStart 发包失败，已中止自动购买",
+    "TraditionalChinese": "EventStart 封包傳送失敗，已中止自動購買",
+    "English": "EventStart failed; automatic purchases aborted"
+  },
+  {
+    "Source": "未能开始自动购买",
+    "TraditionalChinese": "未能開始自動購買",
+    "English": "Could not start automatic purchases"
+  },
+  {
+    "Source": "未能打开购买界面",
+    "TraditionalChinese": "未能開啟購買介面",
+    "English": "Could not open purchase window"
+  },
+  {
+    "Source": "上一笔购买确认未关闭",
+    "TraditionalChinese": "上一筆購買確認尚未關閉",
+    "English": "Previous purchase confirmation remains open"
+  },
+  {
+    "Source": "商店中未找到",
+    "TraditionalChinese": "商店中未找到",
+    "English": "Item not found in shop: "
+  },
+  {
+    "Source": "，已停止以避免误购",
+    "TraditionalChinese": "，已停止以避免誤購",
+    "English": "; stopped to avoid purchasing the wrong item"
+  },
+  {
+    "Source": "购买确认超时或库存未变化",
+    "TraditionalChinese": "購買確認逾時或持有數量未有變化",
+    "English": "Purchase confirmation timed out or inventory did not change"
+  },
+  {
+    "Source": "未能确认购买结果",
+    "TraditionalChinese": "未能確認購買結果",
+    "English": "Could not confirm purchase result"
+  },
+  {
+    "Source": "已购买：",
+    "TraditionalChinese": "已購買：",
+    "English": "Purchased: "
+  },
+  {
+    "Source": "自动购买结束，无需兑换",
+    "TraditionalChinese": "自動購買結束，無需兌換",
+    "English": "Automatic purchases finished; nothing to exchange"
+  },
+  {
+    "Source": "购买收尾中...",
+    "TraditionalChinese": "正在完成購買...",
+    "English": "Finishing purchases..."
+  },
+  {
+    "Source": "继续购买...",
+    "TraditionalChinese": "繼續購買...",
+    "English": "Continuing purchases..."
+  },
+  {
+    "Source": "上一笔商店事件未完全退出，已停止以避免复用错误的钱币商店",
+    "TraditionalChinese": "上一筆商店操作尚未完全結束，已停止以免再次使用錯誤的錢幣商店",
+    "English": "Previous shop event did not close; stopped to avoid using the wrong currency shop"
+  },
+  {
+    "Source": "上一笔购买未能正常结束",
+    "TraditionalChinese": "上一筆購買未能正常結束",
+    "English": "Previous purchase did not finish correctly"
+  },
+  {
+    "Source": "自动购买完成",
+    "TraditionalChinese": "自動購買完成",
+    "English": "Automatic purchases complete"
+  },
+  {
+    "Source": "未能发送购买请求，已停止以避免重复兑换",
+    "TraditionalChinese": "未能傳送購買請求，已停止以免重複兌換",
+    "English": "Could not send purchase request; stopped to avoid duplicate purchases"
+  },
+  {
+    "Source": "未能确认购买数量",
+    "TraditionalChinese": "未能確認購買數量",
+    "English": "Could not confirm purchase quantity"
+  },
+  {
+    "Source": "购买：",
+    "TraditionalChinese": "購買：",
+    "English": "Purchasing: "
+  },
+  {
+    "Source": "，跳过本轮购买",
+    "TraditionalChinese": "，跳過本輪購買",
+    "English": "; skipping this purchase cycle"
+  },
+  {
+    "Source": "内环",
+    "TraditionalChinese": "內環",
+    "English": "Inner ring"
+  },
+  {
+    "Source": "外环",
+    "TraditionalChinese": "外環",
+    "English": "Outer ring"
+  },
+  {
+    "Source": "魔之塔",
+    "TraditionalChinese": "魔之塔",
+    "English": "Forked Tower"
+  },
+  {
+    "Source": "十二城邦白银币",
+    "TraditionalChinese": "十二城邦白銀幣",
+    "English": "Enlightenment silver obols"
+  },
+  {
+    "Source": "十二城邦白金币",
+    "TraditionalChinese": "十二城邦白金幣",
+    "English": "Enlightenment gold obols"
+  },
+  {
+    "Source": "十二城邦银币",
+    "TraditionalChinese": "十二城邦銀幣",
+    "English": "Silver obols"
+  },
+  {
+    "Source": "十二城邦金币",
+    "TraditionalChinese": "十二城邦金幣",
+    "English": "Gold obols"
+  },
+  {
+    "Source": "启用 DR 必要模块",
+    "TraditionalChinese": "啟用 DR 必要模組",
+    "English": "Enable required DR modules"
+  },
+  {
+    "Source": "控制台",
+    "TraditionalChinese": "控制臺",
+    "English": "WORKSPACE"
+  },
+  {
+    "Source": "总览",
+    "TraditionalChinese": "總覽",
+    "English": "Overview"
+  },
+  {
+    "Source": "自动购买",
+    "TraditionalChinese": "自動購買",
+    "English": "Purchases"
+  },
+  {
+    "Source": "测试工具",
+    "TraditionalChinese": "測試工具",
+    "English": "Test tools"
+  },
+  {
+    "Source": "完整界面",
+    "TraditionalChinese": "完整介面",
+    "English": "Full view"
+  },
+  {
+    "Source": "简化界面",
+    "TraditionalChinese": "簡化介面",
+    "English": "Compact view"
+  },
+  {
+    "Source": "进入",
+    "TraditionalChinese": "進入",
+    "English": "Enter"
+  },
+  {
+    "Source": "检测",
+    "TraditionalChinese": "檢測",
+    "English": "Scan"
+  },
+  {
+    "Source": "战斗",
+    "TraditionalChinese": "戰鬥",
+    "English": "Combat"
+  },
+  {
+    "Source": "寻宝",
+    "TraditionalChinese": "尋寶",
+    "English": "Treasure"
+  },
+  {
+    "Source": "重进",
+    "TraditionalChinese": "重新進入",
+    "English": "Re-enter"
+  },
+  {
+    "Source": "南岛不支持魔之塔功能",
+    "TraditionalChinese": "南島不支援魔之塔功能",
+    "English": "Forked Tower travel is unavailable on South Horn."
+  },
+  {
+    "Source": "测试完成后请紧急停止，恢复正常运行前关闭模拟选项。",
+    "TraditionalChinese": "測試完成後請緊急停止，恢復正常運行前請關閉模擬選項。",
+    "English": "Emergency-stop after testing. Disable simulation options before normal operation."
+  },
+  {
+    "Source": "Phantom Freelancer",
+    "TraditionalChinese": "幻境自由人",
+    "English": "Phantom Freelancer"
+  },
+  {
+    "Source": "Phantom White Mage",
+    "TraditionalChinese": "幻境白魔法師",
+    "English": "Phantom White Mage"
+  },
+  {
+    "Source": "Phantom Samurai",
+    "TraditionalChinese": "幻境武士",
+    "English": "Phantom Samurai"
+  },
+  {
+    "Source": "Phantom Ranger",
+    "TraditionalChinese": "幻境遊俠",
+    "English": "Phantom Ranger"
+  },
+  {
+    "Source": "Phantom Monk",
+    "TraditionalChinese": "幻境武僧",
+    "English": "Phantom Monk"
+  },
+  {
+    "Source": "Phantom Berserker",
+    "TraditionalChinese": "幻境狂戰士",
+    "English": "Phantom Berserker"
+  },
+  {
+    "Source": "Phantom Knight",
+    "TraditionalChinese": "幻境騎士",
+    "English": "Phantom Knight"
+  },
+  {
+    "Source": "Phantom Chemist",
+    "TraditionalChinese": "幻境藥劑師",
+    "English": "Phantom Chemist"
+  },
+  {
+    "Source": "Phantom Cannoneer",
+    "TraditionalChinese": "幻境炮擊士",
+    "English": "Phantom Cannoneer"
+  },
+  {
+    "Source": "Phantom Time Mage",
+    "TraditionalChinese": "幻境時魔法師",
+    "English": "Phantom Time Mage"
+  },
+  {
+    "Source": "Phantom Geomancer",
+    "TraditionalChinese": "幻境風水師",
+    "English": "Phantom Geomancer"
+  },
+  {
+    "Source": "Phantom Bard",
+    "TraditionalChinese": "幻境吟遊詩人",
+    "English": "Phantom Bard"
+  },
+  {
+    "Source": "Phantom Dancer",
+    "TraditionalChinese": "幻境舞者",
+    "English": "Phantom Dancer"
+  },
+  {
+    "Source": "Phantom Gladiator",
+    "TraditionalChinese": "幻境角鬥士",
+    "English": "Phantom Gladiator"
+  },
+  {
+    "Source": "Phantom Mystic Knight",
+    "TraditionalChinese": "幻境魔法劍士",
+    "English": "Phantom Mystic Knight"
+  },
+  {
+    "Source": "Phantom Thief",
+    "TraditionalChinese": "幻境盜賊",
+    "English": "Phantom Thief"
+  },
+  {
+    "Source": "Phantom Oracle",
+    "TraditionalChinese": "幻境預言家",
+    "English": "Phantom Oracle"
+  },
+  {
+    "Source": "Phantom Summoner",
+    "TraditionalChinese": "幻境召喚師",
+    "English": "Phantom Summoner"
+  },
+  {
+    "Source": "Phantom Dragoon",
+    "TraditionalChinese": "幻境龍騎士",
+    "English": "Phantom Dragoon"
+  },
+  {
+    "Source": "Phantom Black Mage",
+    "TraditionalChinese": "幻境黑魔法師",
+    "English": "Phantom Black Mage"
+  },
+  {
+    "Source": "Phantom Ninja",
+    "TraditionalChinese": "幻境忍者",
+    "English": "Phantom Ninja"
+  },
+  {
+    "Source": "Phantom Necromancer",
+    "TraditionalChinese": "幻境死靈法師",
+    "English": "Phantom Necromancer"
+  },
+  {
+    "Source": "Phantom Red Mage",
+    "TraditionalChinese": "幻境赤魔法師",
+    "English": "Phantom Red Mage"
+  },
+  {
+    "Source": "Phantom Blue Mage",
+    "TraditionalChinese": "幻境青魔法師",
+    "English": "Phantom Blue Mage"
+  }
+]

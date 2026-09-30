@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+artifacts/
+dist/
+.vs/
+.idea/
+*.user
+*.suo
+*.log
+*.pdb
+*.bak
+*.zip
+treasure-records.json
+.env
+.env.*
+
+# The three required library DLLs in dependencies/ are intentional.

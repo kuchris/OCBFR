@@ -1,0 +1,479 @@
+using System.Collections;
+using System.Numerics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+
+// Runs managed plugin methods with fake Dalamud services. Never invokes native
+// game actions; this validates state transitions, not live game behaviour.
+internal static class RegressionScenarios
+{
+    public static int Run(Assembly assembly)
+    {
+        int failures = 0;
+        if (assembly.GetManifestResourceNames().Contains("OCNFarmer.OmniConnection")) {
+            failures++; Console.WriteLine("FAIL sharing build still embeds verification connection resource");
+        } else Console.WriteLine("PASS sharing build excludes verification connection resource");
+        try {
+            var mainWindow = assembly.GetType("NorthIslandChestPlugin.Plugin+MainWindow", true)!;
+            var postDraw = mainWindow.GetMethod("PostDraw")!;
+            var il = postDraw.GetMethodBody()!.GetILAsByteArray()!;
+            var parentToken = mainWindow.BaseType!.GetMethod("PostDraw")!.MetadataToken;
+            // The failing source casts this to Window and makes a virtual call,
+            // re-entering this override forever. Verify the emitted direct call.
+            bool directParentCall = false;
+            for (int i = 0; i + 4 < il.Length; i++) {
+                if (il[i] != 0x28) continue;
+                try {
+                    var target = postDraw.Module.ResolveMethod(BitConverter.ToInt32(il, i + 1));
+                    if (target?.Name == "PostDraw" && target.DeclaringType != mainWindow) directParentCall = true;
+                } catch (ArgumentException) { }
+            }
+            if (!directParentCall) throw new Exception("PostDraw lacks direct base call; virtual call on this recurses (confirmed by live crash dump)");
+            postDraw.Invoke(RuntimeHelpers.GetUninitializedObject(mainWindow), null);
+            Console.WriteLine("PASS window PostDraw returns without recursion");
+        } catch (Exception error) { failures++; Console.WriteLine("FAIL window PostDraw: " + error.GetBaseException().Message); }
+        if (assembly.GetType("NorthIslandChestPlugin.VerificationSession") != null ||
+            assembly.GetType("NorthIslandChestPlugin.Plugin+VerificationWindow") != null ||
+            assembly.GetReferencedAssemblies().Any(a => a.Name == "Omni.Verification")) {
+            failures++; Console.WriteLine("FAIL removed verification types or dependency remain");
+        } else Console.WriteLine("PASS verification UI/session and assembly dependency removed");
+        var configType = assembly.GetType("NorthIslandChestPlugin.Plugin+PluginConfig", true)!;
+        if (configType.GetProperties().Any(p => p.Name.StartsWith("ServerChan") || p.Name.StartsWith("Notify"))) {
+            failures++; Console.WriteLine("FAIL unattended notification settings remain");
+        } else Console.WriteLine("PASS unattended notification configuration removed");
+        void Test(string name, Action<Fixture> action) {
+            var fixture = new Fixture(assembly);
+            try { action(fixture); Console.WriteLine("PASS " + name); }
+            catch (Exception error) { failures++; Console.WriteLine("FAIL " + name + ": " + error.GetBaseException().Message); }
+            finally { fixture.Cleanup(); }
+        }
+        var ui = assembly.GetType("NorthIslandChestPlugin.UiText", true)!;
+        var uiLanguage = assembly.GetType("NorthIslandChestPlugin.UiLanguage", true)!;
+        var languageProperty = ui.GetProperty("Language", BindingFlags.NonPublic | BindingFlags.Static)!;
+        string Render(string value) => (string)ui.GetMethod("Render", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
+        string Label(string value) => (string)ui.GetMethod("Label", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
+        Test("tower settings use complete Traditional Chinese and English translations", f => {
+            var examples = new[] {
+                ("自动前往魔之塔设置", "自動前往魔之塔設定", "Automatic Forked Tower travel"),
+                ("注意：该项功能只会在蜃景天气出现时停止插件功能前往魔之塔进入区域，不会自动进行魔之塔战斗，后续流程需要手动或者由其他插件接管。", "注意：蜃景天氣出現時，此功能會暫停農寶並前往魔之塔入口。魔之塔戰鬥及後續流程需自行操作，或交由其他插件接管。", "When the required mirage weather appears, this feature pauses farming and moves to the Forked Tower entrance. Tower combat and subsequent steps require manual control or another plugin."),
+                ("如果你不知道上述是什么意思，则不要开启此功能，也不要就此功能进行任何反馈。", "請先了解魔之塔進入流程，再啟用此功能。", "Enable this feature only if you understand the tower entry workflow."),
+                ("蜃景天气出现时自动前往魔之塔区域", "蜃景天氣出現時自動前往魔之塔入口", "Travel to the Forked Tower during mirage weather")
+            };
+            foreach (var (source, traditional, english) in examples) {
+                languageProperty.SetValue(null, Enum.Parse(uiLanguage, "TraditionalChinese"));
+                f.Assert(Render(source) == traditional, "Incomplete Traditional Chinese: " + Render(source));
+                languageProperty.SetValue(null, Enum.Parse(uiLanguage, "English"));
+                f.Assert(Render(source) == english, "Incomplete English: " + Render(source));
+            }
+        });
+        Test("embedded UI catalog has no leftover Simplified characters in Traditional Chinese", f => {
+            using var stream = assembly.GetManifestResourceStream("OCBFR.UiTranslations.json")!;
+            using var catalog = System.Text.Json.JsonDocument.Parse(stream);
+            foreach (var entry in catalog.RootElement.EnumerateArray()) {
+                string text = entry.GetProperty("TraditionalChinese").GetString()!;
+                f.Assert(!text.Any(c => "战斗后并范默认复闲么".Contains(c)), "Incomplete Traditional Chinese entry: " + text);
+                string english = entry.GetProperty("English").GetString()!;
+                f.Assert(!english.Any(c => c >= '\u4e00' && c <= '\u9fff'), "Incomplete English entry: " + english);
+            }
+        });
+        Test("UI language switches without altering stored state or job commands", f => {
+            f.Set("combatJob", "Phantom White Mage");
+            languageProperty.SetValue(null, Enum.Parse(uiLanguage, "TraditionalChinese"));
+            f.Assert(Render("开始运行") == "開始運行", "Traditional Chinese start label missing");
+            f.Assert(Render("Phantom White Mage") == "幻境白魔法師", "Traditional job display missing");
+            f.Call("RequestFreelancerScan", "test");
+            f.Assert(f.Commands.Contains("/pdr pjob Phantom Freelancer"), "translated UI changed command name");
+            f.Assert((string)f.Get("combatJob")! == "Phantom White Mage", "translated UI changed stored job");
+            languageProperty.SetValue(null, Enum.Parse(uiLanguage, "English"));
+            f.Assert(Render("开始运行") == "Start" && Render("检测宝箱...") == "Scanning coffers...", "English labels/status missing or stale cache");
+            f.Assert(Render("Phantom White Mage") == "Phantom White Mage", "English job display changed");
+        });
+        Test("translated controls retain legacy ImGui identity", f => {
+            languageProperty.SetValue(null, Enum.Parse(uiLanguage, "English"));
+            f.Assert(Label("开始运行") == "Start###开始运行", "plain legacy button ID lost");
+            f.Assert(Label("仅展示稀有物品##TreasureTotalsRare") == "Rare items only###仅展示稀有物品##TreasureTotalsRare", "legacy ## ID lost");
+            f.Assert(Label("寻宝战利品###OCNFarmerTreasureHistory") == "Treasure loot###OCNFarmerTreasureHistory", "persistent window ID lost");
+            f.Assert(Label("##BDiscardPreset") == "##BDiscardPreset", "hidden input ID changed");
+        });
+        Test("translation preserves user presets, unknown item names and numbers", f => {
+            languageProperty.SetValue(null, Enum.Parse(uiLanguage, "English"));
+            f.Assert(Render("银箱 08/08  ·  铜箱 30/30") == "Silver coffers 08/08  ·  Bronze coffers 30/30", "translated counts changed");
+            f.Assert(Render("Enlightenment gold obols ×16") == "Enlightenment gold obols ×16", "game item name or quantity changed");
+            f.Assert(Label("##PurchaseSearch") == "##PurchaseSearch", "purchase input ID changed");
+            f.Assert(configType.GetProperty("UiLanguage") != null && configType.GetProperty("CombatJob")!.PropertyType == typeof(string), "existing config schema changed");
+        });
+        languageProperty.SetValue(null, Enum.Parse(uiLanguage, "TraditionalChinese"));
+        var gameText = assembly.GetType("NorthIslandChestPlugin.GameText", true)!;
+        object? GameCall(string method, params object?[] arguments) => gameText.GetMethod(method, BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments);
+        foreach (var example in new[] {
+            ("Japanese active scan", "このエリアから、銀の宝箱0個、銅の宝箱1個の気配を感じる……！", 0, 1),
+            ("Simplified patch active scan", "当前区域内似乎有7个银宝箱和29个铜宝箱！", 7, 29),
+            ("Traditional patch active scan", "當前區域內似乎有7個銀寶箱和29個銅寶箱！", 7, 29),
+            ("Japanese full-width count scan", "このエリアから、銀の宝箱０個、銅の宝箱１個の気配を感じる……！", 0, 1),
+            ("Japanese empty scan", "このエリアには、今は宝箱はなさそうだ……", 0, 0),
+            ("Simplified patch empty scan", "当前区域现在似乎没有宝箱……", 0, 0),
+            ("Traditional patch empty scan", "當前區域現在似乎沒有寶箱……", 0, 0)
+        }) Test(example.Item1, f => {
+            f.Set("waitingForScan", true); f.Set("combatJob", "Phantom White Mage");
+            f.Chat(example.Item2);
+            f.Assert((int)f.Get("silver")! == example.Item3 && (int)f.Get("copper")! == example.Item4, "wrong localized count");
+            f.Assert(!(bool)f.Get("waitingForScan")! && f.Phase == "None", "localized scan did not complete normally");
+            f.Assert(f.Commands.Contains("/pdr pjob Phantom White Mage"), "localized scan changed combat command");
+        });
+        foreach (string language in new[] { "TraditionalChinese", "English" }) {
+            languageProperty.SetValue(null, Enum.Parse(uiLanguage, language));
+            foreach (string message in new[] {
+                "このエリアから、銀の宝箱8個、銅の宝箱29個の気配を感じる……！",
+                "当前区域内似乎有7个银宝箱和30个铜宝箱！",
+                "當前區域內似乎有8個銀寶箱和29個銅寶箱！"
+            }) Test(language + " UI preserves localized threshold transition: " + message, f => {
+                f.Chat(message);
+                f.Assert(f.Phase == "FirstMove", "localized full count did not start route");
+            });
+        }
+        languageProperty.SetValue(null, Enum.Parse(uiLanguage, "TraditionalChinese"));
+        Test("partial, overflowing or wrong chat type cannot complete localized scan", f => {
+            f.Set("waitingForScan", true);
+            f.Chat("銀の宝箱8個");
+            f.Chat("銀の宝箱999999999999999個、銅の宝箱1個");
+            f.Chat("このエリアから、銀の宝箱8個、銅の宝箱30個の気配を感じる……！", 10);
+            f.Assert((bool)f.Get("waitingForScan")! && f.Phase == "None", "accepted incomplete or wrong-channel count");
+        });
+        foreach (string message in new[] {
+            "今はサポートジョブを変更できません。",
+            "战斗中无法切换辅助职业。",
+            "戰鬥中無法切換輔助職業。"
+        }) Test("localized job rejection retries before scanning: " + message, f => {
+            f.Call("RequestFreelancerScan", "test"); f.Chat(message); f.Call("AdvanceFreelancerScan");
+            f.Assert(f.Commands.Count(c => c == "/pdr pjob Phantom Freelancer") == 2 && !(bool)f.Get("waitingForScan")!, "did not retry denied job change");
+        });
+        Test("entry sync supports English, Japanese and both Chinese scripts", f => {
+            foreach (string message in new[] { "Your item level has been synced to 700.", "「アイテムレベル：700」にアイテムレベルシンクされました。", "当前任务设有品级同步限制。", "當前任務設有品級同步限制。" }) {
+                f.Set("waitingForEntry", true); f.Set("entrySyncMessageSeen", false);
+                f.Chat(message);
+                f.Assert((bool)f.Get("entrySyncMessageSeen")!, "localized entry handshake ignored");
+            }
+        });
+        Test("Freelancer acknowledgement checks the local player and canonical job", f => {
+            f.Assert((bool)GameCall("IsFreelancerChange", "K. T.はサポートジョブを 「サポートすっぴん」にチェンジした。", "K. T.", "Phantom Freelancer")!, "Japanese Freelancer acknowledgement ignored");
+            f.Assert((bool)GameCall("IsFreelancerChange", "K. T.切换为了辅助自由人。", "K. T.", "Phantom Freelancer")!, "patch Freelancer acknowledgement ignored");
+            f.Assert(!(bool)GameCall("IsFreelancerChange", "Other Personはサポートジョブを 「サポートすっぴん」にチェンジした。", "K. T.", "Phantom Freelancer")!, "accepted another player's job change");
+        });
+        foreach (var example in new[] {
+            ("Japanese currency loot", "十二都市金貨を16枚手に入れた。", "十二都市金貨", 16),
+            ("Japanese item loot", "「十二都市金貨」×16を手に入れた。", "十二都市金貨", 16),
+            ("Japanese single item loot", "「テストアイテム」を入手した。", "テストアイテム", 1),
+            ("Traditional patch loot", "獲得了16枚十二城邦金幣。", "十二城邦金幣", 16),
+            ("Simplified patch loot", "获得了16枚十二城邦金币。", "十二城邦金币", 16),
+            ("English thousands loot", "You obtain 1,000 Enlightenment gold obols.", "Enlightenment gold obols", 1000)
+        }) Test(example.Item1, f => {
+            f.Phase = "InnerReturn"; f.Call("CaptureTreasureLoot", example.Item2);
+            f.Assert(f.Loot.Contains(example.Item3) && (int)f.Loot[example.Item3]! == example.Item4, "localized loot name or quantity lost");
+        });
+        Test("Japanese bare item requires verified link and loot capture phase", f => {
+            f.Phase = "InnerReturn";
+            f.Call("CaptureTreasureLoot", "十二都市金貨×16");
+            f.Assert(f.Loot.Count == 0, "bare text accepted without a verified item name");
+            f.Call("RecordTreasureLoot", "十二都市金貨×16", "十二都市金貨");
+            f.Assert((int)f.Loot["十二都市金貨"]! == 16, "verified bare Japanese item not recorded");
+            f.Phase = "None"; f.Call("RecordTreasureLoot", "十二都市金貨×16", "十二都市金貨");
+            f.Assert((int)f.Loot["十二都市金貨"]! == 16, "captured loot outside treasure route");
+        });
+        Test("another player's Japanese loot does not affect our records", f => {
+            f.Phase = "OuterReturn";
+            f.Call("CaptureTreasureLoot", "Other Personは「十二都市金貨」×16を手に入れた。");
+            f.Assert(f.Loot.Count == 0, "captured another player's loot");
+        });
+        Test("full active scan starts exactly one treasure procedure", f => {
+            f.Set("waitingForScan", true);
+            f.Chat("There are 8 silver coffers and 30 bronze coffers in this area.");
+            f.Assert(f.Logs.Count(s => s.Contains("宝箱达到上限")) == 1, "full scan restarted procedure twice");
+        });
+        Test("debug force-full follows the real scan-completion path", f => {
+            f.Set("waitingForScan", true); f.Set("debugForceFull", true);
+            f.Chat("There are 0 silver coffers and 0 bronze coffers in this area.");
+            f.Assert(f.Phase == "FirstMove", "force-full did not start after scan");
+        });
+        Test("English treasure loot records quantity", f => {
+            f.Phase = "InnerReturn";
+            f.Call("CaptureTreasureLoot", "You obtain 16 Enlightenment gold obols.");
+            f.Assert((int)f.Loot["Enlightenment gold obols"]! == 16, "English loot quantity was lost");
+        });
+        Test("passive bronze threshold starts treasure and cancels delayed combat", f => {
+            f.Set("pendingBocchiAt", DateTime.UtcNow.AddSeconds(5));
+            f.Chat("There are 7 silver coffers and 30 bronze coffers in this area.");
+            f.Assert(f.Phase == "FirstMove", "bronze threshold ignored");
+            f.Assert((DateTime)f.Get("pendingBocchiAt")! == DateTime.MinValue, "combat would restart during treasure route");
+        });
+        Test("unrelated chat cannot start treasure from stale full count", f => {
+            f.Set("silver", 8); f.Set("copper", 30);
+            f.Chat("Hello", 10);
+            f.Assert(f.Phase == "None", "unrelated chat started treasure");
+        });
+        Test("passive count cannot interrupt tower navigation", f => {
+            f.SetEnum("towerPhase", "MoveToCrystal");
+            f.Chat("There are 8 silver coffers and 30 bronze coffers in this area.");
+            f.Assert(f.Phase == "None", "started treasure during tower navigation");
+        });
+        Test("stopped plugin updates count without starting treasure", f => {
+            f.Set("running", false);
+            f.Chat("There are 8 silver coffers and 30 bronze coffers in this area.");
+            f.Assert(f.Phase == "None" && (int)f.Get("silver")! == 8, "stopped plugin acted or ignored display count");
+        });
+        Test("below-threshold passive count does not start treasure", f => {
+            f.Chat("There are 7 silver coffers and 29 bronze coffers in this area.");
+            f.Assert(f.Phase == "None", "started below threshold");
+        });
+        Test("live singular bronze message completes scan without retry", f => {
+            f.Set("waitingForScan", true);
+            f.Chat("You sense the presence of 0 silver coffers and 1 bronze coffer in the area!");
+            f.Assert((int)f.Get("silver")! == 0 && (int)f.Get("copper")! == 1, "singular bronze count not parsed");
+            f.Assert(!(bool)f.Get("waitingForScan")!, "scan still waiting despite count message");
+        });
+        Test("singular silver and plural bronze start passive treasure at bronze threshold", f => {
+            f.Chat("You sense the presence of 1 silver coffer and 30 bronze coffers in the area!");
+            f.Assert(f.Phase == "FirstMove" && (int)f.Get("silver")! == 1, "singular silver blocked bronze threshold");
+        });
+        Test("scan after mounting waits then requests Freelancer before casting", f => {
+            f.Flags.Add(64);
+            f.Call("RequestFreelancerScan", "test");
+            f.Assert(!f.Commands.Any(c => c.StartsWith("/pdr pjob")), "changed job during mounting");
+            f.Flags.Clear();
+            f.Call("AdvanceFreelancerScan");
+            f.Assert(f.Commands.Contains("/pdr pjob Phantom Freelancer"), "skipped Freelancer after dismount");
+            f.Assert(!(bool)f.Get("waitingForScan")!, "cast before requesting Freelancer");
+        });
+        Test("scan preparation cancels delayed combat and stops navigation", f => {
+            f.Set("pendingBocchiAt", DateTime.UtcNow.AddSeconds(1)); f.Set("bocchiEnabled", true);
+            f.Call("RequestFreelancerScan", "test");
+            f.Assert((DateTime)f.Get("pendingBocchiAt")! == DateTime.MinValue && !(bool)f.Get("bocchiEnabled")!, "combat can start while scanning");
+            f.Assert(f.Commands.Contains("/bocchiillegal off") && f.Commands.Contains("/vnav stop"), "did not stop movement before scan");
+        });
+        Test("unanswered scan retries without starting combat or losing initial scan", f => {
+            f.Set("waitingForScan", true);
+            f.Call("RetryUnansweredTreasureScan");
+            f.Assert((bool)f.Get("initialScan")!, "marked initial scan complete without counts");
+            f.Assert((DateTime)f.Get("pendingScanAt")! > DateTime.UtcNow, "missing delayed retry");
+            f.Assert((DateTime)f.Get("pendingBocchiAt")! == DateTime.MinValue && !f.Commands.Contains("/bocchiillegal on"), "combat resumed without scan result");
+        });
+        Test("rejected job change retries the job command before casting", f => {
+            f.Call("RequestFreelancerScan", "test");
+            f.Chat("You are unable to change phantom jobs at this time.");
+            f.Call("AdvanceFreelancerScan");
+            f.Assert(f.Commands.Count(c => c == "/pdr pjob Phantom Freelancer") == 2, "did not retry rejected job command");
+            f.Assert(!(bool)f.Get("waitingForScan")!, "cast despite rejected change");
+        });
+        Test("position return does not advance outside target island", f => {
+            f.Territory = 1278;
+            f.Phase = "InnerReturn";
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "InnerReturn", "advanced outer ring while outside target island");
+        });
+        Test("position return waits through zone transition", f => {
+            f.Flags.Add(45);
+            f.Phase = "InnerReturn";
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "InnerReturn", "advanced during BetweenAreas");
+        });
+        Test("position return waits until return cast finishes", f => {
+            f.Flags.Add(27); f.Phase = "InnerReturn";
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "InnerReturn", "advanced while casting");
+        });
+        Test("inner return advances at base", f => {
+            f.Phase = "InnerReturn";
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "SecondMove", "did not advance to outer ring");
+        });
+        Test("inner return keeps waiting away from base", f => {
+            f.Position += new Vector3(1000, 0, 0);
+            f.Phase = "InnerReturn";
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "InnerReturn", "finished before reaching base");
+        });
+        Test("mounted player at shard starts inner route when area is clear", f => {
+            var guard = f.Get("treasurePlayerGuard")!;
+            guard.GetType().GetMethod("Begin")!.Invoke(guard, new object[] { f.Position, DateTime.UtcNow, true });
+            f.Position += new Vector3(1000, 0, 0); f.Flags.Add(4); f.Set("innerLeg", true); f.Phase = "FirstWaitPlayers";
+            f.Call("CheckCrystalPlayers");
+            f.Assert(f.Commands.Contains("/pdr ptreasure 内环") && f.Phase == "InnerReturn", "clear mounted shard did not start route");
+        });
+        Test("casting player at shard waits before route", f => {
+            var guard = f.Get("treasurePlayerGuard")!;
+            guard.GetType().GetMethod("Begin")!.Invoke(guard, new object[] { f.Position, DateTime.UtcNow, true });
+            f.Position += new Vector3(1000, 0, 0); f.Flags.Add(4); f.Flags.Add(27); f.Set("innerLeg", true); f.Phase = "FirstWaitPlayers";
+            f.Call("CheckCrystalPlayers");
+            f.Assert(f.Phase == "FirstWaitPlayers" && !f.Commands.Any(c => c.StartsWith("/pdr ptreasure")), "started while casting");
+        });
+        Test("outer position return persists loot once", f => {
+            f.Phase = "OuterReturn";
+            f.Loot["Enlightenment gold obols"] = 16;
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "LeaveDuty", "did not schedule leave");
+            f.Assert(f.Records.Count == 1 && File.Exists(f.RecordPath), "outer position completion discarded treasure history");
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Records.Count == 1, "duplicated treasure history");
+        });
+        Test("outer return in no-leave test mode still persists loot exactly once", f => {
+            f.Set("debugNoLeaveDuty", true); f.Phase = "OuterReturn";
+            f.Loot["Enlightenment silver obols"] = 10;
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "None" && f.Records.Count == 1 && File.Exists(f.RecordPath), "test-mode completion did not save history");
+            f.Chat("K. T. uses Occult Return.", 43);
+            f.Assert(f.Records.Count == 1 && !f.Commands.Contains("/pdr leaveduty"), "late chat duplicated completion or left test duty");
+        });
+        Test("reentry cancels previous pending scan and combat timers", f => {
+            f.Phase = "InnerReturn";
+            foreach (var name in new[] { "pendingScanAt", "pendingBocchiAt", "pendingReturnScanAt", "pendingCurrencyCheckAt", "pendingPurchaseAt" }) f.Set(name, DateTime.UtcNow);
+            f.Call("BeginEntryWait", "test");
+            f.Assert(f.Phase == "None", "stale treasure phase");
+            foreach (var name in new[] { "pendingScanAt", "pendingBocchiAt", "pendingReturnScanAt", "pendingCurrencyCheckAt", "pendingPurchaseAt" })
+                f.Assert((DateTime)f.Get(name)! == DateTime.MinValue, "stale timer: " + name);
+        });
+        Test("unexpected exit while waiting for return starts fresh entry", f => {
+            f.Territory = 1278; f.Position += new Vector3(1000, 0, 0); f.Phase = "InnerReturn";
+            f.Call("OnUpdate", f.Get("framework"));
+            f.Assert(f.Phase == "None" && (bool)f.Get("waitingForEntry")!, "remained stuck in old inner route outside island");
+            f.Assert(f.Commands.Contains("/pdrfe ocn"), "did not request reentry");
+        });
+        Test("logout still stops active work after verification removal", f => {
+            f.LoggedIn = false; f.Phase = "InnerReturn";
+            f.Call("OnUpdate", f.Get("framework"));
+            f.Assert(!(bool)f.Get("running")! && f.Phase == "None", "logout left active route state");
+            f.Assert(f.Commands.Contains("/pdr ptreasure abort") && f.Commands.Contains("/vnav stop"), "logout did not stop external route");
+        });
+        Test("South return uses South territory and base coordinates", f => {
+            f.SelectIsland("South"); f.Phase = "InnerReturn";
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "SecondMove", "did not advance at South base");
+        });
+        Test("South outer return records loot at South base", f => {
+            f.SelectIsland("South"); f.Phase = "OuterReturn"; f.Loot["Enlightenment gold obols"] = 16;
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "LeaveDuty" && f.Records.Count == 1, "South outer completion failed");
+        });
+        Test("South selection rejects North territory and reenters South after exit", f => {
+            f.SelectIsland("South"); f.Territory = 1346; f.Phase = "InnerReturn";
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Phase == "InnerReturn", "accepted wrong island");
+            f.Territory = 1278;
+            f.Call("OnUpdate", f.Get("framework"));
+            f.Assert(f.Commands.Contains("/pdrfe ocs") && !f.Commands.Contains("/pdrfe ocn"), "reentry used wrong profile");
+        });
+        Console.WriteLine($"Managed regression failures: {failures}");
+        return failures;
+    }
+
+    internal sealed class Fixture
+    {
+        readonly Assembly assembly;
+        readonly Type pluginType;
+        readonly object plugin;
+        public readonly List<string> Logs = new();
+        public readonly List<string> Commands = new();
+        public readonly HashSet<int> Flags = new();
+        public uint Territory = 1346;
+        public bool LoggedIn = true;
+        public Vector3 Position = new(882, 258.5f, 882);
+        static readonly string TestRoot = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "artifacts", "regression-tmp"));
+        public string RecordPath = Path.Combine(TestRoot, "OCNFarmer-tests-" + Guid.NewGuid(), "treasure-records.json");
+        const BindingFlags Members = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+        public Fixture(Assembly assembly) {
+            this.assembly = assembly;
+            pluginType = assembly.GetType("NorthIslandChestPlugin.Plugin", true)!;
+            plugin = RuntimeHelpers.GetUninitializedObject(pluginType);
+            // Construct only small managed state objects, not the plugin ctor.
+            foreach (var name in new[] { "treasureMovementWait", "islandSwitchMovementWait", "towerMovementWait", "treasurePlayerGuard", "treasureLoot", "treasureRecords", "config" }) {
+                var field = pluginType.GetField(name, Members)!;
+                field.SetValue(plugin, Activator.CreateInstance(field.FieldType, true));
+            }
+            Set("activeProfile", assembly.GetType("NorthIslandChestPlugin.IslandProfile")!.GetProperty("North", Members)!.GetValue(null));
+            Set("running", true); Set("initialScan", true); Set("silver", -1); Set("copper", -1);
+            Set("freelancerJobName", "Phantom Freelancer");
+            Set("treasureRecordPath", RecordPath);
+            Set("currencyBuyer", RuntimeHelpers.GetUninitializedObject(assembly.GetType("NorthIslandChestPlugin.CurrencyBuyer", true)!));
+            var playerType = Find("Dalamud.Game.ClientState.Objects.SubKinds.IPlayerCharacter");
+            var player = Proxy(playerType, (m, a) => m.Name switch {
+                "get_Position" => Position, "get_Name" => Text("K. T."), _ => Default(m.ReturnType)
+            });
+            Service("objects", (m, a) => {
+                if (m.Name == "get_LocalPlayer") return player;
+                if (m.Name == "GetEnumerator") {
+                    var element = Find("Dalamud.Game.ClientState.Objects.Types.IGameObject");
+                    var array = Array.CreateInstance(element, 0);
+                    return m.ReturnType.IsGenericType
+                        ? typeof(IEnumerable<>).MakeGenericType(element).GetMethod("GetEnumerator")!.Invoke(array, null)
+                        : array.GetEnumerator();
+                }
+                return Default(m.ReturnType);
+            });
+            Service("clientState", (m, a) => m.Name switch { "get_TerritoryType" => Territory, "get_IsLoggedIn" => LoggedIn, _ => Default(m.ReturnType) });
+            Service("condition", (m, a) => m.Name switch {
+                "get_Item" => Flags.Contains(Convert.ToInt32(a![0])),
+                "Any" => a!.SelectMany(x => x is Array values ? values.Cast<object>() : new[] { x! }).Any(x => Flags.Contains(Convert.ToInt32(x))),
+                _ => Default(m.ReturnType)
+            });
+            Service("gameGui", (m, a) => Default(m.ReturnType));
+            Service("playerState", (m, a) => m.Name == "get_IsLoaded" ? true : Default(m.ReturnType));
+            Service("framework", (m, a) => Default(m.ReturnType));
+            Service("commands", (m, a) => { if (m.Name == "ProcessCommand") Commands.Add((string)a![0]!); return Default(m.ReturnType); });
+            Service("log", (m, a) => {
+                foreach (var value in a ?? Array.Empty<object?>()) {
+                    if (value is string s) Logs.Add(s);
+                    else if (value is Exception error) Logs.Add(error.ToString());
+                }
+                return Default(m.ReturnType);
+            });
+        }
+        public IDictionary Loot => (IDictionary)Get("treasureLoot")!;
+        public IList Records => (IList)Get("treasureRecords")!;
+        public string Phase { get => Get("treasurePhase")!.ToString()!; set => Set("treasurePhase", Enum.Parse(pluginType.GetField("treasurePhase", Members)!.FieldType, value)); }
+        public void Set(string name, object? value) => pluginType.GetField(name, Members)!.SetValue(plugin, value);
+        public void SetEnum(string name, string value) => Set(name, Enum.Parse(pluginType.GetField(name, Members)!.FieldType, value));
+        public object? Get(string name) => pluginType.GetField(name, Members)!.GetValue(plugin);
+        public void SelectIsland(string name) {
+            var profileType = assembly.GetType("NorthIslandChestPlugin.IslandProfile", true)!;
+            var profile = profileType.GetProperty(name, Members)!.GetValue(null)!;
+            Set("activeProfile", profile);
+            Territory = (uint)profileType.GetProperty("TerritoryId")!.GetValue(profile)!;
+            Position = (Vector3)profileType.GetProperty("CrystalMoveTarget")!.GetValue(profile)!;
+        }
+        public object? Call(string name, params object?[] args) => pluginType.GetMethod(name, Members)!.Invoke(plugin, args);
+        public void Assert(bool condition, string message) {
+            if (!condition) throw new Exception(message + " | " + string.Join(" | ", Logs.Where(s => s.Contains("Exception") || s.Contains("失败"))));
+        }
+        public void Chat(string text, int kind = 57) {
+            var messageType = pluginType.GetMethod("OnChatMessage", Members)!.GetParameters()[0].ParameterType;
+            var message = Proxy(messageType, (m, a) => m.Name switch {
+                "get_Message" => Text(text), "get_LogKind" => Enum.ToObject(m.ReturnType, kind), _ => Default(m.ReturnType)
+            });
+            Call("OnChatMessage", message);
+        }
+        void Service(string name, Func<MethodInfo, object?[]?, object?> handler) => Set(name, Proxy(pluginType.GetField(name, Members)!.FieldType, handler));
+        static object Proxy(Type type, Func<MethodInfo, object?[]?, object?> handler) {
+            var proxy = DispatchProxy.Create(type, typeof(ServiceProxy));
+            ((ServiceProxy)proxy).Handler = handler;
+            return proxy;
+        }
+        Type Find(string name) => AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(name)).First(t => t != null)!;
+        object Text(string text) {
+            var payload = Activator.CreateInstance(Find("Dalamud.Game.Text.SeStringHandling.Payloads.TextPayload"), text)!;
+            var list = Array.CreateInstance(Find("Dalamud.Game.Text.SeStringHandling.Payload"), 1);
+            list.SetValue(payload, 0);
+            return Activator.CreateInstance(Find("Dalamud.Game.Text.SeStringHandling.SeString"), new object[] { list })!;
+        }
+        static object? Default(Type type) => type == typeof(void) ? null : type.IsValueType ? Activator.CreateInstance(type) : null;
+        public void Cleanup() {
+            var directory = Path.GetFullPath(Path.GetDirectoryName(RecordPath)!);
+            if (!directory.StartsWith(TestRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Test cleanup path escaped its workspace output directory");
+            if (Directory.Exists(directory)) Directory.Delete(directory, true);
+        }
+    }
+}
+
+public class ServiceProxy : DispatchProxy
+{
+    public Func<MethodInfo, object?[]?, object?> Handler = null!;
+    protected override object? Invoke(MethodInfo? method, object?[]? args) => Handler(method!, args);
+}

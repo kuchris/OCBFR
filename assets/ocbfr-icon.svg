@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>OCBFR — crescent and treasure chest</title>
+  <rect x="16" y="16" width="480" height="480" rx="100" fill="#101010"/>
+  <path d="M328 78 C234 52 132 119 132 214 C132 296 194 358 272 363 C220 334 194 291 194 238 C194 164 248 104 328 78Z" fill="#f4f4f4"/>
+  <path d="M358 122 L368 147 L393 157 L368 167 L358 192 L348 167 L323 157 L348 147Z" fill="#f4f4f4"/>
+  <path d="M202 279 V261 C202 233 223 212 250 212 H354 C381 212 402 233 402 261 V279Z" fill="#101010" stroke="#f4f4f4" stroke-width="16" stroke-linejoin="round"/>
+  <path d="M202 279 H402 V366 Q402 382 386 382 H218 Q202 382 202 366Z" fill="#101010" stroke="#f4f4f4" stroke-width="16" stroke-linejoin="round"/>
+  <rect x="290" y="262" width="24" height="48" rx="4" fill="#f4f4f4"/>
+  <circle cx="302" cy="285" r="5" fill="#101010"/>
+</svg>
