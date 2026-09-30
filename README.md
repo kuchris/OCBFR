@@ -2,7 +2,7 @@
 
 Source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.9**, Dalamud API **15**.
 
-The source is publicly available here. No project license has been added; bundled dependencies retain their existing licenses. Installation ZIPs and the plugin icon are distributed through the [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr).
+The source is publicly available here. No project license has been added; bundled dependencies retain their existing licenses. Installation ZIPs are available in this repository's [Releases](https://github.com/kuchris/OCBFR/releases). The [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr) provides the installer subscription.
 
 ## Build
 
@@ -48,10 +48,10 @@ The generator rejects missing Traditional Chinese keys. Verification checks the 
 2. Update the assembly version, informational version, manifest and installation documents together.
 3. Run `Package.ps1`; verify the ZIP contents and checksums.
 4. Commit and push source changes to this repository.
-5. Publish the flat installation ZIP as a release asset in public `kuchris/DalamudPlugins`; publish `images/icon.png` there under `plugins/OCNFarmer/`.
+5. Publish the flat installation ZIP as a release asset in `kuchris/OCBFR`. The catalogue's icon is kept under `plugins/OCNFarmer/` in `kuchris/DalamudPlugins`.
 6. Update only the `OCNFarmer` object in the public `repo.json`, including version, timestamps, download links and icon URL.
 
-The catalogue continues to distribute installation ZIPs from `kuchris/DalamudPlugins`. Keep the assembly/internal ID `OCNFarmer` and `/ocnchest`, `/ocnstart`, `/ocnstop` commands to preserve existing settings.
+The catalogue points installation and update links to releases in `kuchris/OCBFR`. Keep the assembly/internal ID `OCNFarmer` and `/ocnchest`, `/ocnstart`, `/ocnstop` commands to preserve existing settings.
 
 English-client North workflows have been tested in-game. South, Japanese and Chinese-patched clients, the real full-coffer threshold and some ancillary features still need the checks listed in `docs/TEST-STATUS.md`. Offline success does not prove those live behaviors.
 
