@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
-using OmenTools.Interop.Game.Lumina;
+using Dalamud.Plugin.Services;
 
 namespace NorthIslandChestPlugin;
 
 internal sealed class CurrencyPurchaseCatalog
 {
+	private readonly IDataManager data;
+	internal CurrencyPurchaseCatalog(IDataManager data) => this.data = data;
 	private readonly Dictionary<(IslandTarget, CurrencyKind), IReadOnlyList<CurrencyShopItem>> cache = new Dictionary<(IslandTarget, CurrencyKind), IReadOnlyList<CurrencyShopItem>>();
 
 	internal static uint[] Shops(IslandTarget island, CurrencyKind kind)
@@ -52,8 +54,8 @@ internal sealed class CurrencyPurchaseCatalog
 		uint[] array = Shops(profile.Target, kind);
 		foreach (uint num in array)
 		{
-			SpecialShop shop = LuminaGetter.GetRow<SpecialShop>(num) ?? throw new InvalidOperationException($"商店数据不可用：{num}");
-			list.AddRange(Read(shop, currencyId, (uint id) => LuminaGetter.GetRow<Item>(id)));
+			SpecialShop shop = data.GetExcelSheet<SpecialShop>().GetRowOrDefault(num) ?? throw new InvalidOperationException($"商店数据不可用：{num}");
+			list.AddRange(Read(shop, currencyId, (uint id) => data.GetExcelSheet<Item>().GetRowOrDefault(id)));
 		}
 		cache[key] = list;
 		return list;

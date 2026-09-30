@@ -1,4 +1,4 @@
-# OCNFarmer 重建版建置腳本
+# OCBFR 建置腳本
 #
 # 用途：自動偵測目前 Dalamud 使用的 addon\Hooks\<version> 目錄，再交給 MSBuild。
 # 原因：Dalamud 每次更新會建立新版本目錄並刪除舊的，若 csproj 硬編碼路徑就會突然編譯失敗
@@ -47,7 +47,7 @@ $ordered = $candidates | Sort-Object `
 $chosen = $ordered | Select-Object -First 1
 Write-Host "Dalamud 參考組件：$($chosen.Name)  (version $($chosen.Version))" -ForegroundColor Cyan
 
-$proj = Join-Path $PSScriptRoot 'OCNFarmer.csproj'
+$proj = Join-Path $PSScriptRoot 'OCBFR.csproj'
 dotnet build $proj -c $Configuration -p:DalamudLibPath="$($chosen.FullName)"
 
 if ($LASTEXITCODE -ne 0) {

@@ -1,12 +1,12 @@
 # OCBFR
 
-Source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.10**, Dalamud API **15**.
+Source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.12**, Dalamud API **15**.
 
-The source is publicly available here. No project license has been added; bundled dependencies retain their existing licenses. Installation ZIPs are available in this repository's [Releases](https://github.com/kuchris/OCBFR/releases). The [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr) provides the installer subscription.
+The source is publicly available here. No project license has been added. The OmenTools notice for the previous interop implementation is retained under `notices/`. Installation ZIPs are available in this repository's [Releases](https://github.com/kuchris/OCBFR/releases). The [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr) provides the installer subscription.
 
 ## Build
 
-Requires Windows, the .NET 10 SDK, and an installed Dalamud API 15 environment. The required OmenTools, GuerrillaNtp and TinyPinyin libraries are included in `dependencies/`. Dalamud and game data are supplied by the local game installation.
+Requires Windows, the .NET 10 SDK, and an installed Dalamud API 15 environment. No OmenTools, GuerrillaNtp or TinyPinyin DLLs are required. The plugin uses Dalamud services and its own small currency-shop event bridge. Dalamud and game data are supplied by the local game installation.
 
 ```powershell
 .\Build.ps1
@@ -17,19 +17,25 @@ Requires Windows, the .NET 10 SDK, and an installed Dalamud API 15 environment. 
 The build script finds the newest installed Dalamud Hooks directory. To select references manually:
 
 ```powershell
-dotnet build .\src\OCNFarmer.csproj -c Release -p:DalamudLibPath="<Hooks directory>"
+dotnet build .\src\OCBFR.csproj -c Release -p:DalamudLibPath="<Hooks directory>"
 ```
 
-`Package.ps1` creates `dist/OCBFR-2.3.0.10.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
+`Package.ps1` creates `dist/OCBFR-2.3.0.12.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
 
 ## Layout
 
 - `src/`: complete C# project, bilingual UI and localized game-message parser.
-- `dependencies/`: required libraries and OmenTools' license.
+- `notices/`: retained third-party interop notice; no dependency DLLs.
 - `images/` and `assets/`: packaged icon and editable original SVG.
 - `manifest/`: plugin metadata for public binary distribution.
 - `tools/`: build verification, translation audit/generator, icon renderer and optional local game-data inspection.
 - `docs/`: [English installation](docs/INSTALL.en.md), [繁體中文安裝](docs/INSTALL.zh-TW.md), and [test status](docs/TEST-STATUS.md).
+
+## Names and compatibility
+
+The project is `src/OCBFR.csproj`; visible titles, metadata, help text and branding use **OCBFR**. The assembly/internal installer ID, config paths, private namespace and hidden ImGui IDs keep their existing values to preserve installed-plugin updates, settings, records and window layouts. These technical identifiers are not UI branding. See the [name audit](docs/NAME-AUDIT.md) for every retained identifier.
+
+The loot-history page has item search, date/island filters, summary counts and separate item-total/run views. Stored loot keys and quantities are unchanged.
 
 ## UI translations
 

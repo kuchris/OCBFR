@@ -15,10 +15,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using OmenTools;
-using OmenTools.Extensions;
-using OmenTools.Info.Game.Packets.Upstream;
-using OmenTools.Interop.Game.AddonEvent;
 
 namespace NorthIslandChestPlugin;
 
@@ -73,7 +69,8 @@ internal sealed class CurrencyBuyer : IDisposable
 
 	private readonly Queue<CurrencyPurchaseRequest> queue = new Queue<CurrencyPurchaseRequest>();
 
-	private readonly CurrencyPurchaseCatalog catalog = new CurrencyPurchaseCatalog();
+	private readonly CurrencyPurchaseCatalog catalog;
+	private readonly ShopEventBridge shopEvents;
 
 	private Phase phase;
 
@@ -127,7 +124,7 @@ internal sealed class CurrencyBuyer : IDisposable
 
 	internal string Status { get; private set; } = "空闲";
 
-	internal CurrencyBuyer(IClientState clientState, IObjectTable objects, ICondition condition, IGameGui gameGui, IAddonLifecycle addonLifecycle, IPluginLog log, Action<bool, string> finished)
+	internal CurrencyBuyer(IClientState clientState, IObjectTable objects, ICondition condition, IGameGui gameGui, IAddonLifecycle addonLifecycle, IPluginLog log, Action<bool, string> finished, IDataManager data, ShopEventBridge shopEvents)
 	{
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c5: Expected Obj, but got Unknown
@@ -148,6 +145,8 @@ internal sealed class CurrencyBuyer : IDisposable
 		this.addonLifecycle = addonLifecycle;
 		this.log = log;
 		this.finished = finished;
+		this.catalog = new CurrencyPurchaseCatalog(data);
+		this.shopEvents = shopEvents;
 		addonLifecycle.RegisterListener((AddonEvent)1, "ShopExchangeCurrency", (IAddonLifecycle.AddonEventDelegate)OnShopAddon);
 		addonLifecycle.RegisterListener((AddonEvent)4, "ShopExchangeCurrency", (IAddonLifecycle.AddonEventDelegate)OnShopAddon);
 		addonLifecycle.RegisterListener((AddonEvent)1, "ShopExchangeCurrencyDialog", (IAddonLifecycle.AddonEventDelegate)OnShopDialogAddon);
@@ -192,7 +191,7 @@ internal sealed class CurrencyBuyer : IDisposable
 			Status = "请先完成当前确认操作";
 			return false;
 		}
-		if (!DService.IsInitialized)
+		if (!shopEvents.IsReady)
 		{
 			Status = "自动购买功能暂未就绪";
 			return false;
@@ -683,7 +682,7 @@ internal sealed class CurrencyBuyer : IDisposable
 		{
 			try
 			{
-				new EventCompletePackt(activeEventId, 0u).Send();
+				if (!shopEvents.Complete(activeEventId)) throw new InvalidOperationException("Currency shop completion could not be sent");
 				log.Debug($"自动购买 EventComplete event={activeEventId:X}", Array.Empty<object>());
 			}
 			catch (Exception ex)
@@ -698,13 +697,13 @@ internal sealed class CurrencyBuyer : IDisposable
 	private bool TrySendEventStart()
 	{
 		uint localEntityId = GetLocalEntityId();
-		if (!DService.IsInitialized || localEntityId == 0)
+		if (!shopEvents.IsReady || localEntityId == 0)
 		{
 			return false;
 		}
 		try
 		{
-			new EventStartPackt(localEntityId, current.EventId).Send();
+			if (!shopEvents.Start(localEntityId, current.EventId)) return false;
 			log.Debug($"自动购买 EventStart player={localEntityId:X} event={current.EventId:X} attempt={eventStartAttempts + 1}", Array.Empty<object>());
 			return true;
 		}
@@ -741,7 +740,7 @@ internal sealed class CurrencyBuyer : IDisposable
 		{
 			return false;
 		}
-		if (!DService.IsInitialized || GetLocalEntityId() == 0)
+		if (!shopEvents.IsReady || GetLocalEntityId() == 0)
 		{
 			return false;
 		}
@@ -880,7 +879,15 @@ internal sealed class CurrencyBuyer : IDisposable
 		}
 		try
 		{
-			((AgentId)118).SendEvent(1uL, 0, itemIndex, quantity, 0);
+			AgentModule* module = AgentModule.Instance();
+			if (module == null) return false;
+			AgentInterface* agent = module->GetAgentByInternalId((AgentId)118);
+			if (agent == null) return false;
+			AtkValue* args = stackalloc AtkValue[4];
+			int[] values = { 0, itemIndex, quantity, 0 };
+			for (int i = 0; i < 4; i++) { args[i] = default; args[i].Type = FFXIVClientStructs.FFXIV.Component.GUI.AtkValueType.Int; args[i].Int = values[i]; }
+			AtkValue result = default;
+			agent->ReceiveEvent(&result, args, 4, 1uL);
 			return true;
 		}
 		catch
@@ -896,7 +903,7 @@ internal sealed class CurrencyBuyer : IDisposable
 			return;
 		}
 		confirmationSent = true;
-		if (!AddonSelectYesnoEvent.ClickYes())
+		if (!ConfirmPurchaseDialog())
 		{
 			confirmationSent = false;
 			return;
@@ -907,6 +914,12 @@ internal sealed class CurrencyBuyer : IDisposable
 			phaseDeadline = DateTime.UtcNow + ConfirmationTimeout;
 		}
 		Status = $"购买：{current.RewardName} ×{current.Quantity}";
+	}
+
+	private unsafe bool ConfirmPurchaseDialog()
+	{
+		AtkUnitBase* addon = GetAddon("SelectYesno");
+		return addon != null && addon->IsVisible && addon->IsReady && FireCallback(addon, 0);
 	}
 
 	private bool CanConfirmPurchase()

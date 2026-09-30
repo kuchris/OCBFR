@@ -25,7 +25,7 @@ for entry in entries:
         print('INCOMPLETE TRADITIONAL:', entry['Source'], '=>', entry['TraditionalChinese'])
 
 checked = 0
-for name in ['ui-inventory.json', 'dashboard-inventory.json']:
+for name in ['ui-inventory.json', 'dashboard-inventory.json', 'history-inventory.json']:
     inventory = json.loads((root / 'artifacts' / name).read_text(encoding='utf-8-sig'))
     for value in inventory:
         if not value['Context'].startswith('Draw'):

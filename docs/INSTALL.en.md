@@ -1,4 +1,4 @@
-# OCBFR Global 2.3.0.10
+# OCBFR Global 2.3.0.12
 
 Author: kuchris. Built from the C# source for Dalamud API 15. The DLL, manifest filename, internal ID and commands remain `OCNFarmer` so existing settings continue to work.
 
@@ -75,4 +75,4 @@ English-client North scans, UI language switching and exit/re-entry have been te
 
 Logs: `%APPDATA%\XIVLauncher\dalamud.log`, filter `[OCNFarmer]`. Saved loot records: `treasure-records.json` under Dalamud's OCNFarmer configuration directory. Diagnostic logs retain their established wording.
 
-Omni verification and unattended Server酱 notifications are removed. No personal configuration, keys, character data or game logs are included. Required bundled libraries are OmenTools, GuerrillaNtp and TinyPinyin; OmenTools' license is included. File checksums are in `SHA256SUMS.txt`.
+Omni verification and unattended Server酱 notifications are removed. No personal configuration, keys, character data or game logs are included. OmenTools, GuerrillaNtp and TinyPinyin DLLs are no longer required. Only the plugin DLL is shipped; Dalamud supplies the host assemblies. The previous interop license notice is retained. File checksums are in `SHA256SUMS.txt`.

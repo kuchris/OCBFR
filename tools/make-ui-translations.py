@@ -225,6 +225,7 @@ english.update({
     '进入': 'Enter', '检测': 'Scan', '战斗': 'Combat', '寻宝': 'Treasure', '重进': 'Re-enter',
     '测试完成后请紧急停止，恢复正常运行前关闭模拟选项。': 'Emergency-stop after testing. Disable simulation options before normal operation.',
 })
+english.update({'浏览已完成的寻宝与获得物品': 'Browse completed runs and collected loot', '搜索物品名称': 'Search item names', '全部副本': 'All islands', '完成寻宝': 'Completed runs', '获得物品': 'Items collected', '有物品记录': 'Runs with loot', '物品统计': 'Item totals', '每次寻宝': 'Run history', '尚未有已完成的寻宝记录': 'No completed runs yet', '没有符合筛选条件的寻宝记录': 'No runs match these filters', '记录会在寻宝流程完成后保存；未检测到物品的记录仍可在每次寻宝中查看。': 'Records are saved when a treasure run finishes. Runs without captured loot are still listed in Run history.'})
 traditional = json.loads((root / 'tools/ui-traditional.json').read_text(encoding='utf-8'))
 missing = english.keys() - traditional.keys()
 extra = traditional.keys() - english.keys()

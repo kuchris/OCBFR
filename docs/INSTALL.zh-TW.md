@@ -1,6 +1,6 @@
 # OCBFR Global — 安裝及使用
 
-這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.10（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，沿用現有設定及 `/ocnchest`、`/ocnstart`、`/ocnstop` 指令。English instructions are included in `README.en.md`.
+這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.12（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，沿用現有設定及 `/ocnchest`、`/ocnstart`、`/ocnstop` 指令。English instructions are included in `README.en.md`.
 
 本版已完整移除 Omni 驗證介面、Session、身份掃描及 DLL 依賴，亦移除 Server酱「無人值守通知」功能。首次載入會更新設定格式，清除舊通知設定；尋寶、購買及戰利品紀錄設定仍保留。魔之塔功能及舊選項已移除。
 
@@ -32,14 +32,14 @@ https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 
 ## 手動 DEV 安裝
 
-1. 將整個分享包解壓至固定資料夾，例如 `C:\OCNFarmer\`。所有 DLL、`OCNFarmer.json` 必須保留在同一層，並保留 `images` 子資料夾。
-2. 在遊戲輸入 `/xlsettings`，於 Experimental → Dev Plugin Locations 加入 **DLL 的完整路徑**：`C:\OCNFarmer\OCNFarmer.dll`，啟用並儲存。
+1. 將整個分享包解壓至固定資料夾，例如 `C:\OCBFR\`。所有 DLL、`OCNFarmer.json` 必須保留在同一層，並保留 `images` 子資料夾。
+2. 在遊戲輸入 `/xlsettings`，於 Experimental → Dev Plugin Locations 加入 **DLL 的完整路徑**：`C:\OCBFR\OCNFarmer.dll`，啟用並儲存。
 3. 用 `/xlplugins` 搜尋 OCBFR，載入 DEV 插件。用 `/ocnchest` 開啟設定。
-4. 更新時先緊急停止、卸載插件，再替換整包檔案並重新載入。只保留一個 OCNFarmer 載入位置，避免重複啟動。
+4. 更新時先緊急停止、卸載插件，再替換整包檔案並重新載入。只保留一個 OCBFR 載入位置，避免重複啟動。
 
 ## 需要另外安裝並設定的插件
 
-本包包括 OCNFarmer 所需的組件 DLL；Daily Routines、vnavmesh 和 BOCCHI 需另行安裝，並確認可在你的遊戲環境正常使用。
+本包只需要 OCBFR 插件 DLL，Dalamud 提供宿主組件；Daily Routines、vnavmesh 和 BOCCHI 需另行安裝，並確認可在你的遊戲環境正常使用。
 
 | 插件 | 用途 |
 | --- | --- |
@@ -86,10 +86,10 @@ https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 - 內環返營有「内环亚返回完成」，外環有「外环亚返回完成」及「寻宝完成，战利品已记录」。
 - 戰利品紀錄放在 Dalamud 插件設定目錄內 OCNFarmer 的 `treasure-records.json`；更新插件時保留設定目錄。
 - 若顯示「附近有人」，插件會等候或換小水晶。若路線不開始，先檢查 Daily Routines 介面語言及所需模組。
-- 若未收到完整寶箱數量，戰鬥輔助會保持暫停並重試。請保留當時 OCNFarmer log，確認職業、動作及系統訊息。
+- 若未收到完整寶箱數量，戰鬥輔助會保持暫停並重試。請保留當時 OCBFR log，確認職業、動作及系統訊息。
 
 ## 驗證範圍
 
 請閱讀同包的 `TEST-STATUS.md`。北島已完成多輪人工實測；南島、真實滿箱門檻及未逐項測試的購買功能，不能以編譯或離線檢查視為已驗證。
 
-本包不包含個人設定、角色資料、通知金鑰或遊戲日誌；亦不需要 Omni.Verification.dll、System.Management.dll 或 System.CodeDom.dll。OmenTools、GuerrillaNtp 及 TinyPinyin 仍是需要的依賴。插件作者署名為 kuchris，OmenTools 授權文件保留。
+本包不包含個人設定、角色資料、通知金鑰或遊戲日誌；亦不需要 Omni.Verification.dll、System.Management.dll 或 System.CodeDom.dll。已移除 OmenTools、GuerrillaNtp 及 TinyPinyin DLL 依賴，改用 Dalamud 服務及內建購買事件橋接。插件作者署名為 kuchris，保留舊互操作實作的第三方授權聲明。

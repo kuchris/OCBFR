@@ -29,9 +29,6 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using MKDSupportJob = Lumina.Excel.Sheets.MKDSupportJob;
-using OmenTools;
-using OmenTools.OmenService;
-using OmenTools.OmenService.Abstractions;
 
 namespace NorthIslandChestPlugin;
 
@@ -206,226 +203,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			}
 		}
 	}
-
-	private sealed class TreasureHistoryWindow : PersistentWindow
-	{
-		private readonly Plugin plugin;
-
-		private int filter;
-
-		private int detailSort;
-
-		private bool showRareTotals;
-
-		private bool showRareDetails;
-
-		public TreasureHistoryWindow(Plugin plugin)
-			: base(plugin, "寻宝战利品###OCNFarmerTreasureHistory", "TreasureHistory", new Vector2(760f, 560f), new Vector2(600f, 400f))
-		{
-			//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-			this.plugin = plugin;
-			((Window)this).Flags = (ImGuiWindowFlags)((int)((Window)this).Flags | 0x20);
-			((Window)this).IsOpen = false;
-		}
-
-		protected override void DrawContents()
-		{
-			//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-			//IL_010f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-			//IL_020c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0211: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0238: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0242: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0247: Unknown result type (might be due to invalid IL or missing references)
-			//IL_02e2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0310: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0324: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0450: Unknown result type (might be due to invalid IL or missing references)
-			//IL_043c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0572: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0586: Unknown result type (might be due to invalid IL or missing references)
-			//IL_049d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_04b3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_05c1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_05c8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_05da: Unknown result type (might be due to invalid IL or missing references)
-			//IL_04f3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0505: Unknown result type (might be due to invalid IL or missing references)
-			//IL_050a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0526: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0606: Unknown result type (might be due to invalid IL or missing references)
-			//IL_06a3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_06ce: Unknown result type (might be due to invalid IL or missing references)
-			//IL_06e4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_06fa: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0788: Unknown result type (might be due to invalid IL or missing references)
-			//IL_07ae: Unknown result type (might be due to invalid IL or missing references)
-			//IL_07fe: Unknown result type (might be due to invalid IL or missing references)
-			DrawPureBlurBackground(0.82f, border: true);
-			ImGui.PushStyleVar((ImGuiStyleVar)1, new Vector2(16f, 14f));
-			ImGui.PushStyleVar((ImGuiStyleVar)13, new Vector2(10f, 8f));
-			ImGui.PushStyleVar((ImGuiStyleVar)11, 6f);
-			ImGui.PushStyleColor((ImGuiCol)2, new Vector4(0.06f, 0.06f, 0.06f, 0.98f));
-			ImGui.PushStyleColor((ImGuiCol)21, new Vector4(0.16f, 0.16f, 0.16f, 1f));
-			ImGui.PushStyleColor((ImGuiCol)22, new Vector4(0.26f, 0.26f, 0.26f, 1f));
-			ImGui.PushStyleColor((ImGuiCol)23, new Vector4(0.25f, 0.25f, 0.25f, 1f));
-			try
-			{
-				Vector4 vector = new Vector4(0.94f, 0.94f, 0.94f, 1f);
-				ImGui.TextColored(ref vector, UiText.Render("寻宝战利品"));
-				ImGui.SameLine();
-				ImU8String val = new ImU8String(4, 1);
-				val.AppendLiteral(UiText.Render("共 "));
-				val.AppendFormatted<int>(plugin.treasureRecords.Count);
-				val.AppendLiteral(UiText.Render(" 次"));
-				ImGui.TextDisabled(val);
-				ImGui.Separator();
-				DrawFilterButton("全部", 0);
-				ImGui.SameLine();
-				DrawFilterButton("今日", 1);
-				ImGui.SameLine();
-				DrawFilterButton("本周", 2);
-				ImGui.SameLine();
-				DrawFilterButton("本月", 3);
-				DateTime today = DateTime.Now.Date;
-				DateTime weekStart = today.AddDays(0 - today.DayOfWeek);
-				DateTime monthStart = new DateTime(today.Year, today.Month, 1);
-				List<TreasureRecord> list = plugin.treasureRecords.Where((TreasureRecord record) => filter switch
-				{
-					1 => record.CompletedAt >= today, 
-					2 => record.CompletedAt >= weekStart, 
-					3 => record.CompletedAt >= monthStart, 
-					_ => true, 
-				}).ToList();
-				ImGui.SameLine();
-				ImU8String val2 = new ImU8String(7, 1);
-				val2.AppendLiteral(UiText.Render("筛选结果 "));
-				val2.AppendFormatted<int>(list.Count);
-				val2.AppendLiteral(UiText.Render(" 次"));
-				ImGui.TextDisabled(val2);
-				ImU8String val3 = new ImU8String(25, 3);
-				val3.AppendLiteral(UiText.Render("今日 "));
-				val3.AppendFormatted<int>(plugin.treasureRecords.Count((TreasureRecord x) => x.CompletedAt >= today));
-				val3.AppendLiteral(UiText.Render(" 次  ·  本周 "));
-				val3.AppendFormatted<int>(plugin.treasureRecords.Count((TreasureRecord x) => x.CompletedAt >= weekStart));
-				val3.AppendLiteral(UiText.Render(" 次  ·  本月 "));
-				val3.AppendFormatted<int>(plugin.treasureRecords.Count((TreasureRecord x) => x.CompletedAt >= monthStart));
-				val3.AppendLiteral(UiText.Render(" 次"));
-				ImGui.TextDisabled(val3);
-				ImGui.Spacing();
-				vector = new Vector4(0.94f, 0.94f, 0.94f, 1f);
-				ImGui.TextColored(ref vector, UiText.Render("物品获得统计"));
-				ImGui.SameLine();
-				ImGui.Checkbox(UiText.Label("仅展示稀有物品##TreasureTotalsRare"), ref showRareTotals);
-				var list2 = (from item in (from @group in list.SelectMany((TreasureRecord record) => record.Loot ?? new Dictionary<string, int>()).GroupBy((KeyValuePair<string, int> item) => item.Key, StringComparer.Ordinal)
-						select new
-						{
-							Name = @group.Key,
-							Count = @group.Sum((KeyValuePair<string, int> item) => item.Value)
-						} into item
-						orderby GetLootStarLevel(item.Name) descending, item.Count
-						select item).ThenBy(item => item.Name, StringComparer.Ordinal)
-					where !showRareTotals || GetLootStarLevel(item.Name) > 0
-					select item).ToList();
-				if (list2.Count == 0)
-				{
-					ImGui.TextDisabled(UiText.Render("当前筛选范围内暂无战利品记录"));
-				}
-				else if (ImGui.BeginTable("TreasureLootTotalsTable", 2, (ImGuiTableFlags)33579584, new Vector2(0f, MathF.Min(320f, MathF.Max(160f, ImGui.GetContentRegionAvail().Y * 0.58f))), 0f))
-				{
-					ImGui.TableSetupColumn(UiText.Label("物品"), (ImGuiTableColumnFlags)4, 0f, 0u);
-					ImGui.TableSetupColumn(UiText.Label("累计获得"), (ImGuiTableColumnFlags)8, 110f, 0u);
-					ImGui.TableHeadersRow();
-					foreach (var item in list2)
-					{
-						ImGui.TableNextRow();
-						ImGui.TableNextColumn();
-						ImGui.Text(FormatLootName(item.Name));
-						ImGui.TableNextColumn();
-						ImU8String val4 = new ImU8String(1, 1);
-						val4.AppendLiteral(UiText.Render("×"));
-						val4.AppendFormatted<int>(item.Count);
-						ImGui.Text(val4);
-					}
-					ImGui.EndTable();
-				}
-				ImGui.Spacing();
-				vector = new Vector4(0.94f, 0.94f, 0.94f, 1f);
-				ImGui.TextColored(ref vector, UiText.Render("寻宝记录明细"));
-				ImGui.SameLine();
-				ImGui.Checkbox(UiText.Label("仅展示稀有物品##TreasureDetailsRare"), ref showRareDetails);
-				ImGui.SameLine();
-				ImGui.SetNextItemWidth(120f);
-				string text = ((detailSort == 0) ? "最新在前" : "最早在前");
-				if (ImGui.BeginCombo(UiText.Label("时间排序##TreasureHistorySort"), UiText.Render(text), (ImGuiComboFlags)0))
-				{
-					if (ImGui.Selectable(UiText.Label("最新在前"), detailSort == 0, (ImGuiSelectableFlags)0, default(Vector2)))
-					{
-						detailSort = 0;
-					}
-					if (ImGui.Selectable(UiText.Label("最早在前"), detailSort == 1, (ImGuiSelectableFlags)0, default(Vector2)))
-					{
-						detailSort = 1;
-					}
-					ImGui.EndCombo();
-				}
-				IOrderedEnumerable<TreasureRecord> orderedEnumerable = ((detailSort == 0) ? list.OrderByDescending((TreasureRecord record) => record.CompletedAt) : list.OrderBy((TreasureRecord record) => record.CompletedAt));
-				float y = MathF.Max(180f, ImGui.GetContentRegionAvail().Y);
-				if (!ImGui.BeginTable("TreasureHistoryTable", 3, (ImGuiTableFlags)33579584, new Vector2(0f, y), 0f))
-				{
-					return;
-				}
-				ImGui.TableSetupColumn(UiText.Label("完成时间"), (ImGuiTableColumnFlags)8, 150f, 0u);
-				ImGui.TableSetupColumn(UiText.Label("副本"), (ImGuiTableColumnFlags)8, 110f, 0u);
-				ImGui.TableSetupColumn(UiText.Label("战利品"), (ImGuiTableColumnFlags)4, 0f, 0u);
-				ImGui.TableHeadersRow();
-				foreach (TreasureRecord item2 in orderedEnumerable)
-				{
-					List<KeyValuePair<string, int>> list3 = (from item in OrderLoot(item2.Loot ?? new Dictionary<string, int>())
-						where !showRareDetails || GetLootStarLevel(item.Key) > 0
-						select item).ToList();
-					if (!showRareDetails || list3.Count != 0)
-					{
-						ImGui.TableNextRow();
-						ImGui.TableNextColumn();
-						ImGui.Text(UiText.Render(item2.CompletedAt.ToString("yyyy-MM-dd HH:mm")));
-						ImGui.TableNextColumn();
-						ImGui.Text(UiText.Render((item2.Island == IslandTarget.SouthHorn) ? "南征之章" : "北征之章"));
-						ImGui.TableNextColumn();
-						ImGui.TextWrapped(UiText.Render((list3.Count == 0) ? "未检测到获得物品消息" : string.Join("、", list3.Select((KeyValuePair<string, int> x) => $"{FormatLootName(x.Key)}×{x.Value}"))));
-					}
-				}
-				ImGui.EndTable();
-			}
-			finally
-			{
-				ImGui.PopStyleColor(4);
-				ImGui.PopStyleVar(3);
-			}
-		}
-
-		private void DrawFilterButton(string label, int value)
-		{
-			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-			bool flag = filter == value;
-			if (flag)
-			{
-				ImGui.PushStyleColor((ImGuiCol)21, new Vector4(0.25f, 0.25f, 0.25f, 1f));
-			}
-			if (ImGui.SmallButton(UiText.Label(label)))
-			{
-				filter = value;
-			}
-			if (flag)
-			{
-				ImGui.PopStyleColor();
-			}
-		}
-	}
-
 
 
 	public sealed class WindowLayout
@@ -634,7 +411,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	// [GLOBAL] 幻境職業：改用英文名（MKDSupportJob.NameEnglish）。
 	// 原因：Daily Routines 的 /pdr pjob（PhantomJobSwitchCommand）比對「客戶端語言名稱」與 NameEnglish，
-	// 而 LuminaGetter 傳 ClientLanguage=null（跟隨客戶端）→ 英文客戶端下中文職業名配對不到，會靜靜失敗。
+	// 而跟隨客戶端語言讀取資料→ 英文客戶端下中文職業名配對不到，會靜靜失敗。
 	// 英文名在任何客戶端語言都配對得到，且下拉選單顯示正常（不像純數字 ID）。
 	// 名稱由遊戲 MKDSupportJob 表以 Lumina 讀出（Language.English）。
 	private string[] CombatJobs = new string[23]
@@ -652,7 +429,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 	{
 		try
 		{
-			var jobs = DService.Instance().Data.GetExcelSheet<MKDSupportJob>(Dalamud.Game.ClientLanguage.English);
+			var jobs = data.GetExcelSheet<MKDSupportJob>(Dalamud.Game.ClientLanguage.English);
 			string freelancer = jobs.GetRow(0).NameEnglish.ToString();
 			string[] combat = jobs.Where(job => job.RowId != 0)
 				.Select(job => job.NameEnglish.ToString()).Where(name => !string.IsNullOrWhiteSpace(name))
@@ -895,7 +672,8 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private DateTime nextXszPositionCheckAt = DateTime.MinValue;
 
-	private readonly CurrencyPurchaseCatalog purchaseCatalog = new CurrencyPurchaseCatalog();
+	private readonly IDataManager data;
+	private readonly CurrencyPurchaseCatalog purchaseCatalog;
 
 	private readonly MovableWait islandSwitchMovementWait = new MovableWait();
 
@@ -996,20 +774,8 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			select item).ThenBy((KeyValuePair<string, int> item) => item.Key, StringComparer.Ordinal);
 	}
 
-	private static DServiceInitOptions CreateOmenServiceInitOptions()
-	{
-		DServiceInitOptions dServiceInitOptions = new DServiceInitOptions();
-		MethodInfo methodInfo = typeof(DServiceInitOptions).GetMethods().Single((MethodInfo method) => method.Name == "Disable" && method.IsGenericMethodDefinition);
-		foreach (Type item in from type in typeof(GamePacketManager).Assembly.GetTypes()
-			where typeof(OmenServiceBase).IsAssignableFrom(type) && !type.IsAbstract && type != typeof(GamePacketManager)
-			select type)
-		{
-			methodInfo.MakeGenericMethod(item).Invoke(dServiceInitOptions, null);
-		}
-		return dServiceInitOptions;
-	}
 
-	public Plugin(IChatGui chat, IClientState clientState, IObjectTable objects, IFramework framework, ICommandManager commands, ICondition condition, IGameGui gameGui, IPluginLog log, IAddonLifecycle addonLifecycle, IDalamudPluginInterface pluginInterface, IPlayerState playerState, ITextureProvider textures)
+	public Plugin(IChatGui chat, IClientState clientState, IObjectTable objects, IFramework framework, ICommandManager commands, ICondition condition, IGameGui gameGui, IPluginLog log, IAddonLifecycle addonLifecycle, IDalamudPluginInterface pluginInterface, IPlayerState playerState, ITextureProvider textures, IDataManager data, ISigScanner sigScanner)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Expected Obj, but got Unknown
@@ -1045,8 +811,9 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		this.log = log;
 		this.pluginInterface = pluginInterface;
 		this.playerState = playerState;
+		this.data = data;
 		TryLoadBrandIcon(textures);
-		DService.Init(pluginInterface, CreateOmenServiceInitOptions);
+		purchaseCatalog = new CurrencyPurchaseCatalog(data);
 		LoadEnglishPhantomJobs();
 		config = LoadPluginConfig(pluginInterface);
 		config.Initialize(pluginInterface);
@@ -1059,7 +826,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		discardPreset = config.DiscardPreset ?? "";
 		NormalizePurchaseConfig();
 		ApplySelectedProfile();
-		currencyBuyer = new CurrencyBuyer(clientState, objects, condition, gameGui, addonLifecycle, log, OnCurrencyPurchaseFinished);
+		currencyBuyer = new CurrencyBuyer(clientState, objects, condition, gameGui, addonLifecycle, log, OnCurrencyPurchaseFinished, data, new ShopEventBridge(sigScanner, log));
 		mainWindow = new MainWindow(this);
 		simplifiedWindow = new MainWindow(this, simplified: true);
 		treasureHistoryWindow = new TreasureHistoryWindow(this);
@@ -1126,7 +893,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			commands.RemoveHandler("/ocnstart");
 			commands.RemoveHandler("/ocnstop");
 			windows.RemoveAllWindows();
-			DService.Uninit();
 		}
 	}
 
@@ -1845,7 +1611,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			ItemPayload item = ((IMutableChatMessage)message).Message.Payloads.OfType<ItemPayload>().FirstOrDefault();
 			if (item != null)
 			{
-				try { bareItemName = DService.Instance().Data.GetExcelSheet<Lumina.Excel.Sheets.Item>(Dalamud.Game.ClientLanguage.Japanese).GetRow(item.ItemId).Name.ToString(); }
+				try { bareItemName = data.GetExcelSheet<Lumina.Excel.Sheets.Item>(Dalamud.Game.ClientLanguage.Japanese).GetRow(item.ItemId).Name.ToString(); }
 				catch { /* The normal text parser remains available if the sheet is unavailable. */ }
 			}
 		}

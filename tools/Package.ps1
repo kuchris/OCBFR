@@ -10,8 +10,7 @@ $package = Join-Path $workspace ('dist\' + $name)
 $archive = Join-Path $workspace ('dist\' + $name + '.zip')
 New-Item -ItemType Directory -Path $package -Force | Out-Null
 Copy-Item -LiteralPath $SourceDll -Destination (Join-Path $package 'OCNFarmer.dll') -Force
-$dependencies = @('OmenTools.dll','GuerrillaNtp.dll','TinyPinyin.dll','OmenTools.LICENSE')
-foreach ($file in $dependencies) { Copy-Item -LiteralPath (Join-Path $workspace ('dependencies\' + $file)) -Destination (Join-Path $package $file) -Force }
+Copy-Item -LiteralPath (Join-Path $workspace 'notices\OmenTools.LICENSE') -Destination (Join-Path $package 'THIRD-PARTY-NOTICES.txt') -Force
 $manifest = Get-Content -LiteralPath (Join-Path $workspace 'manifest\OCNFarmer.json') -Raw | ConvertFrom-Json
 if ($manifest.AssemblyVersion -ne $version) { throw 'Manifest and assembly versions differ' }
 $manifest | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $package 'OCNFarmer.json') -Encoding utf8
@@ -20,7 +19,7 @@ Copy-Item -LiteralPath (Join-Path $workspace 'docs\INSTALL.zh-TW.md') -Destinati
 Copy-Item -LiteralPath (Join-Path $workspace 'docs\TEST-STATUS.md') -Destination (Join-Path $package 'TEST-STATUS.md') -Force
 New-Item -ItemType Directory -Path (Join-Path $package 'images') -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $workspace 'images\icon.png') -Destination (Join-Path $package 'images\icon.png') -Force
-$allowed = @('OCNFarmer.dll','OCNFarmer.json','README.en.md','安裝說明.md','TEST-STATUS.md','SHA256SUMS.txt','images/icon.png') + $dependencies
+$allowed = @('OCNFarmer.dll','OCNFarmer.json','README.en.md','安裝說明.md','TEST-STATUS.md','SHA256SUMS.txt','images/icon.png','THIRD-PARTY-NOTICES.txt')
 $files = Get-ChildItem -LiteralPath $package -Recurse -File
 foreach ($file in $files) {
     $relative = [IO.Path]::GetRelativePath($package,$file.FullName).Replace('\','/')

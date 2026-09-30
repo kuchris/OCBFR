@@ -16,7 +16,6 @@
          addon\Hooks\<version> folder (Dalamud deletes old ones on update). The fallback
          keeps a sane default when building directly with `dotnet build`. -->
     <DalamudLibPath Condition="'$(DalamudLibPath)' == ''">$(APPDATA)\XIVLauncher\addon\Hooks\dev</DalamudLibPath>
-    <PluginDepPath>$(MSBuildThisFileDirectory)..\dependencies</PluginDepPath>
   </PropertyGroup>
 
   <!-- Dalamud-provided reference assemblies (Private=false: never copied to output) -->
@@ -51,16 +50,11 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Plugin-local dependencies -->
+  <!-- Embedded presentation assets -->
   <ItemGroup>
     <EmbeddedResource Include="NorthIslandChestPlugin\UiTranslations.json" LogicalName="OCBFR.UiTranslations.json" />
     <EmbeddedResource Include="..\images\icon.png" LogicalName="OCBFR.icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="OmenTools">
-      <HintPath>$(PluginDepPath)\OmenTools.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
+
 
 </Project>

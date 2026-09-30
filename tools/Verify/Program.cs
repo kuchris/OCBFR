@@ -37,5 +37,9 @@ foreach (var type in types) {
     }
 }
 Console.WriteLine($"Assembly: {assembly.GetName().Name} {assembly.GetName().Version}; types={types.Length}, JIT prepared={prepared}, skipped={skipped}, failed={failed}");
-if (args.Contains("--regressions")) failed += RegressionScenarios.Run(assembly);
+if (args.Contains("--regressions")) {
+    failed += RegressionScenarios.Run(assembly);
+    failed += HistoryScenarios.Run(assembly);
+    failed += ShopEventScenarios.Run(assembly);
+}
 Environment.ExitCode = failed == 0 ? 0 : 1;

@@ -1,6 +1,6 @@
 # OCBFR Global validation
 
-Date: 2026-09-30. Build against Dalamud 15.0.3.6, using `rebuild01` C# source. No binary IL patches. Sharing build version: 2.3.0.6. Display name: OCBFR. Author: kuchris. The original assembly/internal identifier and commands remain compatible with saved settings.
+Date: 2026-09-30. Build against Dalamud 15.0.3.6, using the reconstructed C# source. No binary IL patches. Current build version: 2.3.0.12. Display name: OCBFR. Author: kuchris. The original assembly/internal identifier and commands remain compatible with saved settings.
 
 ## Live checks
 
@@ -27,7 +27,13 @@ Date: 2026-09-30. Build against Dalamud 15.0.3.6, using `rebuild01` C# source. N
 
 | 18 remove Forked Tower | Offline and user live scan/re-entry review passed | Version 2.3.0.10 removes the page, debug button, config options, weather checks and navigation state machine. Schema 5 saves away old tower flags while preserving language, combat job, presets and purchase settings. The live config was saved as schema 5 without AutoGoTower fields. User confirmed the three remaining pages, scanning and re-entry work. 555 methods prepared with no failures; 66 checks passed. 13 retained gameplay methods match version 2.3.0.9; start/stop/entry/chat/update changes remove tower dispatch and resume normal currency checks directly. |
 
+| 19 loot-history redesign | Offline and user live UI review passed | Version 2.3.0.11 adds monochrome title styling, summary counts, date/island filters, item search and separate totals/run views. User confirmed both UI languages, filters and existing records work. Data projections are read-only and preserve runs with no captured loot. The source project is now OCBFR.csproj. |
+
+| 20 remove library dependencies | Offline and live load/scan/catalogue/purchase passed | Version 2.3.0.12 removes OmenTools, GuerrillaNtp and TinyPinyin references and DLLs. Dalamud IDataManager supplies jobs/items/shop sheets. Native agent/addon calls and the minimal ShopEventBridge replace purchase helpers without packet hooks. Managed preparation succeeded for 595 methods; 73 checks passed with no dependency DLLs in the resolver folder. 16 existing gameplay methods match version 2.3.0.10. Date/island/search/rare history projections and event packet layouts have additional checks. User confirmed final load, scan, reload, shop catalogue, correct purchase quantities/currency deduction and shop closure. Log records North silver purchase of Heavens' Eye Materia XI ×1 at 20:39:50, EventComplete at 20:39:50, completion at 20:39:53, a fresh 0/0 scan at 20:39:59 and emergency stop at 20:40:00. |
+
 ## Outstanding live checks
+
+- Version 2.3.0.12 purchase live validation covered one North silver-currency transaction. Gold-currency, multi-shop queues and large batched quantities were not additionally tested in this session.
 
 - Confirm real silver ≥ 8 or bronze ≥ 30 automatically starts treasure; debug force-full is not evidence for the real threshold.
 - Normal position completion persisted history in live testing; no-leave history persistence was tested offline only.
