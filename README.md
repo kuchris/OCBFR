@@ -1,6 +1,6 @@
 # OCBFR
 
-Private source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.8**, Dalamud API **15**.
+Private source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.9**, Dalamud API **15**.
 
 The source is not open source. Publish only the installation ZIP and icon through the public [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr). Do not upload this checkout or its source files to that repository.
 
@@ -20,7 +20,7 @@ The build script finds the newest installed Dalamud Hooks directory. To select r
 dotnet build .\src\OCNFarmer.csproj -c Release -p:DalamudLibPath="<Hooks directory>"
 ```
 
-`Package.ps1` creates `dist/OCBFR-2.3.0.8.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
+`Package.ps1` creates `dist/OCBFR-2.3.0.9.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
 
 ## Layout
 

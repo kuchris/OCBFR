@@ -1,6 +1,6 @@
 # OCBFR Global — 安裝及使用
 
-這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.8（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，沿用現有設定及 `/ocnchest`、`/ocnstart`、`/ocnstop` 指令。English instructions are included in `README.en.md`.
+這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.9（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，沿用現有設定及 `/ocnchest`、`/ocnstart`、`/ocnstop` 指令。English instructions are included in `README.en.md`.
 
 本版已完整移除 Omni 驗證介面、Session、身份掃描及 DLL 依賴，亦移除 Server酱「無人值守通知」功能。首次載入會更新設定格式，清除舊通知設定；尋寶、購買、魔之塔及戰利品紀錄設定仍保留。
 

@@ -2,7 +2,7 @@
   "Author": "kuchris",
   "Name": "OCBFR",
   "InternalName": "OCNFarmer",
-  "AssemblyVersion": "2.3.0.8",
+  "AssemblyVersion": "2.3.0.9",
   "Description": "國際服適配版，繁體中文／English 介面；英文、日文及漢化訊息解析。Japanese/patched clients await in-game testing. Use /ocnchest to configure, /ocnstart to start. See bundled instructions for setup and validation scope.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/kuchris/DalamudPlugins#ocbfr",
@@ -21,6 +21,6 @@
   "LoadPriority": 0,
   "IconUrl": "https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/plugins/OCNFarmer/icon.png",
   "Punchline": "Occult Crescent Global：寶箱掃描、尋寶與退本重入。",
-  "Changelog": "Global 2.3.0.8：逐條校對繁體中文介面，修正魔之塔提示及殘留簡體字；改用明確翻譯表，保留英文介面與原有流程。Reviewed Traditional Chinese translations, corrected tower settings and incomplete character conversion; English UI and gameplay retained.",
+  "Changelog": "Global 2.3.0.9：移除總覽中的相關文件、連結按鈕及提示。Removed the related documentation row, link button and tooltip from Overview.",
   "AcceptsFeedback": true
 }

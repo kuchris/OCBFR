@@ -97,9 +97,6 @@ DR 跑刀	DR treasure route
 XSZ 跑刀为 XSZToolbox 测试码功能，如果你没有权限则不要选择这个模式。	The XSZ route requires access to the XSZToolbox test feature. Select it only if you have access.
 寻宝记录	Treasure records
 查看寻宝战利品记录	View treasure loot history
-可能会用到的文档	Documentation
-点击前往	Open documentation
-自动葡挞相关功能不接收任何反馈。	Automatic route features are provided without support.
 使用说明	Instructions
 1. 本插件功能为高危行为，如介意请勿使用；	1. This plugin automates gameplay and carries risk. Use it only if you accept that risk.
 2. 使用本插件的必须条件：	2. Required setup:

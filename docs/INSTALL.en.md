@@ -1,4 +1,4 @@
-# OCBFR Global 2.3.0.8
+# OCBFR Global 2.3.0.9
 
 Author: kuchris. Built from the private C# source for Dalamud API 15. The DLL, manifest filename, internal ID and commands remain `OCNFarmer` so existing settings continue to work.
 

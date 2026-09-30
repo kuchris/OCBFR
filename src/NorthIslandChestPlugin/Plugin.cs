@@ -3362,22 +3362,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		}
 	}
 
-	private void OpenPluginDocs()
-	{
-		try
-		{
-			Process.Start(new ProcessStartInfo("https://github.com/kuchris/DalamudPlugins#ocbfr")
-			{
-				UseShellExecute = true
-			});
-		}
-		catch (Exception ex)
-		{
-			log.Error(ex, "打开 OCBFR 文档失败", Array.Empty<object>());
-		}
-	}
-
-
 	private void DrawAutomaticPurchaseConfig()
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -4213,16 +4197,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			((Window)treasureHistoryWindow).IsOpen = true;
 		}
-		ImGui.TableNextRow((ImGuiTableRowFlags)0, ImGui.GetFrameHeight() + 6f);
-		ImGui.TableNextColumn();
-		ImGui.Text(UiText.Render("可能会用到的文档"));
-		ImGui.TableNextColumn();
-		if (ImGui.Button(UiText.Label("点击前往"), new Vector2(num, 0f)))
-		{
-			OpenPluginDocs();
-		}
-		ImGui.SameLine(0f, 6f);
-		DrawInfoIcon("BDocsInfo", "自动葡挞相关功能不接收任何反馈。");
 		ImGui.EndTable();
 
 		// [GLOBAL] 進島後 N 分鐘自動退本重入 —— 已按用戶要求移除。
