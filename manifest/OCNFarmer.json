@@ -5,7 +5,7 @@
   "AssemblyVersion": "2.3.0.9",
   "Description": "國際服適配版，繁體中文／English 介面；英文、日文及漢化訊息解析。Japanese/patched clients await in-game testing. Use /ocnchest to configure, /ocnstart to start. See bundled instructions for setup and validation scope.",
   "ApplicableVersion": "any",
-  "RepoUrl": "https://github.com/kuchris/DalamudPlugins#ocbfr",
+  "RepoUrl": "https://github.com/kuchris/OCBFR",
   "Tags": [
     "Occult Crescent",
     "Global",

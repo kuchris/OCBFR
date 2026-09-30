@@ -26,7 +26,7 @@
 https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 ```
 
-開 `/xlplugins`，重新整理後安裝 **OCBFR**。開始前請完成下方 Daily Routines、vnavmesh 及 BOCCHI 設定。源碼倉庫為 private；公開目錄只提供編譯好的插件。
+開 `/xlplugins`，重新整理後安裝 **OCBFR**。開始前請完成下方 Daily Routines、vnavmesh 及 BOCCHI 設定。[源碼倉庫](https://github.com/kuchris/OCBFR) 已公開；插件目錄繼續提供編譯好的安裝包。
 
 如之前使用 DEV 版，先緊急停止、卸載並停用舊 Dev Plugin Location，再安裝目錄版。保留 Dalamud 的 OCNFarmer 設定資料夾，唔好同時載入兩份插件。
 

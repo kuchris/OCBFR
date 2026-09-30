@@ -1,6 +1,6 @@
 # OCBFR Global 2.3.0.9
 
-Author: kuchris. Built from the private C# source for Dalamud API 15. The DLL, manifest filename, internal ID and commands remain `OCNFarmer` so existing settings continue to work.
+Author: kuchris. Built from the C# source for Dalamud API 15. The DLL, manifest filename, internal ID and commands remain `OCNFarmer` so existing settings continue to work.
 
 ## Install from the catalogue
 
@@ -10,7 +10,7 @@ Add this URL in `/xlsettings` → Experimental → Custom Plugin Repositories, e
 https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 ```
 
-Open `/xlplugins`, refresh and install **OCBFR**. Configure Daily Routines, vnavmesh and BOCCHI as described below before starting. The source repository is private; the catalogue distributes the compiled plugin.
+Open `/xlplugins`, refresh and install **OCBFR**. Configure Daily Routines, vnavmesh and BOCCHI as described below before starting. [Source code](https://github.com/kuchris/OCBFR) is publicly available; the catalogue distributes the compiled plugin.
 
 If you previously used a DEV copy, emergency-stop and unload it, then disable its Dev Plugin Location before installing the catalogue version. Keep the existing Dalamud OCNFarmer configuration folder. Do not load both copies together.
 
