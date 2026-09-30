@@ -106,12 +106,7 @@ XSZ 跑刀为 XSZToolbox 测试码功能，如果你没有权限则不要选择�
       ④ 自动任务出发确认　⑤ 即刻退本　⑥ 特殊场景探索进入指令	      4) Automatic duty confirmation  5) Instant duty exit  6) Special exploration entry command
 一键开启上述模块	Enable required DR modules
 已发送一键开启 Daily Routines 模块指令	Sent commands to enable the required Daily Routines modules
-自动前往魔之塔设置	Automatic Forked Tower travel
-注意：该项功能只会在蜃景天气出现时停止插件功能前往魔之塔进入区域，不会自动进行魔之塔战斗，后续流程需要手动或者由其他插件接管。	When the required mirage weather appears, this feature pauses farming and moves to the Forked Tower entrance. Tower combat and subsequent steps require manual control or another plugin.
-如果你不知道上述是什么意思，则不要开启此功能，也不要就此功能进行任何反馈。	Enable this feature only if you understand the tower entry workflow.
-蜃景天气出现时自动前往魔之塔区域	Travel to the Forked Tower during mirage weather
 直接开始寻宝流程（测试用）	Start treasure route now (test)
-直接开始前往魔之塔流程（测试用）	Start tower travel now (test)
 Debug: 强制视为宝箱已满（测试完整流程）	Debug: Treat coffers as full (test complete loop)
 Debug: 不退本（只测内环+外环）	Debug: Stay in duty (test inner and outer rings)
 测试：立即退本并重新进岛	Test: Leave duty and re-enter now
@@ -152,16 +147,8 @@ Debug: 不退本（只测内环+外环）	Debug: Stay in duty (test inner and ou
 XSZ 寻宝中	XSZ treasure route active
 已离岛，等待角色可动后重新进岛...	Left island; waiting until movable before re-entering...
 加载副本...	Loading duty...
-准备前往魔之塔...	Preparing tower travel...
 未到达大水晶区域，请检查导航功能	Could not reach the main aetheryte; check navigation
-前往魔之塔...	Moving to the Forked Tower...
 未能召唤随机坐骑，请检查坐骑可用性	Could not summon a random mount; check mount availability
-未到达魔之塔中转区域，请检查导航功能	Could not reach the tower staging area; check navigation
-未到达魔之塔进入区域，请检查导航功能	Could not reach the tower entrance; check navigation
-天气已结束，恢复战斗	Weather ended; resuming combat
-已到达魔之塔，等待接管	Arrived at the Forked Tower; waiting for handoff
-未能下坐骑，无法恢复魔寻宝流程	Could not dismount; cannot resume treasure scanning
-坐骑动作未完成，无法恢复魔寻宝流程	Mount action is unfinished; cannot resume treasure scanning
 检查钱币...	Checking currency...
 前往购买地点...	Moving to the currency vendor...
 已离开	Left 
@@ -217,7 +204,6 @@ EventStart 发包失败，已中止自动购买	EventStart failed; automatic pur
 ，跳过本轮购买	; skipping this purchase cycle
 内环	Inner ring
 外环	Outer ring
-魔之塔	Forked Tower
 十二城邦白银币	Enlightenment silver obols
 十二城邦白金币	Enlightenment gold obols
 十二城邦银币	Silver obols
@@ -237,7 +223,6 @@ english.update({
     '控制台': 'WORKSPACE', '总览': 'Overview', '自动购买': 'Purchases',
     '测试工具': 'Test tools', '完整界面': 'Full view', '简化界面': 'Compact view',
     '进入': 'Enter', '检测': 'Scan', '战斗': 'Combat', '寻宝': 'Treasure', '重进': 'Re-enter',
-    '南岛不支持魔之塔功能': 'Forked Tower travel is unavailable on South Horn.',
     '测试完成后请紧急停止，恢复正常运行前关闭模拟选项。': 'Emergency-stop after testing. Disable simulation options before normal operation.',
 })
 traditional = json.loads((root / 'tools/ui-traditional.json').read_text(encoding='utf-8'))

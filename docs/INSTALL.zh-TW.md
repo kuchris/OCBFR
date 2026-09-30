@@ -1,18 +1,18 @@
 # OCBFR Global — 安裝及使用
 
-這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.9（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，沿用現有設定及 `/ocnchest`、`/ocnstart`、`/ocnstop` 指令。English instructions are included in `README.en.md`.
+這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.10（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，沿用現有設定及 `/ocnchest`、`/ocnstart`、`/ocnstop` 指令。English instructions are included in `README.en.md`.
 
-本版已完整移除 Omni 驗證介面、Session、身份掃描及 DLL 依賴，亦移除 Server酱「無人值守通知」功能。首次載入會更新設定格式，清除舊通知設定；尋寶、購買、魔之塔及戰利品紀錄設定仍保留。
+本版已完整移除 Omni 驗證介面、Session、身份掃描及 DLL 依賴，亦移除 Server酱「無人值守通知」功能。首次載入會更新設定格式，清除舊通知設定；尋寶、購買及戰利品紀錄設定仍保留。魔之塔功能及舊選項已移除。
 
 ## 介面及遊戲語言
 
-- 新介面採用黑白控制台：頂部顯示任務及銀／銅箱數量；左側分為總覽、購買、魔之塔及測試工具四個分頁。開始、停止、緊急停止、戰利品紀錄及 Ko-fi 按鈕固定於底部。
+- 新介面採用黑白控制台：頂部顯示任務及銀／銅箱數量；左側分為總覽、購買及測試工具三個分頁。開始、停止、緊急停止、戰利品紀錄及 Ko-fi 按鈕固定於底部。
 - 「完整介面／簡化介面」按鈕可切換視圖；簡化介面亦保留主要操作。舊視窗如過小，首次載入會調整至新版可用尺寸。
 - 本機新圖示位於 `images/icon.png`，請保留這個子資料夾。圖示亦嵌入 DLL 供介面使用，無需下載外部圖片。更新後插件列表如仍有舊圖示，先開 `/xlplugins`，再開 `/xldev` → Plugins → Clear cached images/icons；完成後再次輸入 `/xldev` 收起選單。單純重載插件或重新開啟列表不會清除此快取。
 - Ko-fi 按鈕開啟 [ko-fi.com/kuchris](https://ko-fi.com/kuchris)。只有按下按鈕先會開啟瀏覽器。
 
 - 介面頂部的 **Language / 語言** 可切換 **繁體中文／English**，預設繁體中文；選擇會儲存並在重載後保留。完整及簡化介面均可切換。
-- 繁中按鈕及提示文字已逐條校對，魔之塔等設定採用明確翻譯表，無需在執行時自動繁簡轉換。
+- 繁中按鈕及提示文字已逐條校對，設定及狀態文字採用明確翻譯表，無需在執行時自動繁簡轉換。
 - 介面翻譯只改顯示文字。職業設定仍儲存英文名稱，實際轉職指令仍使用遊戲資料的 `MKDSupportJob.NameEnglish`；傳送仍使用數字索引。原有購買設定、丟棄預設、視窗識別碼及尋寶路線保留。
 - 訊息解析同時接受英文、日文，以及國際服漢化補丁常見的簡體／繁體訊息格式，不需要配合介面語言切換。支援寶箱數量、無寶箱、入島同步、轉職失敗重試及戰利品數量。
 - 日文格式已用本機遊戲 `LogMessage` 資料核對並完成離線測試；**日文及漢化客戶端仍待遊戲內實測**，不同漢化補丁如使用其他文字格式，可能需要補充比對。此版未適配中國服。
@@ -90,6 +90,6 @@ https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 
 ## 驗證範圍
 
-請閱讀同包的 `TEST-STATUS.md`。北島已完成多輪人工實測；南島、真實滿箱門檻及未逐項測試的購買／魔之塔功能，不能以編譯或離線檢查視為已驗證。
+請閱讀同包的 `TEST-STATUS.md`。北島已完成多輪人工實測；南島、真實滿箱門檻及未逐項測試的購買功能，不能以編譯或離線檢查視為已驗證。
 
 本包不包含個人設定、角色資料、通知金鑰或遊戲日誌；亦不需要 Omni.Verification.dll、System.Management.dll 或 System.CodeDom.dll。OmenTools、GuerrillaNtp 及 TinyPinyin 仍是需要的依賴。插件作者署名為 kuchris，OmenTools 授權文件保留。

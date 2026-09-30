@@ -40,8 +40,6 @@ internal sealed class IslandProfile
 
 	public bool SupportsFixative { get; init; }
 
-	public bool SupportsTower { get; init; }
-
 	internal static IslandProfile North { get; } = new IslandProfile
 	{
 		Target = IslandTarget.NorthHorn,
@@ -67,8 +65,7 @@ internal sealed class IslandProfile
 		HealthCheckCurrencyName = "十二城邦白银币",
 		SilverEventId = 1771028u,
 		GoldEventId = 1771029u,
-		SupportsFixative = true,
-		SupportsTower = true
+		SupportsFixative = true
 	};
 
 	internal static IslandProfile South { get; } = new IslandProfile
@@ -93,8 +90,7 @@ internal sealed class IslandProfile
 		HealthCheckCurrencyName = "十二城邦银币",
 		SilverEventId = 1770928u,
 		GoldEventId = 1770930u,
-		SupportsFixative = false,
-		SupportsTower = false
+		SupportsFixative = false
 	};
 
 	internal static IslandProfile Resolve(IslandTarget target)

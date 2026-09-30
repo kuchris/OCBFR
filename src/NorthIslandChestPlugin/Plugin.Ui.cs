@@ -126,7 +126,7 @@ public sealed partial class Plugin
             ImGui.Spacing();
             ImGui.TextDisabled(UiText.Render("控制台"));
             ImGui.Spacing();
-            string[] pages = { "总览", "自动购买", "魔之塔", "测试工具" };
+            string[] pages = { "总览", "自动购买", "测试工具" };
             for (int i = 0; i < pages.Length; i++)
                 if (ImGui.Selectable(UiText.Label(pages[i] + "###OCBFRPage" + i), selectedUiPage == i, ImGuiSelectableFlags.None, new Vector2(0f, 28f * ImGuiHelpers.GlobalScale))) selectedUiPage = i;
             ImGui.Spacing();
@@ -164,10 +164,6 @@ public sealed partial class Plugin
                     break;
                 case 1: DrawAutomaticPurchaseConfig(); break;
                 case 2:
-                    if (activeProfile.SupportsTower) DrawBTowerConfig();
-                    else ImGui.TextWrapped(UiText.Render("南岛不支持魔之塔功能"));
-                    break;
-                case 3:
                     ImGui.TextWrapped(UiText.Render("测试完成后请紧急停止，恢复正常运行前关闭模拟选项。"));
                     DrawBDebug();
                     break;

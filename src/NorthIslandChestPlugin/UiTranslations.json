@@ -510,34 +510,9 @@
     "English": "Sent commands to enable the required Daily Routines modules"
   },
   {
-    "Source": "自动前往魔之塔设置",
-    "TraditionalChinese": "自動前往魔之塔設定",
-    "English": "Automatic Forked Tower travel"
-  },
-  {
-    "Source": "注意：该项功能只会在蜃景天气出现时停止插件功能前往魔之塔进入区域，不会自动进行魔之塔战斗，后续流程需要手动或者由其他插件接管。",
-    "TraditionalChinese": "注意：蜃景天氣出現時，此功能會暫停農寶並前往魔之塔入口。魔之塔戰鬥及後續流程需自行操作，或交由其他插件接管。",
-    "English": "When the required mirage weather appears, this feature pauses farming and moves to the Forked Tower entrance. Tower combat and subsequent steps require manual control or another plugin."
-  },
-  {
-    "Source": "如果你不知道上述是什么意思，则不要开启此功能，也不要就此功能进行任何反馈。",
-    "TraditionalChinese": "請先了解魔之塔進入流程，再啟用此功能。",
-    "English": "Enable this feature only if you understand the tower entry workflow."
-  },
-  {
-    "Source": "蜃景天气出现时自动前往魔之塔区域",
-    "TraditionalChinese": "蜃景天氣出現時自動前往魔之塔入口",
-    "English": "Travel to the Forked Tower during mirage weather"
-  },
-  {
     "Source": "直接开始寻宝流程（测试用）",
     "TraditionalChinese": "直接開始尋寶流程（測試用）",
     "English": "Start treasure route now (test)"
-  },
-  {
-    "Source": "直接开始前往魔之塔流程（测试用）",
-    "TraditionalChinese": "直接開始前往魔之塔流程（測試用）",
-    "English": "Start tower travel now (test)"
   },
   {
     "Source": "Debug: 强制视为宝箱已满（测试完整流程）",
@@ -740,54 +715,14 @@
     "English": "Loading duty..."
   },
   {
-    "Source": "准备前往魔之塔...",
-    "TraditionalChinese": "準備前往魔之塔...",
-    "English": "Preparing tower travel..."
-  },
-  {
     "Source": "未到达大水晶区域，请检查导航功能",
     "TraditionalChinese": "未到達大水晶區域，請檢查導航功能",
     "English": "Could not reach the main aetheryte; check navigation"
   },
   {
-    "Source": "前往魔之塔...",
-    "TraditionalChinese": "前往魔之塔...",
-    "English": "Moving to the Forked Tower..."
-  },
-  {
     "Source": "未能召唤随机坐骑，请检查坐骑可用性",
     "TraditionalChinese": "未能召喚隨機坐騎，請檢查坐騎可用性",
     "English": "Could not summon a random mount; check mount availability"
-  },
-  {
-    "Source": "未到达魔之塔中转区域，请检查导航功能",
-    "TraditionalChinese": "未到達魔之塔中途區域，請檢查導航功能",
-    "English": "Could not reach the tower staging area; check navigation"
-  },
-  {
-    "Source": "未到达魔之塔进入区域，请检查导航功能",
-    "TraditionalChinese": "未到達魔之塔進入區域，請檢查導航功能",
-    "English": "Could not reach the tower entrance; check navigation"
-  },
-  {
-    "Source": "天气已结束，恢复战斗",
-    "TraditionalChinese": "天氣已結束，恢復戰鬥",
-    "English": "Weather ended; resuming combat"
-  },
-  {
-    "Source": "已到达魔之塔，等待接管",
-    "TraditionalChinese": "已到達魔之塔，等待接管",
-    "English": "Arrived at the Forked Tower; waiting for handoff"
-  },
-  {
-    "Source": "未能下坐骑，无法恢复魔寻宝流程",
-    "TraditionalChinese": "未能下坐騎，無法恢復魔尋寶流程",
-    "English": "Could not dismount; cannot resume treasure scanning"
-  },
-  {
-    "Source": "坐骑动作未完成，无法恢复魔寻宝流程",
-    "TraditionalChinese": "坐騎動作未完成，無法恢復魔尋寶流程",
-    "English": "Mount action is unfinished; cannot resume treasure scanning"
   },
   {
     "Source": "检查钱币...",
@@ -1065,11 +1000,6 @@
     "English": "Outer ring"
   },
   {
-    "Source": "魔之塔",
-    "TraditionalChinese": "魔之塔",
-    "English": "Forked Tower"
-  },
-  {
     "Source": "十二城邦白银币",
     "TraditionalChinese": "十二城邦白銀幣",
     "English": "Enlightenment silver obols"
@@ -1148,11 +1078,6 @@
     "Source": "重进",
     "TraditionalChinese": "重新進入",
     "English": "Re-enter"
-  },
-  {
-    "Source": "南岛不支持魔之塔功能",
-    "TraditionalChinese": "南島不支援魔之塔功能",
-    "English": "Forked Tower travel is unavailable on South Horn."
   },
   {
     "Source": "测试完成后请紧急停止，恢复正常运行前关闭模拟选项。",

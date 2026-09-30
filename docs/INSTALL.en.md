@@ -1,4 +1,4 @@
-# OCBFR Global 2.3.0.9
+# OCBFR Global 2.3.0.10
 
 Author: kuchris. Built from the C# source for Dalamud API 15. The DLL, manifest filename, internal ID and commands remain `OCNFarmer` so existing settings continue to work.
 
@@ -23,7 +23,7 @@ If you previously used a DEV copy, emergency-stop and unload it, then disable it
 
 ## Languages
 
-The monochrome dashboard shows the current task and coffer counts above four workspace pages: Overview, Purchases, Forked Tower and Test tools. Start/stop, emergency stop, history and Ko-fi controls remain at the bottom. Full/Compact view switching is at the top; compact view retains the primary controls. Previously undersized windows are resized to the new minimum usable dimensions.
+The monochrome dashboard shows the current task and coffer counts above three workspace pages: Overview, Purchases and Test tools. Start/stop, emergency stop, history and Ko-fi controls remain at the bottom. Full/Compact view switching is at the top; compact view retains the primary controls. Previously undersized windows are resized to the new minimum usable dimensions.
 
 The new crescent/chest icon is embedded for the header and included as `images/icon.png` for the development-plugin list. Keep this folder when updating. If the plugin list shows its cached old icon, open `/xlplugins`, then `/xldev` → Plugins → Clear cached images/icons. Run `/xldev` again to hide the menu. Reloading the plugin or reopening the list alone does not clear this cache.
 
@@ -31,7 +31,7 @@ The Ko-fi button opens [ko-fi.com/kuchris](https://ko-fi.com/kuchris) only when 
 
 Use **Language / 語言** at the top of either UI view to select **Traditional Chinese** or **English**. The choice is saved. The default is Traditional Chinese.
 
-Traditional Chinese labels and tooltips use an explicit, reviewed translation catalog, including the Forked Tower notes. Runtime character conversion is not required.
+Traditional Chinese labels and tooltips use an explicit, reviewed translation catalog, including settings and status messages. Runtime character conversion is not required.
 
 UI translation changes displayed text only. Phantom jobs remain stored and sent to Daily Routines in English; shard teleports use numeric indices. Purchase settings, discard presets, window identities, route commands and recorded loot are retained. Game item names follow the game data/messages and are not rewritten in saved records.
 
@@ -71,7 +71,7 @@ Use **Emergency stop** to stop the plugin and the external route/navigation. If 
 
 **Treat coffers as full** simulates the threshold after a successful scan; it does not change actual game coffers. **Stay in duty** tests the inner and outer legs without leaving. If force-full remains enabled, a fresh scan after re-entry starts another cycle; emergency-stop after your test.
 
-English-client North scans, UI language switching and exit/re-entry have been tested in-game. A complete North route was validated before this localization change. South, the real full-coffer threshold, Japanese/patched-client live behavior, and purchase/tower functionality are not fully live-validated. Read `TEST-STATUS.md` for precise scope.
+English-client North scans, UI language switching and exit/re-entry have been tested in-game. A complete North route was validated before this localization change. South, the real full-coffer threshold, Japanese/patched-client live behavior, and purchase functionality are not fully live-validated. Read `TEST-STATUS.md` for precise scope.
 
 Logs: `%APPDATA%\XIVLauncher\dalamud.log`, filter `[OCNFarmer]`. Saved loot records: `treasure-records.json` under Dalamud's OCNFarmer configuration directory. Diagnostic logs retain their established wording.
 

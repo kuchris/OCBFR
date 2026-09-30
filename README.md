@@ -1,6 +1,6 @@
 # OCBFR
 
-Source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.9**, Dalamud API **15**.
+Source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.10**, Dalamud API **15**.
 
 The source is publicly available here. No project license has been added; bundled dependencies retain their existing licenses. Installation ZIPs are available in this repository's [Releases](https://github.com/kuchris/OCBFR/releases). The [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr) provides the installer subscription.
 
@@ -20,7 +20,7 @@ The build script finds the newest installed Dalamud Hooks directory. To select r
 dotnet build .\src\OCNFarmer.csproj -c Release -p:DalamudLibPath="<Hooks directory>"
 ```
 
-`Package.ps1` creates `dist/OCBFR-2.3.0.9.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
+`Package.ps1` creates `dist/OCBFR-2.3.0.10.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
 
 ## Layout
 
@@ -40,7 +40,7 @@ python -X utf8 .\tools\make-ui-translations.py
 .\tools\Audit-Translations.ps1
 ```
 
-The generator rejects missing Traditional Chinese keys. Verification checks the actual embedded translation catalog and tower labels. Changes to presentation must retain existing ImGui identities, stored English phantom job names, route names and numeric shard indices.
+The generator rejects missing Traditional Chinese keys. Verification checks the actual embedded translation catalog and settings migration. Changes to presentation must retain existing ImGui identities, stored English phantom job names, route names and numeric shard indices.
 
 ## Release
 

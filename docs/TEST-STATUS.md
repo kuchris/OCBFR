@@ -25,6 +25,8 @@ Date: 2026-09-30. Build against Dalamud 15.0.3.6, using `rebuild01` C# source. N
 
 | 17 remove related documentation row | Offline checked; live UI not re-tested | Version 2.3.0.9 removes the Overview documentation label, link button, tooltip, unused browser-opening helper and associated translation entries at the user’s request. Existing workflow methods are unchanged. The package retains external installation documents. |
 
+| 18 remove Forked Tower | Offline and user live scan/re-entry review passed | Version 2.3.0.10 removes the page, debug button, config options, weather checks and navigation state machine. Schema 5 saves away old tower flags while preserving language, combat job, presets and purchase settings. The live config was saved as schema 5 without AutoGoTower fields. User confirmed the three remaining pages, scanning and re-entry work. 555 methods prepared with no failures; 66 checks passed. 13 retained gameplay methods match version 2.3.0.9; start/stop/entry/chat/update changes remove tower dispatch and resume normal currency checks directly. |
+
 ## Outstanding live checks
 
 - Confirm real silver ≥ 8 or bronze ≥ 30 automatically starts treasure; debug force-full is not evidence for the real threshold.

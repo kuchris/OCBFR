@@ -55,19 +55,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		Reentry
 	}
 
-	private enum TowerPhase
-	{
-		None,
-		MoveToCrystal,
-		CrystalTeleport,
-		MountToTower,
-		MoveToStaging,
-		StagingArrived,
-		MoveToTower,
-		Arrived,
-		DismountBeforeResume
-	}
-
 	public sealed class PurchaseSettings
 	{
 		public int ItemsVersion { get; set; }
@@ -98,7 +85,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		[NonSerialized]
 		private IDalamudPluginInterface? pluginInterface;
 
-		public int Version { get; set; } = 4;
+		public int Version { get; set; } = 5;
 
 		public UiLanguage UiLanguage { get; set; } = UiLanguage.TraditionalChinese;
 
@@ -123,11 +110,9 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 
 
-		public bool AutoGoTower { get; set; }
 
 
 
-		public bool AutoGoTowerExpanded { get; set; }
 
 		public bool SimplifiedUi { get; set; }
 
@@ -731,7 +716,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 	private static readonly TimeSpan TreasureCommandDelay = TimeSpan.FromMilliseconds(500L);
 
 
-	private static readonly TimeSpan TowerCrystalDelay = TimeSpan.FromSeconds(3L);
 
 	private static readonly TimeSpan CrystalMoveTimeout = TimeSpan.FromMinutes(3L);
 
@@ -745,15 +729,10 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private const uint MountRouletteGeneralActionSlot = 9u;
 
-	private const uint TowerWeatherId = 192u;
 
-	private static readonly Vector3 TowerCenter = new Vector3(-320f, 11.5f, 423f);
 
-	private static readonly float TowerRadius = MathF.Sqrt(92.98f) - 0.3f;
 
-	private static readonly Vector3 TowerStagingCenter = new Vector3(-390f, 68f, 692f);
 
-	private const float TowerStagingRadius = 2f;
 
 
 	private readonly IChatGui chat;
@@ -890,26 +869,16 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 
 
-	private TowerPhase towerPhase;
-
-	private DateTime towerPhaseAt = DateTime.MinValue;
-
-	private Vector3 towerTarget;
-
-	private Vector3 towerStagingTarget;
-
-	private bool towerWeatherHandled;
 
 
-	private bool towerStartPending;
 
-	private bool weatherCheckPending;
 
-	private DateTime nextWeatherCheckAt = DateTime.MinValue;
 
-	private DateTime towerMoveDeadline = DateTime.MinValue;
 
-	private DateTime nextTowerPositionCheckAt = DateTime.MinValue;
+
+
+
+
 
 	private DateTime crystalMoveDeadline = DateTime.MinValue;
 
@@ -919,7 +888,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private DateTime nextMountRetryAt = DateTime.MinValue;
 
-	private DateTime towerResumeDeadline = DateTime.MinValue;
 
 	private Vector3 xszLastPosition;
 
@@ -933,7 +901,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private readonly MovableWait treasureMovementWait = new MovableWait();
 
-	private readonly MovableWait towerMovementWait = new MovableWait();
 
 
 	private bool logoutHandled;
@@ -1183,7 +1150,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			log.Information("插件已开始运行", Array.Empty<object>());
 			silver = (copper = -1);
 			initialScan = true;
-			towerWeatherHandled = false;
 			if ((territoryType == 1346 || territoryType == 1252) && territoryType != activeProfile.TerritoryId)
 			{
 				string value = ((territoryType == 1346) ? IslandProfile.North.ChapterName : IslandProfile.South.ChapterName);
@@ -1199,12 +1165,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			}
 			else
 			{
-				weatherCheckPending = true;
-				nextWeatherCheckAt = DateTime.UtcNow;
-				if (!TryHandleTowerWeather("岛内点击开始运行"))
-				{
-					ScheduleInitialCurrencyCheck("副本内首次", TimeSpan.Zero);
-				}
+				ScheduleInitialCurrencyCheck("副本内首次", TimeSpan.Zero);
 			}
 		}
 	}
@@ -1233,22 +1194,13 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		purchaseRetryDeadline = (currencyPurchaseMoveDeadline = (nextCurrencyPurchaseMoveCheckAt = (currencyPurchaseMoveStartAt = DateTime.MinValue)));
 		islandSwitchMovementWait.Reset();
 		treasureMovementWait.Reset();
-		towerMovementWait.Reset();
 		treasurePlayerGuard.Reset();
 		treasurePhase = TreasurePhase.None;
 		treasurePhaseAt = DateTime.MinValue;
-		towerPhase = TowerPhase.None;
-		towerPhaseAt = DateTime.MinValue;
-		towerWeatherHandled = false;
-		towerStartPending = false;
-		weatherCheckPending = false;
-		nextWeatherCheckAt = DateTime.MinValue;
-		towerMoveDeadline = (nextTowerPositionCheckAt = DateTime.MinValue);
 		crystalMoveDeadline = (nextCrystalMoveCheckAt = DateTime.MinValue);
 		mountRetryDeadline = (nextMountRetryAt = DateTime.MinValue);
 		xszLastPosition = default;
 		xszLastPositionChangeAt = (nextXszPositionCheckAt = DateTime.MinValue);
-		towerResumeDeadline = DateTime.MinValue;
 		status = message;
 		if (num)
 		{
@@ -1416,7 +1368,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			{
 				return;
 			}
-			// Recover before dispatching an old treasure/tower phase outside the island.
 			if (!IsIsland() && !waitingForEntry && !islandSwitchPending && treasurePhase != TreasurePhase.Reentry && !islandRecoveryPending)
 			{
 				PrepareUnexpectedIslandExit();
@@ -1439,21 +1390,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 					islandSwitchMovementWait.Reset();
 					BeginEntryWait("进入副本...");
 				}
-				return;
-			}
-			if (towerStartPending)
-			{
-				if (MovementWaitReady(towerMovementWait))
-				{
-					towerStartPending = false;
-					towerMovementWait.Reset();
-					BeginTowerNavigation();
-				}
-				return;
-			}
-			if (towerPhase != TowerPhase.None)
-			{
-				UpdateTowerProcedure();
 				return;
 			}
 			if (treasurePhase != TreasurePhase.None)
@@ -1482,14 +1418,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 				// 就永遠卡住、唔會重新進本。改為直接呼叫 BeginEntryWait() 自動重新進本。
 				BeginEntryWait("进入副本...");
 				return;
-			}
-			if (weatherCheckPending && DateTime.UtcNow >= nextWeatherCheckAt)
-			{
-				if (TryHandleTowerWeather("进入副本后"))
-				{
-					return;
-				}
-				nextWeatherCheckAt = DateTime.UtcNow.AddSeconds(1.0);
 			}
 			if (pendingScanAt != DateTime.MinValue && DateTime.UtcNow >= pendingScanAt)
 			{
@@ -1840,8 +1768,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		// 結果寶箱已滿（8 銀 / 30 銅）卻永遠不開始跑刀。
 		if (cofferCountsUpdated && !waitingForScan && !waitingForEntry &&
 			(silver >= MaxSilver || copper >= MaxCopper) && IsIsland() &&
-			treasurePhase == TreasurePhase.None && towerPhase == TowerPhase.None &&
-			!towerStartPending && !currencyBuyer.IsBusy && !currencyPurchaseMoveActive)
+			treasurePhase == TreasurePhase.None && !currencyBuyer.IsBusy && !currencyPurchaseMoveActive)
 		{
 			BeginTreasureProcedure();
 		}
@@ -1868,13 +1795,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		}
 		if (!initialScan & flag)
 		{
-			weatherCheckPending = true;
-			nextWeatherCheckAt = DateTime.UtcNow;
-			if (TryHandleTowerWeather("普通亚返回完成后"))
-			{
-				return;
-			}
-			log.Debug("检测到本角色 " + text + " 的亚返回完成消息，已立即检测天气，并按间隔检测钱币和宝箱", Array.Empty<object>());
+			log.Debug("检测到本角色 " + text + " 的亚返回完成消息，将按间隔检测钱币和宝箱", Array.Empty<object>());
 			if (pendingCurrencyCheckAt == DateTime.MinValue)
 			{
 				pendingCurrencyCheckAt = DateTime.UtcNow + ReturnScanDelay;
@@ -2248,7 +2169,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		purchaseRetryDeadline = currencyPurchaseMoveDeadline = nextCurrencyPurchaseMoveCheckAt = currencyPurchaseMoveStartAt = DateTime.MinValue;
 		islandSwitchMovementWait.Reset();
 		treasureMovementWait.Reset();
-		towerMovementWait.Reset();
 		treasurePlayerGuard.Reset();
 		treasurePhase = TreasurePhase.None;
 		treasurePhaseAt = DateTime.MinValue;
@@ -2260,11 +2180,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		xszLastPositionChangeAt = nextXszPositionCheckAt = DateTime.MinValue;
 		silver = copper = silverCurrency = goldCurrency = -1;
 		initialScan = true;
-		towerPhase = TowerPhase.None;
-		towerPhaseAt = towerMoveDeadline = nextTowerPositionCheckAt = towerResumeDeadline = DateTime.MinValue;
-		towerStartPending = weatherCheckPending = false;
-		nextWeatherCheckAt = DateTime.MinValue;
-		towerWeatherHandled = false;
 		islandEnteredAt = DateTime.MinValue;
 	}
 
@@ -2323,295 +2238,9 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		entrySyncMessageSeen = false;
 		// [GLOBAL] 記錄進島時間（供 autoLeaveAfterMinutes 計時）
 		islandEnteredAt = DateTime.UtcNow;
-		weatherCheckPending = true;
-		nextWeatherCheckAt = DateTime.UtcNow;
 		log.Debug("已确认进入" + activeProfile.ChapterName + "，开始首次流程", Array.Empty<object>());
-		if (!TryHandleTowerWeather("进入副本品级同步消息"))
-		{
-			ScheduleInitialCurrencyCheck("首次进岛", JobChangeDelay);
-		}
+		ScheduleInitialCurrencyCheck("首次进岛", JobChangeDelay);
 		return true;
-	}
-
-	private unsafe uint GetCurrentWeatherId()
-	{
-		try
-		{
-			WeatherManager* ptr = WeatherManager.Instance();
-			return (uint)((ptr != null) ? ((*ptr)).GetCurrentWeather() : 0);
-		}
-		catch (Exception ex)
-		{
-			log.Error(ex, "读取当前天气失败", Array.Empty<object>());
-			return 0u;
-		}
-	}
-
-	private bool TryHandleTowerWeather(string reason)
-	{
-		if (!activeProfile.SupportsTower)
-		{
-			weatherCheckPending = false;
-			nextWeatherCheckAt = DateTime.MinValue;
-			return false;
-		}
-		if (!IsIsland() || towerPhase != TowerPhase.None)
-		{
-			return towerPhase != TowerPhase.None;
-		}
-		uint currentWeatherId = GetCurrentWeatherId();
-		log.Debug($"天气检测（{reason}）：当前天气 ID={currentWeatherId}，目标 ID={192u}", Array.Empty<object>());
-		if (currentWeatherId == 0)
-		{
-			return false;
-		}
-		weatherCheckPending = false;
-		nextWeatherCheckAt = DateTime.MinValue;
-		if (currentWeatherId != 192)
-		{
-			towerWeatherHandled = false;
-			return false;
-		}
-		if (!config.AutoGoTower)
-		{
-			towerWeatherHandled = false;
-			return false;
-		}
-		if (towerWeatherHandled)
-		{
-			return towerPhase != TowerPhase.None;
-		}
-		towerWeatherHandled = true;
-		initialCurrencyCheckPending = false;
-		pendingCurrencyCheckAt = (pendingPurchaseAt = (pendingScanAt = (pendingReturnScanAt = (pendingBocchiAt = DateTime.MinValue))));
-		purchaseRetryDeadline = DateTime.MinValue;
-		waitingForScan = false;
-		treasurePhase = TreasurePhase.None;
-		treasurePhaseAt = DateTime.MinValue;
-		treasureMovementWait.Reset();
-		treasurePlayerGuard.Reset();
-		if (bocchiEnabled)
-		{
-			Send("/bocchiillegal off");
-		}
-		bocchiEnabled = false;
-		towerStartPending = true;
-		BeginMovementWait(towerMovementWait);
-		status = "准备前往魔之塔...";
-		log.Debug($"检测到天气 {192u}，开始检测可动状态，可动满 1 秒后前往大水晶，随后进入中转点 {TowerStagingCenter}", Array.Empty<object>());
-		return true;
-	}
-
-	private void BeginTowerNavigation()
-	{
-		towerPhase = TowerPhase.MoveToCrystal;
-		towerPhaseAt = DateTime.UtcNow;
-		status = "准备前往魔之塔...";
-		log.Debug($"人物已连续可动 1 秒，开始前往魔之塔流程：第一阶段前往大水晶，随后进入中转点 {TowerStagingCenter}", Array.Empty<object>());
-	}
-
-	private static Vector3 GetRandomTowerTarget()
-	{
-		float x = Random.Shared.NextSingle() * (float)Math.PI * 2f;
-		float num = MathF.Sqrt(Random.Shared.NextSingle()) * TowerRadius;
-		return new Vector3(TowerCenter.X + MathF.Cos(x) * num, TowerCenter.Y, TowerCenter.Z + MathF.Sin(x) * num);
-	}
-
-	private static Vector3 GetRandomTowerStagingTarget()
-	{
-		float x = Random.Shared.NextSingle() * (float)Math.PI * 2f;
-		float num = MathF.Sqrt(Random.Shared.NextSingle()) * 2f;
-		return new Vector3(TowerStagingCenter.X + MathF.Cos(x) * num, TowerStagingCenter.Y, TowerStagingCenter.Z + MathF.Sin(x) * num);
-	}
-
-	private void UpdateTowerProcedure()
-	{
-		if (towerPhaseAt != DateTime.MinValue && DateTime.UtcNow < towerPhaseAt)
-		{
-			return;
-		}
-		towerPhaseAt = DateTime.MinValue;
-		switch (towerPhase)
-		{
-		case TowerPhase.MoveToCrystal:
-		{
-			Vector3 crystalMoveTarget = activeProfile.CrystalMoveTarget;
-			Send($"/vnav moveto {crystalMoveTarget.X.ToString("0.###", CultureInfo.InvariantCulture)} {crystalMoveTarget.Y.ToString("0.###", CultureInfo.InvariantCulture)} {crystalMoveTarget.Z.ToString("0.###", CultureInfo.InvariantCulture)}");
-			towerPhase = TowerPhase.CrystalTeleport;
-			crystalMoveDeadline = DateTime.UtcNow + CrystalMoveTimeout;
-			nextCrystalMoveCheckAt = DateTime.UtcNow;
-			status = "准备前往魔之塔...";
-			break;
-		}
-		case TowerPhase.CrystalTeleport:
-			if (DateTime.UtcNow < nextCrystalMoveCheckAt)
-			{
-				break;
-			}
-			nextCrystalMoveCheckAt = DateTime.UtcNow.AddSeconds(1.0);
-			if (!IsAtCrystalMoveTarget())
-			{
-				if (!(DateTime.UtcNow < crystalMoveDeadline))
-				{
-					Stop("未到达大水晶区域，请检查导航功能");
-				}
-				break;
-			}
-			crystalMoveDeadline = (nextCrystalMoveCheckAt = DateTime.MinValue);
-			// [GLOBAL] 魔之塔：原版用中文水晶名「遗迹」，但 Daily Routines 的 ptp 比對的是
-			// LuminaWrapper.GetPlaceName（跟隨客戶端語言），英文客戶端配對不到 → 改用數字索引。
-			// 北島 NorthHornAetherytes[3] = SuspendedMasonry（原「遗迹」所指的水晶）。
-			Send("/pdr ptp 3");
-			towerPhase = TowerPhase.MountToTower;
-			towerPhaseAt = DateTime.UtcNow + TowerCrystalDelay;
-			mountRetryDeadline = DateTime.UtcNow + TowerCrystalDelay + MountRetryTimeout;
-			nextMountRetryAt = DateTime.UtcNow + TowerCrystalDelay;
-			status = "前往魔之塔...";
-			break;
-		case TowerPhase.MountToTower:
-		{
-			if (DateTime.UtcNow >= mountRetryDeadline)
-			{
-				Stop("未能召唤随机坐骑，请检查坐骑可用性");
-				break;
-			}
-			bool flag = IsMountedOrMounting();
-			if (!flag && DateTime.UtcNow >= nextMountRetryAt)
-			{
-				nextMountRetryAt = DateTime.UtcNow + MountRetryInterval;
-				log.Debug("遗迹小水晶传送等待结束，尝试使用原生随机坐骑动作", Array.Empty<object>());
-				flag = TryUseRandomMount("魔之塔");
-			}
-			if (flag)
-			{
-				mountRetryDeadline = (nextMountRetryAt = DateTime.MinValue);
-				towerStagingTarget = GetRandomTowerStagingTarget();
-				towerPhase = TowerPhase.MoveToStaging;
-				towerPhaseAt = DateTime.UtcNow + TimeSpan.FromSeconds(1L);
-				status = "前往魔之塔...";
-			}
-			break;
-		}
-		case TowerPhase.MoveToStaging:
-			Send($"/vnav moveto {towerStagingTarget.X.ToString("0.###", CultureInfo.InvariantCulture)} {towerStagingTarget.Y.ToString("0.###", CultureInfo.InvariantCulture)} {towerStagingTarget.Z.ToString("0.###", CultureInfo.InvariantCulture)}");
-			towerPhase = TowerPhase.StagingArrived;
-			towerMoveDeadline = DateTime.UtcNow + TimeSpan.FromMinutes(3L);
-			nextTowerPositionCheckAt = DateTime.UtcNow;
-			status = "前往魔之塔...";
-			log.Debug($"已执行魔之塔中转点导航，目标坐标 {towerStagingTarget}", Array.Empty<object>());
-			break;
-		case TowerPhase.StagingArrived:
-			if (DateTime.UtcNow < nextTowerPositionCheckAt)
-			{
-				break;
-			}
-			nextTowerPositionCheckAt = DateTime.UtcNow.AddSeconds(1.0);
-			if (!IsNearPosition(towerStagingTarget, 2f))
-			{
-				if (!(DateTime.UtcNow < towerMoveDeadline))
-				{
-					Stop("未到达魔之塔中转区域，请检查导航功能");
-				}
-				break;
-			}
-			towerMoveDeadline = (nextTowerPositionCheckAt = DateTime.MinValue);
-			towerTarget = GetRandomTowerTarget();
-			towerPhase = TowerPhase.MoveToTower;
-			towerPhaseAt = DateTime.UtcNow;
-			status = "前往魔之塔...";
-			log.Debug($"已到达魔之塔中转区域，开始第二阶段导航，最终入口目标 {towerTarget}", Array.Empty<object>());
-			break;
-		case TowerPhase.MoveToTower:
-			Send($"/vnav moveto {towerTarget.X.ToString("0.###", CultureInfo.InvariantCulture)} {towerTarget.Y.ToString("0.###", CultureInfo.InvariantCulture)} {towerTarget.Z.ToString("0.###", CultureInfo.InvariantCulture)}");
-			towerPhase = TowerPhase.Arrived;
-			towerMoveDeadline = DateTime.UtcNow + TimeSpan.FromMinutes(3L);
-			nextTowerPositionCheckAt = DateTime.UtcNow + TimeSpan.FromSeconds(1L);
-			status = "前往魔之塔...";
-			log.Debug($"开始最终魔之塔入口导航，目标坐标 {towerTarget}", Array.Empty<object>());
-			break;
-		case TowerPhase.Arrived:
-		{
-			if (DateTime.UtcNow < nextTowerPositionCheckAt)
-			{
-				break;
-			}
-			nextTowerPositionCheckAt = DateTime.UtcNow + TimeSpan.FromSeconds(1L);
-			if (!IsNearTowerTarget())
-			{
-				if (!(DateTime.UtcNow < towerMoveDeadline))
-				{
-					Stop("未到达魔之塔进入区域，请检查导航功能");
-				}
-				break;
-			}
-			towerPhase = TowerPhase.None;
-			towerPhaseAt = DateTime.MinValue;
-			towerMoveDeadline = (nextTowerPositionCheckAt = DateTime.MinValue);
-			uint currentWeatherId = GetCurrentWeatherId();
-			log.Debug($"到达魔之塔区域后二次天气检测：当前天气 ID={currentWeatherId}，目标 ID={192u}", Array.Empty<object>());
-			if (currentWeatherId != 192)
-			{
-				TryDismount("魔之塔天气消失后恢复插件功能");
-				towerWeatherHandled = false;
-				weatherCheckPending = false;
-				initialScan = true;
-				silver = (copper = -1);
-				towerPhase = TowerPhase.DismountBeforeResume;
-				towerResumeDeadline = DateTime.UtcNow + TimeSpan.FromSeconds(10L);
-				towerPhaseAt = DateTime.UtcNow;
-				status = "天气已结束，恢复战斗";
-			}
-			else
-			{
-				Stop("已到达魔之塔，等待接管");
-			}
-			break;
-		}
-		case TowerPhase.DismountBeforeResume:
-			if (IsMounted())
-			{
-				TryDismount("魔之塔天气消失后恢复插件功能");
-				if (DateTime.UtcNow >= towerResumeDeadline)
-				{
-					Stop("未能下坐骑，无法恢复魔寻宝流程");
-				}
-				else
-				{
-					towerPhaseAt = DateTime.UtcNow + TimeSpan.FromSeconds(1L);
-				}
-			}
-			else if (IsMounting())
-			{
-				if (DateTime.UtcNow >= towerResumeDeadline)
-				{
-					Stop("坐骑动作未完成，无法恢复魔寻宝流程");
-				}
-				else
-				{
-					towerPhaseAt = DateTime.UtcNow + TimeSpan.FromSeconds(1L);
-				}
-			}
-			else
-			{
-				towerPhase = TowerPhase.None;
-				towerPhaseAt = (towerResumeDeadline = DateTime.MinValue);
-				ScheduleInitialCurrencyCheck("魔之塔天气结束后", JobChangeDelay);
-				status = "天气已结束，恢复战斗";
-			}
-			break;
-		}
-	}
-
-	private bool IsNearTowerTarget()
-	{
-		IPlayerCharacter localPlayer = objects.LocalPlayer;
-		if (localPlayer == null)
-		{
-			return false;
-		}
-		float num = ((IGameObject)localPlayer).Position.X - TowerCenter.X;
-		float num2 = ((IGameObject)localPlayer).Position.Z - TowerCenter.Z;
-		return num * num + num2 * num2 <= TowerRadius * TowerRadius;
 	}
 
 	private bool IsNearPosition(Vector3 target, float radius)
@@ -2624,19 +2253,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		float num = ((IGameObject)localPlayer).Position.X - target.X;
 		float num2 = ((IGameObject)localPlayer).Position.Z - target.Z;
 		return num * num + num2 * num2 <= radius * radius;
-	}
-
-	private void BeginTowerProcedureForTest()
-	{
-		if (bocchiEnabled)
-		{
-			Send("/bocchiillegal off");
-		}
-		bocchiEnabled = false;
-		towerWeatherHandled = true;
-		towerPhase = TowerPhase.MoveToCrystal;
-		towerPhaseAt = DateTime.UtcNow;
-		status = "准备前往魔之塔...";
 	}
 
 	private bool NearBase()
@@ -2999,6 +2615,12 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			// Saving the new schema drops removed notification settings and their URL.
 			config.Version = 4;
+			flag = true;
+		}
+		if (config.Version < 5)
+		{
+			// Saving schema 5 drops the removed tower options.
+			config.Version = 5;
 			flag = true;
 		}
 		IslandTarget islandTarget = config.IslandTarget;
@@ -4073,7 +3695,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		DrawAutomaticPurchaseConfig();
 		ImGui.Spacing();
 		ImGui.Spacing();
-		DrawBTowerConfig();
 		ImGui.Spacing();
 		DrawBDebug();
 		ImGui.Spacing();
@@ -4250,43 +3871,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		}
 	}
 
-	private void DrawBTowerConfig()
-	{
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		if (!activeProfile.SupportsTower)
-		{
-			return;
-		}
-		ImGui.SetNextItemOpen(config.AutoGoTowerExpanded, (ImGuiCond)2);
-		bool flag = ImGui.CollapsingHeader(UiText.Label("自动前往魔之塔设置"), (ImGuiTreeNodeFlags)0);
-		if (flag != config.AutoGoTowerExpanded)
-		{
-			config.AutoGoTowerExpanded = flag;
-			config.Save();
-		}
-		if (!flag)
-		{
-			return;
-		}
-		ImGui.TextWrapped(UiText.Render("注意：该项功能只会在蜃景天气出现时停止插件功能前往魔之塔进入区域，不会自动进行魔之塔战斗，后续流程需要手动或者由其他插件接管。"));
-		ImGui.TextWrapped(UiText.Render("如果你不知道上述是什么意思，则不要开启此功能，也不要就此功能进行任何反馈。"));
-		bool autoGoTower = config.AutoGoTower;
-		if (ImGui.Checkbox(UiText.Label("蜃景天气出现时自动前往魔之塔区域"), ref autoGoTower))
-		{
-			config.AutoGoTower = autoGoTower;
-			config.Save();
-			if (autoGoTower && running && IsIsland())
-			{
-				weatherCheckPending = true;
-				nextWeatherCheckAt = DateTime.UtcNow;
-			}
-		}
-	}
-
 	private void DrawBDebug()
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
@@ -4305,14 +3889,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			silver = 8;
 			copper = 0;
 			BeginTreasureProcedure();
-		}
-		if (activeProfile.SupportsTower && ImGui.Button(UiText.Label("直接开始前往魔之塔流程（测试用）"), default(Vector2)))
-		{
-			if (!running)
-			{
-				running = true;
-			}
-			BeginTowerProcedureForTest();
 		}
 		// [DEBUG] 完整循環測試開關（見 debugForceFull 的說明）
 		ImGui.Checkbox(UiText.Label("Debug: 强制视为宝箱已满（测试完整流程）"), ref debugForceFull);

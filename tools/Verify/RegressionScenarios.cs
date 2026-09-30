@@ -52,19 +52,34 @@ internal static class RegressionScenarios
         var languageProperty = ui.GetProperty("Language", BindingFlags.NonPublic | BindingFlags.Static)!;
         string Render(string value) => (string)ui.GetMethod("Render", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
         string Label(string value) => (string)ui.GetMethod("Label", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
-        Test("tower settings use complete Traditional Chinese and English translations", f => {
-            var examples = new[] {
-                ("自动前往魔之塔设置", "自動前往魔之塔設定", "Automatic Forked Tower travel"),
-                ("注意：该项功能只会在蜃景天气出现时停止插件功能前往魔之塔进入区域，不会自动进行魔之塔战斗，后续流程需要手动或者由其他插件接管。", "注意：蜃景天氣出現時，此功能會暫停農寶並前往魔之塔入口。魔之塔戰鬥及後續流程需自行操作，或交由其他插件接管。", "When the required mirage weather appears, this feature pauses farming and moves to the Forked Tower entrance. Tower combat and subsequent steps require manual control or another plugin."),
-                ("如果你不知道上述是什么意思，则不要开启此功能，也不要就此功能进行任何反馈。", "請先了解魔之塔進入流程，再啟用此功能。", "Enable this feature only if you understand the tower entry workflow."),
-                ("蜃景天气出现时自动前往魔之塔区域", "蜃景天氣出現時自動前往魔之塔入口", "Travel to the Forked Tower during mirage weather")
-            };
-            foreach (var (source, traditional, english) in examples) {
-                languageProperty.SetValue(null, Enum.Parse(uiLanguage, "TraditionalChinese"));
-                f.Assert(Render(source) == traditional, "Incomplete Traditional Chinese: " + Render(source));
-                languageProperty.SetValue(null, Enum.Parse(uiLanguage, "English"));
-                f.Assert(Render(source) == english, "Incomplete English: " + Render(source));
-            }
+        Test("tower options and weather navigation are absent from the plugin", f => {
+            f.Assert(!configType.GetProperties().Any(p => p.Name.Contains("Tower")), "tower options remain");
+            f.Assert(!assembly.GetTypes().Any(t => t.Name.Contains("Tower")), "tower phase type remains");
+            var pluginType = assembly.GetType("NorthIslandChestPlugin.Plugin", true)!;
+            f.Assert(!pluginType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).Any(m => m.Name.Contains("Tower") || m.Name == "GetCurrentWeatherId"), "tower/weather methods remain");
+        });
+        Test("old enabled tower options are dropped without losing other settings", f => {
+            var jsonConvert = Assembly.Load("Newtonsoft.Json").GetType("Newtonsoft.Json.JsonConvert", true)!;
+            var deserialize = jsonConvert.GetMethod("DeserializeObject", new[] { typeof(string), typeof(Type) })!;
+            const string legacy = "{\"Version\":4,\"AutoGoTower\":true,\"AutoGoTowerExpanded\":true,\"UiLanguage\":1,\"CombatJob\":\"Phantom Samurai\",\"DiscardPreset\":\"MyPreset\",\"NorthPurchase\":{\"SilverTriggerAmount\":7777}}";
+            var migrated = deserialize.Invoke(null, new object[] { legacy, configType })!;
+            f.Set("config", migrated);
+            f.Call("NormalizePurchaseConfig");
+            f.Assert((int)configType.GetProperty("Version")!.GetValue(migrated)! == 5, "schema migration did not run");
+            f.Assert((string)configType.GetProperty("CombatJob")!.GetValue(migrated)! == "Phantom Samurai", "combat job lost");
+            f.Assert((string)configType.GetProperty("DiscardPreset")!.GetValue(migrated)! == "MyPreset", "discard preset lost");
+            f.Assert(configType.GetProperty("UiLanguage")!.GetValue(migrated)!.ToString() == "English", "UI language lost");
+            var purchase = configType.GetProperty("NorthPurchase")!.GetValue(migrated)!;
+            f.Assert((int)purchase.GetType().GetProperty("SilverTriggerAmount")!.GetValue(purchase)! == 7777, "purchase threshold lost");
+            string saved = (string)jsonConvert.GetMethod("SerializeObject", new[] { typeof(object) })!.Invoke(null, new[] { migrated })!;
+            f.Assert(!saved.Contains("AutoGoTower"), "removed options survive serialization");
+        });
+        Test("North start directly schedules currency check before scanning", f => {
+            f.Set("running", false);
+            f.Call("Start");
+            f.Assert((bool)f.Get("running")! && (bool)f.Get("initialCurrencyCheckPending")!, "start did not continue to initial checks");
+            f.Assert((DateTime)f.Get("pendingCurrencyCheckAt")! != DateTime.MinValue, "initial currency check missing");
+            f.Assert(f.Phase == "None" && !f.Commands.Any(c => c.StartsWith("/vnav moveto") || c == "/pdr ptp 3"), "start unexpectedly navigates away");
         });
         Test("embedded UI catalog has no leftover Simplified characters in Traditional Chinese", f => {
             using var stream = assembly.GetManifestResourceStream("OCBFR.UiTranslations.json")!;
@@ -209,11 +224,6 @@ internal static class RegressionScenarios
             f.Set("silver", 8); f.Set("copper", 30);
             f.Chat("Hello", 10);
             f.Assert(f.Phase == "None", "unrelated chat started treasure");
-        });
-        Test("passive count cannot interrupt tower navigation", f => {
-            f.SetEnum("towerPhase", "MoveToCrystal");
-            f.Chat("There are 8 silver coffers and 30 bronze coffers in this area.");
-            f.Assert(f.Phase == "None", "started treasure during tower navigation");
         });
         Test("stopped plugin updates count without starting treasure", f => {
             f.Set("running", false);
@@ -383,7 +393,7 @@ internal static class RegressionScenarios
             pluginType = assembly.GetType("NorthIslandChestPlugin.Plugin", true)!;
             plugin = RuntimeHelpers.GetUninitializedObject(pluginType);
             // Construct only small managed state objects, not the plugin ctor.
-            foreach (var name in new[] { "treasureMovementWait", "islandSwitchMovementWait", "towerMovementWait", "treasurePlayerGuard", "treasureLoot", "treasureRecords", "config" }) {
+            foreach (var name in new[] { "treasureMovementWait", "islandSwitchMovementWait", "treasurePlayerGuard", "treasureLoot", "treasureRecords", "config" }) {
                 var field = pluginType.GetField(name, Members)!;
                 field.SetValue(plugin, Activator.CreateInstance(field.FieldType, true));
             }

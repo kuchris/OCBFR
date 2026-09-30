@@ -8,6 +8,8 @@ var root = CSharpSyntaxTree.ParseText(File.ReadAllText(path)).GetRoot();
 if (args.Contains("--compare-flows")) {
     var other = CSharpSyntaxTree.ParseText(File.ReadAllText(args[1])).GetRoot();
     var names = new HashSet<string> { "Start", "Stop", "EmergencyStop", "ChangeToCombatJob", "RequestFreelancerScan", "AdvanceFreelancerScan", "CompleteTreasureScan", "BeginTreasureProcedure", "UpdateTreasureProcedure", "TryCompleteTreasureReturn", "TryCompleteEntryHandshake", "ResetForIslandEntry", "OnTerritoryChanged", "TryDismount", "InvokeTreasureScan", "SummonRandomMount", "UpdateTowerProcedure", "UpdateCurrencyPurchaseMove", "ApplySelectedProfile", "Send", "ResetIslandEntryState" };
+    var excluded = args.FirstOrDefault(a => a.StartsWith("--exclude-methods="));
+    if (excluded != null) names.ExceptWith(excluded.Substring("--exclude-methods=".Length).Split(','));
     int compared = 0;
     foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>().Where(m => names.Contains(m.Identifier.Text))) {
         var candidate = other.DescendantNodes().OfType<MethodDeclarationSyntax>().Single(m => m.Identifier.Text == method.Identifier.Text && m.ParameterList.Parameters.Count == method.ParameterList.Parameters.Count);
