@@ -2,8 +2,8 @@
   "Author": "kuchris",
   "Name": "OCBFR",
   "InternalName": "OCNFarmer",
-  "AssemblyVersion": "2.3.0.14",
-  "Description": "OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄。支援繁體中文／English 介面。需要 Daily Routines、vnavmesh 與 BOCCHI。\n\nOCBFR automates Occult Crescent coffer scanning, treasure routes, currency purchases and re-entry, with loot tracking and a Traditional Chinese / English interface. Requires Daily Routines, vnavmesh and BOCCHI.\n\n/ocbchest — 介面 / Open UI\n/ocbstart — 開始 / Start\n/ocbstop — 停止 / Stop",
+  "AssemblyVersion": "2.3.0.15",
+  "Description": "OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄。支援繁體中文／English 介面。需要 Daily Routines、vnavmesh 與 BOCCHI。\n\nOCBFR automates Occult Crescent coffer scanning, treasure routes, currency purchases and re-entry, with loot tracking and a Traditional Chinese / English interface. Requires Daily Routines, vnavmesh and BOCCHI.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/kuchris/OCBFR",
   "Tags": [
@@ -21,6 +21,6 @@
   "LoadPriority": 0,
   "IconUrl": "https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/plugins/OCNFarmer/icon.png",
   "Punchline": "新月島尋寶自動化與戰利品記錄 / Occult Crescent treasure automation and loot tracking.",
-  "Changelog": "Global 2.3.0.14：更新 OCBFR 功能介紹及安裝文件，使用獨立插件定位。Updated product description and installation documents. Gameplay and commands are unchanged.",
+  "Changelog": "Global 2.3.0.15：精簡安裝器簡介，移除重複指令列表。Simplified installer description by removing the duplicate command list.",
   "AcceptsFeedback": true
 }

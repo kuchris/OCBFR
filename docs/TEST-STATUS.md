@@ -1,6 +1,6 @@
 # Validation
 
-Current release: **2.3.0.14**, built against Dalamud **15.0.3.6** on 2026-09-30. Versions 2.3.0.13 and 2.3.0.14 change commands and product descriptions; gameplay is unchanged from 2.3.0.12.
+Current release: **2.3.0.15**, built against Dalamud **15.0.3.6** on 2026-09-30. Versions 2.3.0.13–2.3.0.15 change commands, product descriptions and packaging; gameplay is unchanged from 2.3.0.12.
 
 ## Checked in-game
 
