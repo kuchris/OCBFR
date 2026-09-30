@@ -13,5 +13,3 @@ dist/
 treasure-records.json
 .env
 .env.*
-
-# The three required library DLLs in dependencies/ are intentional.

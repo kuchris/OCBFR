@@ -39,7 +39,7 @@ The chat parser accepts English, Japanese, and common Simplified/Traditional Chi
 
 ## Required plugins and setup
 
-Install and configure **Daily Routines**, **vnavmesh** and **BOCCHI** separately. This package includes only OCBFR's library dependencies.
+Install and configure **Daily Routines**, **vnavmesh** and **BOCCHI** separately. The package includes OCBFR; these plugins are installed separately.
 
 Enable these Daily Routines modules using **Enable required DR modules** at the bottom of Overview or the commands below:
 
@@ -71,7 +71,7 @@ Use **Emergency stop** to stop the plugin and the external route/navigation. If 
 
 **Treat coffers as full** simulates the threshold after a successful scan; it does not change actual game coffers. **Stay in duty** tests the inner and outer legs without leaving. If force-full remains enabled, a fresh scan after re-entry starts another cycle; emergency-stop after your test.
 
-English-client North scans, UI language switching and exit/re-entry have been tested in-game. A complete North route was validated before this localization change. South, the real full-coffer threshold, Japanese/patched-client live behavior, and purchase functionality are not fully live-validated. Read `TEST-STATUS.md` for precise scope.
+English-client North scans, routes, re-entry, UI controls and one silver-currency purchase have been tested in-game. South, Japanese/patched clients, the real full-coffer threshold and other purchase variants remain pending. Read `TEST-STATUS.md` for the current scope.
 
 Logs: `%APPDATA%\XIVLauncher\dalamud.log`, filter `[OCNFarmer]`. Saved loot records: `treasure-records.json` under Dalamud's OCNFarmer configuration directory. Diagnostic logs retain their established wording.
 
