@@ -1,6 +1,6 @@
 # OCBFR Global — 安裝及使用
 
-這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.12（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，沿用現有設定及 `/ocnchest`、`/ocnstart`、`/ocnstop` 指令。English instructions are included in `README.en.md`.
+這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.13（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，保留現有設定。指令改為 `/ocbchest`、`/ocbstart`、`/ocbstop`，如有舊巨集請同步更新。English instructions are included in `README.en.md`.
 
 本版已完整移除 Omni 驗證介面、Session、身份掃描及 DLL 依賴，亦移除 Server酱「無人值守通知」功能。首次載入會更新設定格式，清除舊通知設定；尋寶、購買及戰利品紀錄設定仍保留。魔之塔功能及舊選項已移除。
 
@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 
 1. 將整個分享包解壓至固定資料夾，例如 `C:\OCBFR\`。所有 DLL、`OCNFarmer.json` 必須保留在同一層，並保留 `images` 子資料夾。
 2. 在遊戲輸入 `/xlsettings`，於 Experimental → Dev Plugin Locations 加入 **DLL 的完整路徑**：`C:\OCBFR\OCNFarmer.dll`，啟用並儲存。
-3. 用 `/xlplugins` 搜尋 OCBFR，載入 DEV 插件。用 `/ocnchest` 開啟設定。
+3. 用 `/xlplugins` 搜尋 OCBFR，載入 DEV 插件。用 `/ocbchest` 開啟設定。
 4. 更新時先緊急停止、卸載插件，再替換整包檔案並重新載入。只保留一個 OCBFR 載入位置，避免重複啟動。
 
 ## 需要另外安裝並設定的插件
@@ -65,13 +65,13 @@ https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 
 ## 正常運行
 
-關閉 Debug 的「強制視為寶箱已滿」和「不退本」，再按開始或輸入 `/ocnstart`。
+關閉 Debug 的「強制視為寶箱已滿」和「不退本」，再按開始或輸入 `/ocbstart`。
 
 流程是：停戰鬥輔助及導航 → 下坐騎 → 切 Phantom Freelancer → 魔尋寶 → 讀取銀／銅數量。未滿時切回戰鬥職業；達銀 8 或銅 30 時開始尋寶。內環返到基地營後自動接外環；外環完成後儲存戰利品、退本重入並重新掃描。
 
 亞返回採用目標島基地營 60y 內的位置偵測，不需要 Action 類聊天訊息。區域載入或施法期間會繼續等候。重入以品級同步系統訊息及角色就緒作握手，例如英文 `Your item level has been synced to 700.`，或日文 `アイテムレベルシンク` 訊息。
 
-需要立即停止移動及尋寶時，使用介面的**緊急停止**。若只用了 `/ocnstop`，亦可手動輸入 `/pdr ptreasure abort` 和 `/vnav stop`，停止已交給其他插件的路線。
+需要立即停止移動及尋寶時，使用介面的**緊急停止**。若只用了 `/ocbstop`，亦可手動輸入 `/pdr ptreasure abort` 和 `/vnav stop`，停止已交給其他插件的路線。
 
 ## 測試模式
 

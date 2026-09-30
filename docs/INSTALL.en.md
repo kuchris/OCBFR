@@ -1,6 +1,6 @@
-# OCBFR Global 2.3.0.12
+# OCBFR Global 2.3.0.13
 
-Author: kuchris. Built from the C# source for Dalamud API 15. The DLL, manifest filename, internal ID and commands remain `OCNFarmer` so existing settings continue to work.
+Author: kuchris. Built from the C# source for Dalamud API 15. The DLL, manifest filename and internal ID remain `OCNFarmer` so existing settings continue to work. Commands are now `/ocbchest`, `/ocbstart` and `/ocbstop`; update existing macros accordingly.
 
 ## Install from the catalogue
 
@@ -18,7 +18,7 @@ If you previously used a DEV copy, emergency-stop and unload it, then disable it
 
 1. Extract the entire package into a permanent folder, for example `C:\OCBFR\`. Keep all DLLs and `OCNFarmer.json` together, including the `images` subfolder.
 2. Open `/xlsettings` → Experimental → Dev Plugin Locations and add the full DLL path, for example `C:\OCBFR\OCNFarmer.dll`. Enable and save it.
-3. Load **OCBFR** in `/xlplugins`, then open `/ocnchest`.
+3. Load **OCBFR** in `/xlplugins`, then open `/ocbchest`.
 4. Before updating, use Emergency stop, unload the plugin, replace the package and reload. Keep only one development-plugin location. Preserve your existing Dalamud plugin configuration folder.
 
 ## Languages
@@ -59,13 +59,13 @@ Enable these Daily Routines modules using **Enable required DR modules** at the 
 
 ## Run and stop
 
-Leave both Debug checkboxes off for normal operation. Press **Start** or use `/ocnstart`.
+Leave both Debug checkboxes off for normal operation. Press **Start** or use `/ocbstart`.
 
 The plugin pauses combat/navigation, dismounts, switches to Phantom Freelancer, casts Treasuresight and reads coffer counts. Below the threshold it switches back to the combat phantom job. At **8 silver coffers or 30 bronze coffers**, it starts the treasure route. Returning to camp completes the inner leg, then starts the outer leg. The outer return saves a record, leaves duty, re-enters and performs a fresh scan.
 
 Return detection uses a position within 60 yalms of the target island's base camp and waits through casting/area transitions. It does not require Action chat messages. Entry waits for the localized item-level sync message and a ready character.
 
-Use **Emergency stop** to stop the plugin and the external route/navigation. If you only use `/ocnstop`, also use `/pdr ptreasure abort` and `/vnav stop` when needed. `/ocnchest` opens the UI.
+Use **Emergency stop** to stop the plugin and the external route/navigation. If you only use `/ocbstop`, also use `/pdr ptreasure abort` and `/vnav stop` when needed. `/ocbchest` opens the UI.
 
 ## Debug and verification
 

@@ -833,21 +833,21 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		windows.AddWindow((IWindow)(object)mainWindow);
 		windows.AddWindow((IWindow)(object)simplifiedWindow);
 		windows.AddWindow((IWindow)(object)treasureHistoryWindow);
-		commands.AddHandler("/ocnchest", new CommandInfo((IReadOnlyCommandInfo.HandlerDelegate)((string _, string _) =>
+		commands.AddHandler("/ocbchest", new CommandInfo((IReadOnlyCommandInfo.HandlerDelegate)((string _, string _) =>
 		{
 			plugin.OpenMainUi();
 		}))
 		{
 			HelpMessage = "開啟 OCBFR 設定 / Open OCBFR settings."
 		});
-		commands.AddHandler("/ocnstart", new CommandInfo((IReadOnlyCommandInfo.HandlerDelegate)((string _, string _) =>
+		commands.AddHandler("/ocbstart", new CommandInfo((IReadOnlyCommandInfo.HandlerDelegate)((string _, string _) =>
 		{
 			plugin.Start();
 		}))
 		{
 			HelpMessage = "啟動 OCBFR 自動流程 / Start the OCBFR workflow."
 		});
-		commands.AddHandler("/ocnstop", new CommandInfo((IReadOnlyCommandInfo.HandlerDelegate)((string _, string _) =>
+		commands.AddHandler("/ocbstop", new CommandInfo((IReadOnlyCommandInfo.HandlerDelegate)((string _, string _) =>
 		{
 			plugin.StopFromUser();
 		}))
@@ -889,9 +889,9 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			FlushWindowLayouts(force: true);
 			chat.ChatMessage -= OnChatMessage;
 			framework.Update -= OnUpdate;
-			commands.RemoveHandler("/ocnchest");
-			commands.RemoveHandler("/ocnstart");
-			commands.RemoveHandler("/ocnstop");
+			commands.RemoveHandler("/ocbchest");
+			commands.RemoveHandler("/ocbstart");
+			commands.RemoveHandler("/ocbstop");
 			windows.RemoveAllWindows();
 		}
 	}

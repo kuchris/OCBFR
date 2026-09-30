@@ -2,8 +2,8 @@
   "Author": "kuchris",
   "Name": "OCBFR",
   "InternalName": "OCNFarmer",
-  "AssemblyVersion": "2.3.0.12",
-  "Description": "國際服適配版，繁體中文／English 介面；英文、日文及漢化訊息解析。Japanese/patched clients await in-game testing. Use /ocnchest to configure, /ocnstart to start. See bundled instructions for setup and validation scope.",
+  "AssemblyVersion": "2.3.0.13",
+  "Description": "國際服適配版，繁體中文／English 介面；英文、日文及漢化訊息解析。Japanese/patched clients await in-game testing. Use /ocbchest to configure, /ocbstart to start. See bundled instructions for setup and validation scope.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/kuchris/OCBFR",
   "Tags": [
@@ -21,6 +21,6 @@
   "LoadPriority": 0,
   "IconUrl": "https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/plugins/OCNFarmer/icon.png",
   "Punchline": "Occult Crescent Global：寶箱掃描、尋寶與退本重入。",
-  "Changelog": "Global 2.3.0.12：重新設計黑白尋寶記錄頁，加入搜尋與副本篩選；移除 OmenTools、GuerrillaNtp、TinyPinyin DLL 依賴；專案改名 OCBFR.csproj，保留現有安裝 ID 與設定。Redesigned loot history, removed three bundled library dependencies, and renamed the source project while preserving existing settings.",
+  "Changelog": "Global 2.3.0.13：指令改為 /ocbchest（介面）、/ocbstart（開始）、/ocbstop（停止）。舊指令不再註冊，請更新巨集。Renamed commands to /ocbchest, /ocbstart and /ocbstop; update existing macros.",
   "AcceptsFeedback": true
 }
