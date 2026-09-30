@@ -47,5 +47,3 @@ dotnet build .\src\OCBFR.csproj -c Release -p:DalamudLibPath="<Hooks directory>"
 Packages are created under `dist/`. See [validation status](docs/TEST-STATUS.md) for tested behavior and pending client checks.
 
 [Support on Ko-fi](https://ko-fi.com/kuchris)
-
-Gugu contributed to the South Horn workflow and currency purchasing. Third-party notices are in [notices](notices/).
