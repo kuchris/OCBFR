@@ -1,8 +1,8 @@
 # OCBFR Global — 安裝及使用
 
-這是由 `rebuild01` C# 源碼重新編譯的國際服適配版，適用於 Dalamud API 15。顯示名稱為 OCBFR，作者 kuchris，版本 2.3.0.13（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，保留現有設定。指令改為 `/ocbchest`、`/ocbstart`、`/ocbstop`，如有舊巨集請同步更新。English instructions are included in `README.en.md`.
+OCBFR 是由 kuchris 開發及維護的新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄，適用於 Dalamud API 15。版本 2.3.0.14（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，保留現有設定。指令改為 `/ocbchest`、`/ocbstart`、`/ocbstop`，如有舊巨集請同步更新。English instructions are included in `README.en.md`.
 
-本版已完整移除 Omni 驗證介面、Session、身份掃描及 DLL 依賴，亦移除 Server酱「無人值守通知」功能。首次載入會更新設定格式，清除舊通知設定；尋寶、購買及戰利品紀錄設定仍保留。魔之塔功能及舊選項已移除。
+本插件提供繁體中文／English 介面，使用時需要另行安裝 Daily Routines、vnavmesh 及 BOCCHI。
 
 ## 介面及遊戲語言
 
@@ -92,4 +92,4 @@ https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 
 請閱讀同包的 `TEST-STATUS.md`。北島已完成多輪人工實測；南島、真實滿箱門檻及未逐項測試的購買功能，不能以編譯或離線檢查視為已驗證。
 
-本包不包含個人設定、角色資料、通知金鑰或遊戲日誌；亦不需要 Omni.Verification.dll、System.Management.dll 或 System.CodeDom.dll。已移除 OmenTools、GuerrillaNtp 及 TinyPinyin DLL 依賴，改用 Dalamud 服務及內建購買事件橋接。插件作者署名為 kuchris，保留舊互操作實作的第三方授權聲明。
+本包只提供插件 DLL、圖示、安裝文件及檔案校驗資料，不包含個人設定、角色資料或遊戲日誌。使用 Dalamud 服務及內建購買事件橋接，無需額外函式庫 DLL。第三方授權聲明另行保留。

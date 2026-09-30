@@ -1,6 +1,6 @@
 # OCBFR Global validation
 
-Date: 2026-09-30. Build against Dalamud 15.0.3.6, using the reconstructed C# source. No binary IL patches. Current build version: 2.3.0.13. Display name: OCBFR. Author: kuchris. The original assembly/internal identifier remains compatible with saved settings. Commands now use `/ocbchest`, `/ocbstart`, `/ocbstop`; historical test entries retain the names used at that time.
+Date: 2026-09-30. Build against Dalamud 15.0.3.6, using the reconstructed C# source. No binary IL patches. Current build version: 2.3.0.14. Display name: OCBFR. Author: kuchris. The original assembly/internal identifier remains compatible with saved settings. Commands now use `/ocbchest`, `/ocbstart`, `/ocbstop`; historical test entries retain the names used at that time.
 
 ## Live checks
 
@@ -32,6 +32,8 @@ Date: 2026-09-30. Build against Dalamud 15.0.3.6, using the reconstructed C# sou
 | 20 remove library dependencies | Offline and live load/scan/catalogue/purchase passed | Version 2.3.0.12 removes OmenTools, GuerrillaNtp and TinyPinyin references and DLLs. Dalamud IDataManager supplies jobs/items/shop sheets. Native agent/addon calls and the minimal ShopEventBridge replace purchase helpers without packet hooks. Managed preparation succeeded for 595 methods; 73 checks passed with no dependency DLLs in the resolver folder. 16 existing gameplay methods match version 2.3.0.10. Date/island/search/rare history projections and event packet layouts have additional checks. User confirmed final load, scan, reload, shop catalogue, correct purchase quantities/currency deduction and shop closure. Log records North silver purchase of Heavens' Eye Materia XI ×1 at 20:39:50, EventComplete at 20:39:50, completion at 20:39:53, a fresh 0/0 scan at 20:39:59 and emergency stop at 20:40:00. |
 
 | 21 rename commands | Offline and user live command check passed | Version 2.3.0.13 renames command registration, removal on unload, help metadata and current installation instructions to /ocbchest, /ocbstart and /ocbstop. Each handler retains its existing action. No legacy aliases remain. 73 managed checks passed, 595 methods prepared without failures and 16 existing workflow methods match 2.3.0.12. User confirmed all three new commands open/start/stop correctly in-game. |
+
+| 22 product description | Offline validation passed | Version 2.3.0.14 presents OCBFR as a standalone plugin in its manifest, assembly description, README and installation documents. Runtime source and command handlers are unchanged from 2.3.0.13; historical validation notes and third-party credits remain. 595 methods prepared without failures and 73 checks passed. This metadata/documentation change does not require another gameplay test. |
 
 ## Outstanding live checks
 

@@ -1,6 +1,6 @@
-# OCBFR Global 2.3.0.13
+# OCBFR Global 2.3.0.14
 
-Author: kuchris. Built from the C# source for Dalamud API 15. The DLL, manifest filename and internal ID remain `OCNFarmer` so existing settings continue to work. Commands are now `/ocbchest`, `/ocbstart` and `/ocbstop`; update existing macros accordingly.
+OCBFR is an Occult Crescent automation plugin for Dalamud API 15 by kuchris, with coffer scanning, treasure routes, currency purchases, re-entry and loot tracking. The DLL, manifest filename and internal ID remain `OCNFarmer` so existing settings continue to work. Commands are now `/ocbchest`, `/ocbstart` and `/ocbstop`; update existing macros accordingly.
 
 ## Install from the catalogue
 
@@ -75,4 +75,4 @@ English-client North scans, UI language switching and exit/re-entry have been te
 
 Logs: `%APPDATA%\XIVLauncher\dalamud.log`, filter `[OCNFarmer]`. Saved loot records: `treasure-records.json` under Dalamud's OCNFarmer configuration directory. Diagnostic logs retain their established wording.
 
-Omni verification and unattended Server酱 notifications are removed. No personal configuration, keys, character data or game logs are included. OmenTools, GuerrillaNtp and TinyPinyin DLLs are no longer required. Only the plugin DLL is shipped; Dalamud supplies the host assemblies. The previous interop license notice is retained. File checksums are in `SHA256SUMS.txt`.
+The package contains the plugin DLL, icon, instructions and checksums. No personal configuration, keys, character data or game logs are included. No additional library DLLs are required; Dalamud supplies the host assemblies. Third-party license notices are retained. File checksums are in `SHA256SUMS.txt`.

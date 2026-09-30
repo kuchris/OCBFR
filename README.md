@@ -1,6 +1,6 @@
 # OCBFR
 
-Source repository for the Global Occult Crescent treasure farmer maintained by kuchris. Current version: **2.3.0.13**, Dalamud API **15**.
+OCBFR is an Occult Crescent automation plugin for Dalamud by kuchris. It scans coffers, runs treasure routes, exchanges currency, handles re-entry and keeps a searchable loot history. Its interface supports Traditional Chinese and English. Current version: **2.3.0.14**, Dalamud API **15**.
 
 The source is publicly available here. No project license has been added. The OmenTools notice for the previous interop implementation is retained under `notices/`. Installation ZIPs are available in this repository's [Releases](https://github.com/kuchris/OCBFR/releases). The [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr) provides the installer subscription.
 
@@ -20,7 +20,7 @@ The build script finds the newest installed Dalamud Hooks directory. To select r
 dotnet build .\src\OCBFR.csproj -c Release -p:DalamudLibPath="<Hooks directory>"
 ```
 
-`Package.ps1` creates `dist/OCBFR-2.3.0.13.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
+`Package.ps1` creates `dist/OCBFR-2.3.0.14.zip` with the plugin DLL and manifest at the ZIP root, ready for the Dalamud installer. It includes only runtime files, installation documents and checksums; no source, PDBs, personal configuration or game logs.
 
 ## Layout
 
@@ -62,3 +62,7 @@ The catalogue points installation and update links to releases in `kuchris/OCBFR
 English-client North workflows have been tested in-game. South, Japanese and Chinese-patched clients, the real full-coffer threshold and some ancillary features still need the checks listed in `docs/TEST-STATUS.md`. Offline success does not prove those live behaviors.
 
 [Support on Ko-fi](https://ko-fi.com/kuchris).
+
+## Credits
+
+Gugu contributed to the South Horn workflow and currency purchasing. Third-party notices are retained under `notices/`.
