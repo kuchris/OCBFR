@@ -2,6 +2,10 @@
 
 OCBFR is an Occult Crescent automation plugin for Dalamud by kuchris. It scans coffers, runs treasure routes, exchanges currency, handles re-entry and keeps a searchable loot history. Its interface supports Traditional Chinese and English. Current version: **2.3.0.14**, Dalamud API **15**.
 
+<p align="center">
+  <img src="images/icon.png" alt="OCBFR crescent moon and treasure chest" width="240">
+</p>
+
 The source is publicly available here. No project license has been added. The OmenTools notice for the previous interop implementation is retained under `notices/`. Installation ZIPs are available in this repository's [Releases](https://github.com/kuchris/OCBFR/releases). The [DalamudPlugins catalogue](https://github.com/kuchris/DalamudPlugins#ocbfr) provides the installer subscription.
 
 ## Build
