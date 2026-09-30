@@ -1,6 +1,6 @@
 # OCBFR Global — 安裝及使用
 
-OCBFR 是由 kuchris 開發及維護的新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄，適用於 Dalamud API 15。版本 2.3.0.14（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，保留現有設定。指令改為 `/ocbchest`、`/ocbstart`、`/ocbstop`，如有舊巨集請同步更新。English instructions are included in `README.en.md`.
+OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄，適用於 Dalamud API 15。版本 2.3.0.14（Global 20260930）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，保留現有設定。指令改為 `/ocbchest`、`/ocbstart`、`/ocbstop`，如有舊巨集請同步更新。English instructions are included in `README.en.md`.
 
 本插件提供繁體中文／English 介面，使用時需要另行安裝 Daily Routines、vnavmesh 及 BOCCHI。
 

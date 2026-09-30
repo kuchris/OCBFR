@@ -1,6 +1,6 @@
 # OCBFR Global 2.3.0.14
 
-OCBFR is an Occult Crescent automation plugin for Dalamud API 15 by kuchris, with coffer scanning, treasure routes, currency purchases, re-entry and loot tracking. The DLL, manifest filename and internal ID remain `OCNFarmer` so existing settings continue to work. Commands are now `/ocbchest`, `/ocbstart` and `/ocbstop`; update existing macros accordingly.
+OCBFR is an Occult Crescent automation plugin for Dalamud API 15, with coffer scanning, treasure routes, currency purchases, re-entry and loot tracking. The DLL, manifest filename and internal ID remain `OCNFarmer` so existing settings continue to work. Commands are now `/ocbchest`, `/ocbstart` and `/ocbstop`; update existing macros accordingly.
 
 ## Install from the catalogue
 
