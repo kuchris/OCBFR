@@ -18,6 +18,7 @@ public sealed partial class Plugin
         private bool rareOnly;
         private bool showTotals = true;
         private string search = string.Empty;
+        private bool resetFailed;
 
         public TreasureHistoryWindow(Plugin plugin)
             : base(plugin, "寻宝战利品###OCNFarmerTreasureHistory", "TreasureHistory", new Vector2(900f, 640f), new Vector2(650f, 460f))
@@ -46,6 +47,30 @@ public sealed partial class Plugin
             using var theme = new MonochromeUiScope();
             ImGui.TextColored(in UiWhite, "OCBFR  /  " + UiText.Render("寻宝记录"));
             ImGui.TextDisabled(UiText.Render("浏览已完成的寻宝与获得物品"));
+            ImGui.Spacing();
+            ImGui.TextColored(in UiWhite, UiText.Render("本次已开宝箱（铜＋银）：") + plugin.cofferOpeningCounter.Count);
+            ImGui.TextDisabled(UiText.Render("每次开始运行后从零计数，停止后保留结果。"));
+            if (ImGui.Button(UiText.Label("重置统计###OCBFRResetStatistics")))
+            {
+                resetFailed = false;
+                ImGui.OpenPopup("OCBFRResetStatisticsConfirm");
+            }
+            if (ImGui.BeginPopup("OCBFRResetStatisticsConfirm"))
+            {
+                try
+                {
+                    ImGui.TextWrapped(UiText.Render("清空全部寻宝记录、物品统计和本次开箱次数？"));
+                    if (ImGui.Button(UiText.Label("确认重置###OCBFRConfirmResetStatistics")))
+                    {
+                        if (plugin.ResetTreasureStatistics()) ImGui.CloseCurrentPopup();
+                        else resetFailed = true;
+                    }
+                    ImGui.SameLine();
+                    if (ImGui.Button(UiText.Label("取消###OCBFRCancelResetStatistics"))) ImGui.CloseCurrentPopup();
+                    if (resetFailed) ImGui.TextWrapped(UiText.Render("重置失败，记录已保留。请检查日志。"));
+                }
+                finally { ImGui.EndPopup(); }
+            }
             ImGui.Spacing();
             DrawPeriodFilters();
             ImGui.Spacing();

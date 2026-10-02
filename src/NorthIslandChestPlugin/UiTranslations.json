@@ -1,4 +1,11 @@
 [
+  { "Source": "本次已开宝箱（铜＋银）：", "TraditionalChinese": "本次已開寶箱（銅＋銀）：", "English": "Coffers opened this run (bronze + silver): " },
+  { "Source": "每次开始运行后从零计数，停止后保留结果。", "TraditionalChinese": "每次開始運行後從零計數，停止後保留結果。", "English": "Counts from zero on each Start; keeps the result when stopped." },
+  { "Source": "重置统计", "TraditionalChinese": "重設統計", "English": "Reset statistics" },
+  { "Source": "清空全部寻宝记录、物品统计和本次开箱次数？", "TraditionalChinese": "清空全部尋寶記錄、物品統計及本次開箱次數？", "English": "Clear all saved treasure history, loot totals and the current coffer count?" },
+  { "Source": "确认重置", "TraditionalChinese": "確認重設", "English": "Confirm reset" },
+  { "Source": "取消", "TraditionalChinese": "取消", "English": "Cancel" },
+  { "Source": "重置失败，记录已保留。请检查日志。", "TraditionalChinese": "重設失敗，記錄已保留。請檢查日誌。", "English": "Reset failed; records were preserved. Check the log." },
   {
     "Source": "寻宝战利品",
     "TraditionalChinese": "尋寶戰利品",

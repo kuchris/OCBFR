@@ -913,6 +913,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			ApplySelectedProfile();
 			uint territoryType = clientState.TerritoryType;
 			running = true;
+			cofferOpeningCounter.Reset();
 			log.Information("插件已开始运行", Array.Empty<object>());
 			silver = (copper = -1);
 			initialScan = true;
@@ -1078,30 +1079,35 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 				Loot = new Dictionary<string, int>(treasureLoot, StringComparer.Ordinal)
 			};
 			treasureRecords.Insert(0, item);
-			string directoryName = Path.GetDirectoryName(treasureRecordPath);
-			if (!string.IsNullOrEmpty(directoryName))
-			{
-				Directory.CreateDirectory(directoryName);
-			}
-			string text = treasureRecordPath + ".tmp";
-			string contents = JsonSerializer.Serialize(treasureRecords, new JsonSerializerOptions
-			{
-				WriteIndented = true
-			});
-			File.WriteAllText(text, contents, Encoding.UTF8);
-			if (File.Exists(treasureRecordPath))
-			{
-				File.Replace(text, treasureRecordPath, null);
-			}
-			else
-			{
-				File.Move(text, treasureRecordPath);
-			}
+			PersistTreasureRecords(treasureRecords);
 			log.Information("寻宝完成，战利品已记录", Array.Empty<object>());
 		}
 		catch (Exception ex)
 		{
 			log.Error(ex, "保存寻宝战利品记录失败", Array.Empty<object>());
+		}
+	}
+
+	private void PersistTreasureRecords(List<TreasureRecord> records)
+	{
+		string directoryName = Path.GetDirectoryName(treasureRecordPath);
+		if (!string.IsNullOrEmpty(directoryName))
+		{
+			Directory.CreateDirectory(directoryName);
+		}
+		string text = treasureRecordPath + ".tmp";
+		string contents = JsonSerializer.Serialize(records, new JsonSerializerOptions
+		{
+			WriteIndented = true
+		});
+		File.WriteAllText(text, contents, Encoding.UTF8);
+		if (File.Exists(treasureRecordPath))
+		{
+			File.Replace(text, treasureRecordPath, null);
+		}
+		else
+		{
+			File.Move(text, treasureRecordPath);
 		}
 	}
 
@@ -1120,6 +1126,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			return;
 		}
+		UpdateOpenedCofferCount();
 		if (currencyBuyer.IsBusy)
 		{
 			currencyBuyer.Update();

@@ -35,7 +35,7 @@ public sealed partial class Plugin
         ImGui.Spacing();
         if (!config.SimplifiedUi)
         {
-            float reserved = ImGui.GetFrameHeightWithSpacing() + 30f * ImGuiHelpers.GlobalScale;
+            float reserved = ImGui.GetFrameHeightWithSpacing() + ImGui.GetTextLineHeightWithSpacing() + 30f * ImGuiHelpers.GlobalScale;
             if (!string.IsNullOrEmpty(treasureError)) reserved += 42f * ImGuiHelpers.GlobalScale;
             ImGui.BeginChild("BWorkspace", new Vector2(0f, -reserved), false, ImGuiWindowFlags.None);
             try { DrawDashboardWorkspace(); }
@@ -174,6 +174,7 @@ public sealed partial class Plugin
 
     private void DrawDashboardActions()
     {
+        ImGui.TextDisabled(UiText.Render("本次已开宝箱（铜＋银）：") + cofferOpeningCounter.Count);
         ImGui.Separator();
         ImGui.Spacing();
         string primary = running ? "停止运行" : "开始运行";

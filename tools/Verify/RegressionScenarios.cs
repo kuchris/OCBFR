@@ -52,6 +52,66 @@ internal static class RegressionScenarios
         var languageProperty = ui.GetProperty("Language", BindingFlags.NonPublic | BindingFlags.Static)!;
         string Render(string value) => (string)ui.GetMethod("Render", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
         string Label(string value) => (string)ui.GetMethod("Label", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
+        int OpenedCount(Fixture f) => (int)f.Get("cofferOpeningCounter")!.GetType().GetProperty("Count", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(f.Get("cofferOpeningCounter"))!;
+        Test("live bronze and silver openings count once; loot and scans do not add openings", f => {
+            var bronze = f.AddCoffer(101, 1, true);
+            var silver = f.AddCoffer(102, 2, true);
+            var unrelated = f.AddCoffer(103, 3, false);
+            f.Call("UpdateOpenedCofferCount");
+            bronze(true); silver(true); unrelated(true);
+            f.Call("UpdateOpenedCofferCount");
+            f.Call("UpdateOpenedCofferCount");
+            f.Assert(OpenedCount(f) == 2, "wrong combined count or repeated frame counted twice");
+            f.Phase = "OuterReturn";
+            f.Call("CaptureTreasureLoot", "You obtain 16 Enlightenment gold obols.");
+            f.Call("CaptureTreasureLoot", "You obtain a test item.");
+            f.Chat("You sense the presence of 0 silver coffers and 0 bronze coffers in the area!");
+            f.Assert(OpenedCount(f) == 2, "loot quantity or scan counted as chest opening");
+        });
+        Test("already-open coffers and disappearance are not openings; reentry keeps the total", f => {
+            var old = f.AddCoffer(201, 1, true);
+            old(true);
+            f.Call("UpdateOpenedCofferCount");
+            f.Assert(OpenedCount(f) == 0, "already-open coffer counted at baseline");
+            var fresh = f.AddCoffer(202, 2, true);
+            f.Call("UpdateOpenedCofferCount"); fresh(true); f.Call("UpdateOpenedCofferCount");
+            f.WorldObjects.Clear(); f.Call("UpdateOpenedCofferCount");
+            f.Assert(OpenedCount(f) == 1, "despawn counted as opening");
+            f.Territory = 1278; f.Call("UpdateOpenedCofferCount");
+            f.Territory = 1346;
+            var next = f.AddCoffer(202, 2, true);
+            f.Call("UpdateOpenedCofferCount"); next(true); f.Call("UpdateOpenedCofferCount");
+            f.Assert(OpenedCount(f) == 2, "reentry cleared count or stale instance suppressed opening");
+        });
+        Test("stopped plugin preserves results; next accepted Start resets, rejected Start does not", f => {
+            var chest = f.AddCoffer(301, 1, true);
+            f.Call("UpdateOpenedCofferCount"); chest(true); f.Call("UpdateOpenedCofferCount");
+            f.Call("Start");
+            f.Assert(OpenedCount(f) == 1, "duplicate Start reset running statistics");
+            f.Set("running", false); f.Call("UpdateOpenedCofferCount");
+            f.Assert(OpenedCount(f) == 1, "stop lost result");
+            f.LoggedIn = false; f.Call("Start");
+            f.Assert(OpenedCount(f) == 1, "rejected Start lost result");
+            f.LoggedIn = true; f.Territory = 1278; f.Call("Start");
+            f.Assert(OpenedCount(f) == 0, "accepted Start failed to reset counter");
+        });
+        Test("statistics reset clears saved history and in-progress loot, and cannot recount open coffers", f => {
+            var chest = f.AddCoffer(401, 1, true);
+            f.Call("UpdateOpenedCofferCount"); chest(true); f.Call("UpdateOpenedCofferCount");
+            f.Loot["test item"] = 2; f.Call("SaveTreasureRecord");
+            f.Assert((bool)f.Call("ResetTreasureStatistics")!, "reset failed");
+            f.Assert(OpenedCount(f) == 0 && f.Records.Count == 0 && f.Loot.Count == 0, "statistics remain after reset");
+            f.Call("LoadTreasureRecords"); f.Call("UpdateOpenedCofferCount");
+            f.Assert(f.Records.Count == 0 && OpenedCount(f) == 0, "reset did not persist or re-counted opened coffer");
+            var next = f.AddCoffer(402, 2, true); f.Call("UpdateOpenedCofferCount"); next(true); f.Call("UpdateOpenedCofferCount");
+            f.Assert(OpenedCount(f) == 1, "reset stopped subsequent counting");
+        });
+        Test("failed reset preserves all visible statistics", f => {
+            f.Loot["test item"] = 2; f.Call("SaveTreasureRecord");
+            f.Set("treasureRecordPath", Path.Combine(f.RecordPath, "invalid.json"));
+            f.Assert(!(bool)f.Call("ResetTreasureStatistics")!, "reset unexpectedly succeeded with a file as the parent directory");
+            f.Assert(f.Records.Count == 1 && f.Loot.Count == 1, "failed write discarded statistics");
+        });
         Test("tower options and weather navigation are absent from the plugin", f => {
             f.Assert(!configType.GetProperties().Any(p => p.Name.Contains("Tower")), "tower options remain");
             f.Assert(!assembly.GetTypes().Any(t => t.Name.Contains("Tower")), "tower phase type remains");
@@ -382,6 +442,8 @@ internal static class RegressionScenarios
         public readonly List<string> Logs = new();
         public readonly List<string> Commands = new();
         public readonly HashSet<int> Flags = new();
+        public readonly List<object> WorldObjects = new();
+        readonly List<IntPtr> nativeCoffers = new();
         public uint Territory = 1346;
         public bool LoggedIn = true;
         public Vector3 Position = new(882, 258.5f, 882);
@@ -393,7 +455,7 @@ internal static class RegressionScenarios
             pluginType = assembly.GetType("NorthIslandChestPlugin.Plugin", true)!;
             plugin = RuntimeHelpers.GetUninitializedObject(pluginType);
             // Construct only small managed state objects, not the plugin ctor.
-            foreach (var name in new[] { "treasureMovementWait", "islandSwitchMovementWait", "treasurePlayerGuard", "treasureLoot", "treasureRecords", "config" }) {
+            foreach (var name in new[] { "treasureMovementWait", "islandSwitchMovementWait", "treasurePlayerGuard", "treasureLoot", "treasureRecords", "config", "cofferOpeningCounter", "countedCofferTypes" }) {
                 var field = pluginType.GetField(name, Members)!;
                 field.SetValue(plugin, Activator.CreateInstance(field.FieldType, true));
             }
@@ -410,7 +472,8 @@ internal static class RegressionScenarios
                 if (m.Name == "get_LocalPlayer") return player;
                 if (m.Name == "GetEnumerator") {
                     var element = Find("Dalamud.Game.ClientState.Objects.Types.IGameObject");
-                    var array = Array.CreateInstance(element, 0);
+                    var array = Array.CreateInstance(element, WorldObjects.Count);
+                    for (int i = 0; i < WorldObjects.Count; i++) array.SetValue(WorldObjects[i], i);
                     return m.ReturnType.IsGenericType
                         ? typeof(IEnumerable<>).MakeGenericType(element).GetMethod("GetEnumerator")!.Invoke(array, null)
                         : array.GetEnumerator();
@@ -436,6 +499,25 @@ internal static class RegressionScenarios
             });
         }
         public IDictionary Loot => (IDictionary)Get("treasureLoot")!;
+        public Action<bool> AddCoffer(ulong instanceId, uint baseId, bool eligible) {
+            var nativeType = Find("FFXIVClientStructs.FFXIV.Client.Game.Object.Treasure");
+            var field = nativeType.GetField("Flags")!;
+            int offset = field.GetCustomAttribute<System.Runtime.InteropServices.FieldOffsetAttribute>()!.Value;
+            var address = System.Runtime.InteropServices.Marshal.AllocHGlobal(nativeType.StructLayoutAttribute!.Size);
+            nativeCoffers.Add(address);
+            long opened = Convert.ToInt64(Enum.Parse(field.FieldType, "Opened"));
+            void SetOpened(bool value) {
+                byte flag = (byte)(value ? opened : 0);
+                System.Runtime.InteropServices.Marshal.WriteByte(address, offset, flag);
+            }
+            SetOpened(false);
+            WorldObjects.Add(Proxy(Find("Dalamud.Game.ClientState.Objects.Types.IGameObject"), (m, a) => m.Name switch {
+                "get_ObjectKind" => Enum.Parse(m.ReturnType, "Treasure"), "get_Address" => address,
+                "get_BaseId" => baseId, "get_GameObjectId" => instanceId, _ => Default(m.ReturnType)
+            }));
+            ((IDictionary)Get("countedCofferTypes")!)[baseId] = eligible;
+            return SetOpened;
+        }
         public IList Records => (IList)Get("treasureRecords")!;
         public string Phase { get => Get("treasurePhase")!.ToString()!; set => Set("treasurePhase", Enum.Parse(pluginType.GetField("treasurePhase", Members)!.FieldType, value)); }
         public void Set(string name, object? value) => pluginType.GetField(name, Members)!.SetValue(plugin, value);
@@ -474,6 +556,7 @@ internal static class RegressionScenarios
         }
         static object? Default(Type type) => type == typeof(void) ? null : type.IsValueType ? Activator.CreateInstance(type) : null;
         public void Cleanup() {
+            foreach (var address in nativeCoffers) System.Runtime.InteropServices.Marshal.FreeHGlobal(address);
             var directory = Path.GetFullPath(Path.GetDirectoryName(RecordPath)!);
             if (!directory.StartsWith(TestRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("Test cleanup path escaped its workspace output directory");

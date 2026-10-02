@@ -1,6 +1,6 @@
 # Validation
 
-Current release: **2.3.0.15**, built against Dalamud **15.0.3.6** on 2026-09-30. Versions 2.3.0.13–2.3.0.15 change commands, product descriptions and packaging; gameplay is unchanged from 2.3.0.12.
+Current local build: **2.3.0.16**, built against Dalamud **15.0.3.6** on 2026-10-02. Adds a combined bronze/silver coffer opening count and statistics reset. The earlier in-game results below predate these additions.
 
 ## Checked in-game
 
@@ -16,12 +16,17 @@ Current release: **2.3.0.15**, built against Dalamud **15.0.3.6** on 2026-09-30.
 
 ## Offline verification
 
-`tools/Verify.ps1` prepares managed methods and runs state transitions with fake Dalamud services. The latest build passed **73 checks** and prepared **595 methods** without failures. Coverage includes scan sequencing, localized messages, thresholds, returns, history filtering, re-entry, settings migration and shop packet layouts. No OmenTools, GuerrillaNtp or TinyPinyin assembly references remain.
+`tools/Verify.ps1` prepares managed methods and runs state transitions with fake Dalamud services. The latest build passed **78 checks** and prepared **606 methods** without failures. Coverage includes scan sequencing, localized messages, thresholds, returns, history filtering, re-entry, settings migration and shop packet layouts. No OmenTools, GuerrillaNtp or TinyPinyin assembly references remain.
+
+New checks use simulated treasure objects with native-layout flags to exercise the actual coffer polling path: bronze and silver openings combine, repeated frames and loot messages do not add counts, already-open coffers and despawns are ignored, re-entry keeps the total, accepted Start resets it, and saved statistics reset persists. A failed reset preserves the visible history. Traditional Chinese / English UI audit passed with no issues.
+
+The opening counter observes bronze/silver coffer instances changing from closed to opened while running in the selected island. It starts at zero on each accepted Start, retains the result while stopped, and also resets when statistics are cleared. Reset clears all saved loot history and pending loot after an in-window confirmation. Openings outside the observation period, including a complete opening/despawn between framework updates, cannot be recovered from loot messages.
 
 These checks do not execute native game actions.
 
 ## Pending in-game checks
 
+- Bronze/silver opening counts and statistics reset, including the new controls in both UI languages. No in-game verification of these additions has been performed yet.
 - South Horn workflows.
 - Japanese and Chinese-patched Global clients. Message formats have offline coverage.
 - Starting a route from real silver ≥8 / bronze ≥30 counts; Debug force-full is not proof of the real threshold.
