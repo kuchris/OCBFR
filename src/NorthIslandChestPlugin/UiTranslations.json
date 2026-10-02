@@ -1,4 +1,7 @@
 [
+  { "Source": "传送超时，等待角色可动后重试...", "TraditionalChinese": "傳送超時，等待角色可動後重試...", "English": "Teleport timed out; waiting until ready to retry..." },
+  { "Source": "小水晶传送失败，正在重试...", "TraditionalChinese": "小水晶傳送失敗，正在重試...", "English": "Shard teleport failed; retrying..." },
+  { "Source": "流程无进展，准备退岛重进...", "TraditionalChinese": "流程沒有進展，準備退島重進...", "English": "No workflow progress; preparing to leave and re-enter..." },
   { "Source": "本次已开宝箱（铜＋银）：", "TraditionalChinese": "本次已開寶箱（銅＋銀）：", "English": "Coffers opened this run (bronze + silver): " },
   { "Source": "每次开始运行后从零计数，停止后保留结果。", "TraditionalChinese": "每次開始運行後從零計數，停止後保留結果。", "English": "Counts from zero on each Start; keeps the result when stopped." },
   { "Source": "重置统计", "TraditionalChinese": "重設統計", "English": "Reset statistics" },

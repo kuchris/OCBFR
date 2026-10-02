@@ -53,6 +53,87 @@ internal static class RegressionScenarios
         string Render(string value) => (string)ui.GetMethod("Render", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
         string Label(string value) => (string)ui.GetMethod("Label", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
         int OpenedCount(Fixture f) => (int)f.Get("cofferOpeningCounter")!.GetType().GetProperty("Count", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(f.Get("cofferOpeningCounter"))!;
+        Test("failed shard teleport retries without stopping the workflow", f => {
+            f.Set("innerLeg", true); f.Set("currentCrystal", "3"); f.Set("shardTeleportAttempts", 1); f.Phase = "FirstWaitPlayers";
+            var guard = f.Get("treasurePlayerGuard")!;
+            guard.GetType().GetMethod("Begin")!.Invoke(guard, new object[] { f.Position, DateTime.UtcNow.AddMinutes(-4), true });
+            f.Call("CheckCrystalPlayers");
+            f.Assert((bool)f.Get("running")! && f.Phase == "FirstWaitPlayers" && f.Commands.Contains("/pdr ptp 3"), "teleport timeout stopped instead of retrying");
+            f.Call("CheckCrystalPlayers");
+            f.Assert(f.Commands.Count(c => c == "/pdr ptp 3") == 1, "retry command repeated every frame");
+        });
+        Test("expired crystal navigation restarts the cycle instead of leaving the character idle", f => {
+            f.Position += new Vector3(100, 0, 0); f.Phase = "FirstCrystal";
+            f.Set("crystalMoveDeadline", DateTime.UtcNow.AddMinutes(-1));
+            f.Call("UpdateCrystalMove", true);
+            f.Assert((bool)f.Get("running")! && f.Phase == "LeaveDuty", "navigation timeout disabled automatic recovery");
+        });
+        Test("three failed shard attempts recover once, retain loot and opening counts, and clear old timers", f => {
+            var chest = f.AddCoffer(501, 1, true);
+            f.Call("UpdateOpenedCofferCount"); chest(true); f.Call("UpdateOpenedCofferCount");
+            f.Loot["test item"] = 2;
+            f.Set("innerLeg", true); f.Set("currentCrystal", "3"); f.Set("shardTeleportAttempts", 3); f.Phase = "FirstWaitPlayers";
+            f.Set("pendingScanAt", DateTime.UtcNow); f.Set("pendingBocchiAt", DateTime.UtcNow);
+            var guard = f.Get("treasurePlayerGuard")!;
+            guard.GetType().GetMethod("Begin")!.Invoke(guard, new object[] { f.Position, DateTime.UtcNow.AddMinutes(-4), true });
+            f.Call("CheckCrystalPlayers");
+            f.Assert((bool)f.Get("running")! && f.Phase == "LeaveDuty", "exhausted teleport did not enter recovery");
+            f.Assert(f.Records.Count == 1 && OpenedCount(f) == 1, "recovery lost collected loot or reset run count");
+            f.Assert((DateTime)f.Get("pendingScanAt")! == DateTime.MinValue && (DateTime)f.Get("pendingBocchiAt")! == DateTime.MinValue, "recovery kept delayed work");
+            f.Call("RecoverIslandWorkflow", "repeat");
+            f.Assert(f.Records.Count == 1 && f.Commands.Count(c => c == "/pdr ptreasure abort") == 1, "recovery duplicated each frame");
+        });
+        Test("teleport retry waits for combat and casting to finish", f => {
+            f.Set("innerLeg", true); f.Set("currentCrystal", "3"); f.Set("shardTeleportAttempts", 1); f.Phase = "FirstWaitPlayers";
+            var guard = f.Get("treasurePlayerGuard")!;
+            guard.GetType().GetMethod("Begin")!.Invoke(guard, new object[] { f.Position, DateTime.UtcNow.AddMinutes(-4), true });
+            f.Flags.Add(26); f.Call("CheckCrystalPlayers");
+            f.Assert((bool)f.Get("running")! && !f.Commands.Contains("/pdr ptp 3") && (int)f.Get("shardTeleportAttempts")! == 1, "retried in combat");
+            f.Flags.Clear(); f.Flags.Add(27); f.Call("CheckCrystalPlayers");
+            f.Assert(!f.Commands.Contains("/pdr ptp 3"), "retried while casting");
+            f.Flags.Clear(); f.Call("CheckCrystalPlayers");
+            f.Assert(f.Commands.Count(c => c == "/pdr ptp 3") == 1 && (int)f.Get("shardTeleportAttempts")! == 2, "retry did not resume when ready");
+        });
+        Test("30-minute stationary watchdog recovers while ordinary same-map movement does not", f => {
+            var now = DateTime.UtcNow;
+            f.Phase = "InnerReturn"; f.Position += new Vector3(1000, 0, 0);
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now)!, "initial observation triggered recovery");
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(29))!, "watchdog triggered early");
+            f.Position += new Vector3(5, 0, 0);
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(31))!, "same map with movement falsely recovered");
+            f.Assert((bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(61))! && f.Phase == "LeaveDuty", "continuous stationary workflow did not recover");
+        });
+        Test("phase changes and openings reset the no-progress timer", f => {
+            var now = DateTime.UtcNow;
+            f.Phase = "FirstWaitPlayers"; f.Call("UpdateRecoveryWatchdog", now);
+            f.Phase = "InnerReturn";
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(31))!, "new phase falsely recovered");
+            var chest = f.AddCoffer(601, 1, true); f.Call("UpdateOpenedCofferCount"); chest(true); f.Call("UpdateOpenedCofferCount");
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(62))!, "new opening falsely recovered");
+        });
+        Test("watchdog cannot restart stopped work or interrupt combat and loading", f => {
+            var now = DateTime.UtcNow;
+            f.Phase = "FirstWaitPlayers"; f.Call("UpdateRecoveryWatchdog", now);
+            f.Flags.Add(26);
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(31))! && f.Phase == "FirstWaitPlayers", "recovered in combat");
+            f.Flags.Clear(); f.Call("UpdateRecoveryWatchdog", now.AddMinutes(32)); f.Flags.Add(45);
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(63))!, "recovered during loading");
+            f.Flags.Clear(); f.Set("running", false);
+            f.Assert(!(bool)f.Call("UpdateRecoveryWatchdog", now.AddMinutes(94))! && !(bool)f.Get("running")!, "watchdog restarted stopped plugin");
+        });
+        Test("framework watchdog completes the leave and reentry command sequence", f => {
+            f.Phase = "FirstWaitPlayers";
+            f.Call("UpdateRecoveryWatchdog", DateTime.UtcNow.AddMinutes(-31));
+            f.Call("OnUpdate", f.Get("framework"));
+            f.Assert(f.Phase == "LeaveDuty" && (bool)f.Get("running")!, "framework did not run watchdog before the waiting phase");
+            var wait = f.Get("treasureMovementWait")!;
+            wait.GetType().GetMethod("Begin")!.Invoke(wait, new object[] { DateTime.UtcNow.AddSeconds(-2), true, f.Territory, false });
+            f.Call("UpdateTreasureProcedure");
+            f.Assert(f.Commands.Contains("/pdr leaveduty") && f.Phase == "Reentry", "recovery did not send leave command");
+            f.Set("observedTerritory", f.Territory); f.Territory = 1278;
+            f.Call("OnTerritoryChanged", f.Territory); f.Call("OnUpdate", f.Get("framework"));
+            f.Assert(f.Commands.Contains("/pdrfe ocn") && (bool)f.Get("waitingForEntry")! && (bool)f.Get("running")!, "recovery did not request fresh entry after leaving");
+        });
         Test("live bronze and silver openings count once; loot and scans do not add openings", f => {
             var bronze = f.AddCoffer(101, 1, true);
             var silver = f.AddCoffer(102, 2, true);
@@ -455,7 +536,7 @@ internal static class RegressionScenarios
             pluginType = assembly.GetType("NorthIslandChestPlugin.Plugin", true)!;
             plugin = RuntimeHelpers.GetUninitializedObject(pluginType);
             // Construct only small managed state objects, not the plugin ctor.
-            foreach (var name in new[] { "treasureMovementWait", "islandSwitchMovementWait", "treasurePlayerGuard", "treasureLoot", "treasureRecords", "config", "cofferOpeningCounter", "countedCofferTypes" }) {
+            foreach (var name in new[] { "treasureMovementWait", "islandSwitchMovementWait", "treasurePlayerGuard", "treasureLoot", "treasureRecords", "config", "cofferOpeningCounter", "countedCofferTypes", "workflowProgressWatchdog" }) {
                 var field = pluginType.GetField(name, Members)!;
                 field.SetValue(plugin, Activator.CreateInstance(field.FieldType, true));
             }

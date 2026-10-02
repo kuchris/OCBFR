@@ -2,7 +2,7 @@
   "Author": "kuchris",
   "Name": "OCBFR",
   "InternalName": "OCNFarmer",
-  "AssemblyVersion": "2.3.0.16",
+  "AssemblyVersion": "2.3.0.17",
   "Description": "OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄。支援繁體中文／English 介面。需要 Daily Routines、vnavmesh 與 BOCCHI。\n\nOCBFR automates Occult Crescent coffer scanning, treasure routes, currency purchases and re-entry, with loot tracking and a Traditional Chinese / English interface. Requires Daily Routines, vnavmesh and BOCCHI.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/kuchris/OCBFR",
@@ -21,6 +21,6 @@
   "LoadPriority": 0,
   "IconUrl": "https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/plugins/OCNFarmer/icon.png",
   "Punchline": "新月島尋寶自動化與戰利品記錄 / Occult Crescent treasure automation and loot tracking.",
-  "Changelog": "Global 2.3.0.16：統計頁新增重設按鈕；每次開始運行後合併計算已開銅、銀寶箱，停止後保留次數。Added statistics reset and a combined bronze/silver opening count for each run, retained when stopped.",
+  "Changelog": "Global 2.3.0.17：小水晶傳送失敗最多嘗試三次，仍失敗或導航超時則退島重入；連續三十分鐘沒有移動、換階段或開箱時自動恢復，戰鬥及載入期間不觸發。Retries failed shard teleports up to three attempts, then leaves and re-enters. Navigation timeouts and 30 minutes without movement, phase changes or coffer openings also trigger recovery; combat and loading are excluded.",
   "AcceptsFeedback": true
 }

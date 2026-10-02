@@ -914,6 +914,8 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			uint territoryType = clientState.TerritoryType;
 			running = true;
 			cofferOpeningCounter.Reset();
+			workflowProgressWatchdog.Reset();
+			shardTeleportAttempts = 0;
 			log.Information("插件已开始运行", Array.Empty<object>());
 			silver = (copper = -1);
 			initialScan = true;
@@ -939,6 +941,8 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	public void Stop(string message = "已停止")
 	{
+		workflowProgressWatchdog.Reset();
+		shardTeleportAttempts = 0;
 		bool num = running || currencyBuyer.IsBusy;
 		islandRecoveryPending = false;
 		runGeneration++;
@@ -1127,6 +1131,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			return;
 		}
 		UpdateOpenedCofferCount();
+		if (UpdateRecoveryWatchdog(DateTime.UtcNow)) return;
 		if (currencyBuyer.IsBusy)
 		{
 			currencyBuyer.Update();
@@ -1807,7 +1812,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			if (!(DateTime.UtcNow < crystalMoveDeadline))
 			{
-				Stop("未到达小水晶区域，请检查导航功能");
+				RecoverIslandWorkflow("大水晶导航超时");
 			}
 		}
 		else
@@ -1930,6 +1935,8 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private void ResetIslandCycle()
 	{
+		workflowProgressWatchdog.Reset();
+		shardTeleportAttempts = 0;
 		runGeneration++;
 		freelancerJobChangeRequested = false;
 		if (currencyBuyer.IsBusy)
@@ -2658,6 +2665,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private void BeginShardTeleport(Vector3 origin, bool requiresMount)
 	{
+		shardTeleportAttempts = 1;
 		treasurePhase = (innerLeg ? TreasurePhase.FirstWaitPlayers : TreasurePhase.SecondWaitPlayers);
 		treasurePhaseAt = DateTime.MinValue;
 		treasurePlayerGuard.Begin(origin, DateTime.UtcNow, requiresMount);
@@ -2746,7 +2754,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			break;
 		}
 		case TreasureGuardAction.TeleportTimedOut:
-			Stop("小水晶传送失败，请检查传送功能");
+			RetryShardTeleportOrRecover();
 			break;
 		case TreasureGuardAction.MountTimedOut:
 			Stop("未能召唤随机坐骑，请检查坐骑可用性");
