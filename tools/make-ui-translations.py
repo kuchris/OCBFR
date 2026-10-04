@@ -4,6 +4,16 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parent.parent
 mapping = r'''
+传送超时，等待角色可动后重试...	Teleport timed out; waiting until ready to retry...
+小水晶传送失败，正在重试...	Shard teleport failed; retrying...
+流程无进展，准备退岛重进...	No workflow progress; preparing to leave and re-enter...
+本次已开宝箱（铜＋银）：	Coffers opened this run (bronze + silver):
+每次开始运行后从零计数，停止后保留结果。	Counts from zero on each Start; keeps the result when stopped.
+重置统计	Reset statistics
+清空全部寻宝记录、物品统计和本次开箱次数？	Clear all saved treasure history, loot totals and the current coffer count?
+确认重置	Confirm reset
+取消	Cancel
+重置失败，记录已保留。请检查日志。	Reset failed; records were preserved. Check the log.
 寻宝战利品	Treasure loot
 共 	Total: 
  次	runs
@@ -106,6 +116,7 @@ XSZ 跑刀为 XSZToolbox 测试码功能，如果你没有权限则不要选择�
       ④ 自动任务出发确认　⑤ 即刻退本　⑥ 特殊场景探索进入指令	      4) Automatic duty confirmation  5) Instant duty exit  6) Special exploration entry command
 一键开启上述模块	Enable required DR modules
 已发送一键开启 Daily Routines 模块指令	Sent commands to enable the required Daily Routines modules
+已发送一键关闭 Daily Routines 模块指令	Sent commands to disable the required Daily Routines modules
 直接开始寻宝流程（测试用）	Start treasure route now (test)
 Debug: 强制视为宝箱已满（测试完整流程）	Debug: Treat coffers as full (test complete loop)
 Debug: 不退本（只测内环+外环）	Debug: Stay in duty (test inner and outer rings)
@@ -218,8 +229,10 @@ for line in mapping.splitlines():
     english[source] = translation
 
 english[' 次'] = ' runs'
+english['本次已开宝箱（铜＋银）：'] = 'Coffers opened this run (bronze + silver): '
 english.update({
     '启用 DR 必要模块': 'Enable required DR modules',
+    '禁用 DR 必要模块': 'Disable required DR modules',
     '控制台': 'WORKSPACE', '总览': 'Overview', '自动购买': 'Purchases',
     '测试工具': 'Test tools', '完整界面': 'Full view', '简化界面': 'Compact view',
     '进入': 'Enter', '检测': 'Scan', '战斗': 'Combat', '寻宝': 'Treasure', '重进': 'Re-enter',

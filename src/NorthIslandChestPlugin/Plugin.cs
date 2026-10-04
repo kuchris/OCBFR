@@ -3650,6 +3650,17 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			Send("/pdr load FieldEntryCommand");
 			status = "已发送一键开启 Daily Routines 模块指令";
 		}
+		ImGui.SameLine(0f, 8f);
+		if (ImGui.Button(UiText.Label("禁用 DR 必要模块"), default(Vector2)))
+		{
+			Send("/pdr unload OccultCrescentHelper");
+			Send("/pdr unload BetterMKDSupportJobList");
+			Send("/pdr unload PhantomJobSwitchCommand");
+			Send("/pdr unload AutoCommenceDuty");
+			Send("/pdr unload InstantLeaveDuty");
+			Send("/pdr unload FieldEntryCommand");
+			status = "已发送一键关闭 Daily Routines 模块指令";
+		}
 	}
 
 	private void DrawBDebug()

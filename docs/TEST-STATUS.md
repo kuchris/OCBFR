@@ -1,6 +1,6 @@
 # Validation
 
-Current local build: **2.3.0.17**, built against Dalamud **15.0.3.6** on 2026-10-02. Adds recovery for failed shard teleports, crystal navigation timeouts and prolonged lack of workflow progress. The earlier in-game results below predate these additions and the 2.3.0.16 statistics changes.
+Current local build: **2.3.0.18**, built against Dalamud **15.0.3.6** on 2026-10-04. Adds a **Disable required DR modules** button beside Enable in the Traditional Chinese / English interface. It sends unload commands for the same six modules enabled by the existing button. Translation generation also retains the earlier statistics and recovery strings. The earlier in-game results below predate this addition, the 2.3.0.17 recovery changes and the 2.3.0.16 statistics changes.
 
 ## Checked in-game
 
@@ -30,6 +30,7 @@ These checks do not execute native game actions.
 
 ## Pending in-game checks
 
+- The adjacent Disable button in both UI languages, and unloading all six required Daily Routines modules. This addition has not been tested in-game.
 - Failed shard retry and leave/re-entry recovery, navigation recovery and the 30-minute fallback. These additions have only offline coverage.
 - Bronze/silver opening counts and statistics reset, including the new controls in both UI languages. No in-game verification of these additions has been performed yet.
 - South Horn workflows.
