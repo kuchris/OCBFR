@@ -240,11 +240,12 @@
   "没有符合筛选条件的寻宝记录": "沒有符合篩選條件的尋寶記錄",
   "记录会在寻宝流程完成后保存；未检测到物品的记录仍可在每次寻宝中查看。": "記錄會在尋寶流程完成後儲存；未偵測到物品的記錄仍可在每次尋寶中查看。",
   "战斗循环": "戰鬥循環",
-  "自动选用 RSR（BOCCHI）": "自動選用 RSR（BOCCHI）",
-  "战斗开始前自动让 BOCCHI 选用 RSR；确认成功后才启动战斗。需要已加载 BOCCHI 和 RSR。停止时由 BOCCHI 关闭 RSR，战斗循环选择保留为 RSR。": "戰鬥開始前自動讓 BOCCHI 選用 RSR；確認成功後才啟動戰鬥。需要已載入 BOCCHI 和 RSR。停止時由 BOCCHI 關閉 RSR，戰鬥循環選擇保留為 RSR。",
-  "等待 BOCCHI 选用 RSR...": "等待 BOCCHI 選用 RSR...",
-  "自动选用 RSR 需要已加载 BOCCHI 和 RSR，已停止": "自動選用 RSR 需要已載入 BOCCHI 和 RSR，已停止",
-  "BOCCHI 的 RSR 设置指令失败，已停止": "BOCCHI 的 RSR 設定指令失敗，已停止",
-  "BOCCHI 未确认选用 RSR，已停止": "BOCCHI 未確認選用 RSR，已停止",
+  "直接控制 RSR": "直接控制 RSR",
+  "由 OCBFR 直接控制 RSR：战斗时 Auto，扫描、寻宝、购买及停止时 Off。需要已加载 RSR。BOCCHI 继续负责原有流程和移动。": "由 OCBFR 直接控制 RSR：戰鬥時 Auto，掃描、尋寶、購買及停止時 Off。需要已載入 RSR。BOCCHI 繼續負責原有流程和移動。",
+  "直接控制 RSR 需要已加载 RSR，已停止": "直接控制 RSR 需要已載入 RSR，已停止",
+  "RSR 未确认启用，已停止": "RSR 未確認啟用，已停止",
+  "RSR 无法继续自动战斗，已停止": "RSR 無法繼續自動戰鬥，已停止",
+  "RSR 关闭未确认，正在重试；如仍在战斗，请手动输入 /rotation off。": "RSR 關閉未確認，正在重試；如仍在戰鬥，請手動輸入 /rotation off。",
+  "RSR 关闭失败，请手动输入 /rotation off。": "RSR 關閉失敗，請手動輸入 /rotation off。",
   "BOCCHI 启动指令失败，已停止": "BOCCHI 啟動指令失敗，已停止"
 }

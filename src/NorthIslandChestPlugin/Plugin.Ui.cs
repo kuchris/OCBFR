@@ -49,6 +49,8 @@ public sealed partial class Plugin
         }
         if (!string.IsNullOrEmpty(treasureError))
             ImGui.TextWrapped(UiText.Render("错误：") + UiText.Render(treasureError));
+        if (!string.IsNullOrEmpty(rsrControlWarning))
+            ImGui.TextWrapped(UiText.Render(rsrControlWarning));
         DrawDashboardActions();
     }
 

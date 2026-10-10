@@ -94,6 +94,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		// 舊設定檔若仍存中文名，載入時會因不在清單內而回退為預設值。
 		public string CombatJob { get; set; } = "Phantom White Mage";
 
+		// Preserve the 2.3.0.19 setting; it now opts into direct RSR control.
 		public bool AutoSelectRsr { get; set; }
 
 		public string DiscardPreset { get; set; } = "";
@@ -943,7 +944,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	public void Stop(string message = "已停止")
 	{
-		CancelBocchiCombatStart();
 		workflowProgressWatchdog.Reset();
 		shardTeleportAttempts = 0;
 		bool num = running || currencyBuyer.IsBusy;
@@ -962,6 +962,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			SendBocchiEnabled(false);
 		}
+		StopDirectRsrControl();
 		bocchiEnabled = false;
 		running = (currencyPurchaseMoveActive = (islandSwitchPending = (waitingForEntry = (entrySyncMessageSeen = (waitingForScan = (initialCurrencyCheckPending = false))))));
 		pendingScanAt = (pendingBocchiAt = (pendingReturnScanAt = (pendingCurrencyCheckAt = (pendingPurchaseAt = (nextAllowedScanAt = DateTime.MinValue)))));
@@ -1129,6 +1130,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		//       InvalidProgramException（兩次遊戲 crash 都來自這裡）。
 		// 欄位 autoLeaveAfterMinutes 與 islandEnteredAt 保留但不再使用。
 		CheckForLogout();
+		RetryDirectRsrStop();
 		if (!clientState.IsLoggedIn || !playerState.IsLoaded || objects.LocalPlayer == null)
 		{
 			return;
@@ -1190,7 +1192,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			}
 			if (!IsIsland())
 			{
-				CancelBocchiCombatStart();
+				StopDirectRsrControl();
 				if (bocchiEnabled)
 				{
 					SendBocchiEnabled(false);
@@ -1252,7 +1254,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 				pendingBocchiAt = DateTime.MinValue;
 				PrepareBocchiCombatStart();
 			}
-			AdvanceBocchiCombatStart();
+			RefreshDirectRsrControl();
 		}
 	}
 
@@ -1501,7 +1503,6 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		//IL_0336: Unknown result type (might be due to invalid IL or missing references)
 		//IL_033d: Invalid comparison between Unknown and I4
 		string textValue = ((IMutableChatMessage)message).Message.TextValue;
-		AcceptBocchiRsrSelection(textValue, ((IMutableChatMessage)message).Sender?.TextValue);
 		bool cofferCountsUpdated = false;
 		// [GLOBAL] 被動寶箱計數同步。
 		// 即使插件不在自己的掃描狀態（例如玩家手動、或由 BOCCHI 施放魔尋寶），
@@ -1935,7 +1936,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private void ResetIslandCycle()
 	{
-		CancelBocchiCombatStart();
+		StopDirectRsrControl();
 		workflowProgressWatchdog.Reset();
 		shardTeleportAttempts = 0;
 		runGeneration++;
@@ -2124,7 +2125,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			return false;
 		}
-		CancelBocchiCombatStart();
+		StopDirectRsrControl();
 		if (bocchiEnabled)
 		{
 			SendBocchiEnabled(false);
@@ -2152,7 +2153,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private void BeginCurrencyPurchasePreparation()
 	{
-		CancelBocchiCombatStart();
+		StopDirectRsrControl();
 		if (bocchiEnabled)
 		{
 			SendBocchiEnabled(false);
@@ -3566,14 +3567,14 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		ImGui.TableNextColumn();
 		ImGui.BeginDisabled(running || currencyBuyer.IsBusy);
 		bool autoSelectRsr = config.AutoSelectRsr;
-		if (ImGui.Checkbox(UiText.Label("自动选用 RSR（BOCCHI）"), ref autoSelectRsr))
+		if (ImGui.Checkbox(UiText.Label("直接控制 RSR"), ref autoSelectRsr))
 		{
 			config.AutoSelectRsr = autoSelectRsr;
 			config.Save();
 		}
 		ImGui.EndDisabled();
 		ImGui.SameLine(0f, 6f);
-		DrawInfoIcon("BAutoSelectRsrInfo", "战斗开始前自动让 BOCCHI 选用 RSR；确认成功后才启动战斗。需要已加载 BOCCHI 和 RSR。停止时由 BOCCHI 关闭 RSR，战斗循环选择保留为 RSR。");
+		DrawInfoIcon("BAutoSelectRsrInfo", "由 OCBFR 直接控制 RSR：战斗时 Auto，扫描、寻宝、购买及停止时 Off。需要已加载 RSR。BOCCHI 继续负责原有流程和移动。");
 		ImGui.TableNextRow((ImGuiTableRowFlags)0, ImGui.GetFrameHeight() + 8f);
 		ImGui.TableNextColumn();
 		ImGui.Text(UiText.Render("DR 自动丢弃预设"));

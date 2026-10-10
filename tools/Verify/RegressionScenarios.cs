@@ -53,9 +53,19 @@ internal static class RegressionScenarios
         string Render(string value) => (string)ui.GetMethod("Render", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
         string Label(string value) => (string)ui.GetMethod("Label", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, new object[] { value })!;
         int OpenedCount(Fixture f) => (int)f.Get("cofferOpeningCounter")!.GetType().GetProperty("Count", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(f.Get("cofferOpeningCounter"))!;
-        Test("existing combat selection is preserved when automatic RSR selection is off", f => {
-            f.Call("PrepareBocchiCombatStart");
-            f.Assert((bool)f.Get("bocchiEnabled")! && f.Commands.SequenceEqual(new[] { "/bocchiillegal on" }), "changed existing backend or failed to start legacy BOCCHI");
+        Test("direct RSR combat start works when BOCCHI never acknowledges an RSR config command", f => {
+            f.ModernBocchi = true; f.LegacyBocchiCommand = true; f.SetConfig("AutoSelectRsr", true);
+            f.Set("pendingBocchiAt", DateTime.UtcNow.AddSeconds(-1));
+            f.Call("OnUpdate", f.Get("framework"));
+            f.Assert((bool)f.Get("running")! && (bool)f.Get("bocchiEnabled")! && f.RsrActive && f.RsrCalls.SequenceEqual(new[] { 1 }),
+                "combat still depends on BOCCHI confirming its unsupported RSR setting; status=" + f.Get("status"));
+            f.Assert(f.Commands.Contains("/bocchiillegal on") && !f.Commands.Any(c => c.Contains("combat_autorotation")), "still configured BOCCHI's RSR backend");
+        });
+        Test("disabled direct RSR control preserves a manually active RSR", f => {
+            f.RsrActive = true;
+            f.Call("PrepareBocchiCombatStart"); f.Call("Stop", "test");
+            f.Assert(f.RsrCalls.Count == 0 && f.RsrActive, "modified RSR while direct control was off");
+            f.Assert(f.Commands.SequenceEqual(new[] { "/bocchiillegal on", "/bocchiillegal off" }), "changed existing legacy workflow");
         });
         Test("modern BOCCHI starts and stops through its subcommand", f => {
             f.ModernBocchi = true;
@@ -67,78 +77,92 @@ internal static class RegressionScenarios
             f.Call("PrepareBocchiCombatStart"); f.Call("Stop", "test");
             f.Assert(f.Commands.SequenceEqual(new[] { "/bocchiillegal on", "/bocchiillegal off" }), "treated legacy BOCCHI's root prefix as modern subcommand support");
         });
-        Test("automatic RSR selection waits for confirmation before combat starts", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
-            f.Set("pendingBocchiAt", DateTime.UtcNow.AddSeconds(-1));
-            f.Call("OnUpdate", f.Get("framework"));
-            f.Assert((bool)f.Get("awaitingRsrSelection")! && !(bool)f.Get("bocchiEnabled")!, "started combat before RSR selection was confirmed");
-            f.Assert(f.Commands.SequenceEqual(new[] { "/bocchi config set combat_autorotation RotationSolverReborn" }), "did not issue the supported BOCCHI config command");
-            f.Chat("Set automator_config.combat_autorotation = RotationSolverReborn", 56);
-            f.Call("OnUpdate", f.Get("framework"));
-            f.Assert((bool)f.Get("bocchiEnabled")! && !(bool)f.Get("awaitingRsrSelection")!, "confirmed RSR selection did not resume combat");
-            f.Assert(f.Commands.Last() == "/bocchi illegal on", "resumed through the wrong command");
-        });
-        Test("other messages cannot confirm automatic RSR selection", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
-            f.Call("PrepareBocchiCombatStart"); f.Call("PrepareBocchiCombatStart");
-            f.Chat("Set combat_autorotation = RotationSolverReborn", 10, "Another Player");
-            f.Chat("Set combat_autorotation = WrathCombo", 56);
-            f.Call("AdvanceBocchiCombatStart");
-            f.Assert(!(bool)f.Get("bocchiEnabled")! && f.Commands.Count == 1, "accepted unrelated chat or repeated the selection command");
-            f.Chat("[BOCCHI] Set combat_autorotation = RotationSolverReborn", 56);
-            f.Call("AdvanceBocchiCombatStart");
-            f.Assert((bool)f.Get("bocchiEnabled")!, "did not accept the unrooted config acknowledgement");
-        });
-        Test("RSR confirmation works with the user's configured Dalamud plugin chat channel", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
-            f.Call("PrepareBocchiCombatStart");
-            f.Chat("Set combat_autorotation = RotationSolverReborn", 1);
-            f.Call("AdvanceBocchiCombatStart");
-            f.Assert((bool)f.Get("bocchiEnabled")!, "ignored BOCCHI confirmation printed to Dalamud GeneralChatType=1");
-        });
-        Test("missing RSR stops before changing the BOCCHI backend", f => {
-            f.ModernBocchi = true; f.RsrAvailable = false; f.SetConfig("AutoSelectRsr", true);
-            f.Call("PrepareBocchiCombatStart");
-            f.Assert(!(bool)f.Get("running")! && f.Commands.Count == 0, "continued without a loaded RSR IPC provider");
-        });
-        Test("legacy BOCCHI cannot silently ignore automatic RSR selection", f => {
+        Test("direct RSR works without a modern BOCCHI config command", f => {
             f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart");
-            f.Assert(!(bool)f.Get("running")! && f.Commands.Count == 0, "sent unsupported config command or started another backend");
+            f.Assert(f.RsrActive && (bool)f.Get("bocchiEnabled")! && f.Commands.Single() == "/bocchiillegal on", "still required modern BOCCHI config support");
         });
-        Test("RSR selection dispatch failure stops the workflow", f => {
-            f.ModernBocchi = true; f.CommandDispatchSucceeds = false; f.SetConfig("AutoSelectRsr", true);
+        Test("missing RSR stops before starting BOCCHI", f => {
+            f.RsrAvailable = false; f.SetConfig("AutoSelectRsr", true);
             f.Call("PrepareBocchiCombatStart");
-            f.Assert(!(bool)f.Get("running")! && !(bool)f.Get("awaitingRsrSelection")!, "kept waiting after command dispatch failed");
+            f.Assert(!(bool)f.Get("running")! && f.Commands.Count == 0 && f.RsrCalls.Count == 0, "started workflow without RSR");
         });
-        Test("unconfirmed RSR selection times out without starting combat", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
-            f.Call("PrepareBocchiCombatStart"); f.Set("rsrSelectionDeadline", DateTime.UtcNow.AddSeconds(-1));
-            f.Call("AdvanceBocchiCombatStart");
-            f.Assert(!(bool)f.Get("running")! && !f.Commands.Contains("/bocchi illegal on"), "timed-out selection started combat");
+        Test("failed BOCCHI dispatch does not enable RSR", f => {
+            f.CommandDispatchSucceeds = false; f.SetConfig("AutoSelectRsr", true);
+            f.Call("PrepareBocchiCombatStart");
+            f.Assert(!(bool)f.Get("running")! && !f.RsrActive && f.RsrCalls.Count == 0, "enabled RSR without starting BOCCHI");
         });
-        Test("stopping cancels RSR selection even if confirmation arrives later", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
+        Test("RSR command fallback handles a failed IPC invocation", f => {
+            f.RotationCommandAvailable = true; f.RsrInvocationThrows = true; f.SetConfig("AutoSelectRsr", true);
             f.Call("PrepareBocchiCombatStart"); f.Call("Stop", "test");
-            f.Chat("Set combat_autorotation = RotationSolverReborn", 56); f.Call("AdvanceBocchiCombatStart");
-            f.Assert(!(bool)f.Get("awaitingRsrSelection")! && !f.Commands.Contains("/bocchi illegal on"), "late acknowledgement restarted stopped combat");
+            f.Assert(!f.RsrActive && f.Commands.Contains("/rotation auto") && f.Commands.Contains("/rotation off"), "direct command fallback did not control both modes");
+            f.Assert(!(bool)f.Get("rsrControlOwned")!, "retained ownership after successful off fallback");
         });
-        Test("treasure scan cancels pending RSR combat start", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
-            f.Call("PrepareBocchiCombatStart"); f.Call("RequestFreelancerScan", "test");
-            f.Chat("Set combat_autorotation = RotationSolverReborn", 56); f.Call("AdvanceBocchiCombatStart");
-            f.Assert((bool)f.Get("running")! && !(bool)f.Get("awaitingRsrSelection")! && !f.Commands.Contains("/bocchi illegal on"), "late selection started combat during a scan");
+        Test("RSR command fallback also works when its mode IPC is absent", f => {
+            f.RotationCommandAvailable = true; f.RsrAvailable = false; f.SetConfig("AutoSelectRsr", true);
+            f.Call("PrepareBocchiCombatStart");
+            f.Assert(f.RsrActive && (bool)f.Get("running")! && f.Commands.Contains("/rotation auto"), "did not use available RSR command");
         });
-        Test("currency purchase preparation cancels pending RSR combat start", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
-            f.Call("PrepareBocchiCombatStart"); f.Call("BeginCurrencyPurchasePreparation");
-            f.Chat("Set combat_autorotation = RotationSolverReborn", 1); f.Call("AdvanceBocchiCombatStart");
-            f.Assert((bool)f.Get("running")! && !(bool)f.Get("awaitingRsrSelection")! && !f.Commands.Contains("/bocchi illegal on"), "late selection started combat while purchasing");
+        Test("unconfirmed RSR activation stops BOCCHI and switches RSR off", f => {
+            f.RsrIgnoresAuto = true; f.SetConfig("AutoSelectRsr", true);
+            f.Call("PrepareBocchiCombatStart");
+            f.Assert(!(bool)f.Get("running")! && !(bool)f.Get("bocchiEnabled")! && !f.RsrActive, "claimed active combat despite an inactive RSR reply");
+            f.Assert(f.Commands.Last() == "/bocchiillegal off" && f.RsrCalls.SequenceEqual(new[] { 1, 0 }), "did not clean up partially started combat");
         });
-        Test("resetting the island cycle cancels pending RSR combat start", f => {
-            f.ModernBocchi = true; f.SetConfig("AutoSelectRsr", true);
-            f.Call("PrepareBocchiCombatStart"); f.Call("ResetIslandCycle");
-            f.Chat("Set combat_autorotation = RotationSolverReborn", 1); f.Call("AdvanceBocchiCombatStart");
-            f.Assert(!(bool)f.Get("awaitingRsrSelection")! && !f.Commands.Contains("/bocchi illegal on"), "old-cycle selection started combat after re-entry reset");
+        Test("stopping directly controlled RSR cannot be undone by a late BOCCHI message", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart"); f.Call("Stop", "test");
+            f.Chat("Set combat_autorotation = RotationSolverReborn", 1); f.Call("RefreshDirectRsrControl");
+            f.Assert(!f.RsrActive && !(bool)f.Get("rsrControlOwned")! && f.RsrCalls.SequenceEqual(new[] { 1, 0 }), "late chat restarted RSR");
+        });
+        Test("RSR shutdown uses ownership even if the saved option is later disabled", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart"); f.SetConfig("AutoSelectRsr", false);
+            f.Call("Stop", "test");
+            f.Assert(!f.RsrActive && f.RsrCalls.Last() == 0, "changed option prevented shutdown of our RSR session");
+        });
+        Test("treasure scanning turns directly controlled RSR off", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart");
+            f.Call("RequestFreelancerScan", "test"); f.Set("nextRsrCheckAt", DateTime.MinValue); f.Call("RefreshDirectRsrControl");
+            f.Assert((bool)f.Get("running")! && !f.RsrActive && f.RsrCalls.SequenceEqual(new[] { 1, 0 }), "RSR was active during Freelancer scanning");
+        });
+        Test("currency purchase preparation turns directly controlled RSR off", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart"); f.Call("BeginCurrencyPurchasePreparation");
+            f.Call("RefreshDirectRsrControl");
+            f.Assert((bool)f.Get("running")! && !f.RsrActive && f.RsrCalls.SequenceEqual(new[] { 1, 0 }), "RSR was active while preparing purchases");
+        });
+        Test("resetting the island cycle turns directly controlled RSR off", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart"); f.Call("ResetIslandCycle");
+            f.Call("RefreshDirectRsrControl");
+            f.Assert(!f.RsrActive && !(bool)f.Get("rsrControlOwned")! && f.RsrCalls.SequenceEqual(new[] { 1, 0 }), "old-cycle RSR ownership survived reset");
+        });
+        Test("RSR self-disable is recovered without sending Auto every frame", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart");
+            f.Set("nextRsrCheckAt", DateTime.MinValue); f.Call("RefreshDirectRsrControl");
+            f.Assert(f.RsrCalls.Count == 1, "sent Auto again while RSR was already active");
+            f.RsrActive = false; f.Set("nextRsrCheckAt", DateTime.MinValue); f.Call("RefreshDirectRsrControl"); f.Call("RefreshDirectRsrControl");
+            f.Assert(f.RsrActive && f.RsrCalls.SequenceEqual(new[] { 1, 1 }), "failed to re-enable RSR or retried every frame");
+            f.Call("Stop", "test"); f.Set("nextRsrCheckAt", DateTime.MinValue); f.Call("RefreshDirectRsrControl");
+            f.Assert(!f.RsrActive && f.RsrCalls.Last() == 0, "re-enabled RSR after stop");
+        });
+        Test("failed RSR shutdown retries after the workflow is stopped, then remains bounded", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart"); f.RsrOffThrows = true;
+            f.Call("Stop", "test");
+            for (int i = 0; i < 4; i++) { f.Set("nextRsrStopRetryAt", DateTime.MinValue); f.Call("OnUpdate", f.Get("framework")); }
+            f.Assert(!(bool)f.Get("running")! && f.RsrOffAttempts == 3 && f.RsrActive, "off retries were unbounded or restarted stopped work");
+            f.Assert(((string)f.Get("rsrControlWarning")!).Contains("/rotation off"), "failed shutdown was hidden");
+            f.RsrActive = false; f.Set("nextRsrStopRetryAt", DateTime.MinValue); f.Call("RetryDirectRsrStop");
+            f.Assert(!(bool)f.Get("rsrControlOwned")! && (string)f.Get("rsrControlWarning")! == "", "manual off did not clear failed shutdown ownership");
+        });
+        Test("a stopped workflow retries Off when a missing RSR IPC returns", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart");
+            f.RsrAvailable = false; f.Set("nextRsrCheckAt", DateTime.MinValue); f.Call("RefreshDirectRsrControl");
+            f.Assert(!(bool)f.Get("running")! && (bool)f.Get("rsrStopRequested")!, "continued despite losing RSR control");
+            f.RsrAvailable = true; f.Set("nextRsrStopRetryAt", DateTime.MinValue); f.Call("RetryDirectRsrStop");
+            f.Assert(!f.RsrActive && f.RsrCalls.SequenceEqual(new[] { 1, 0 }), "returning IPC restarted Auto instead of completing Off");
+        });
+        Test("unavailable player status does not replace a failed RSR Off operation", f => {
+            f.SetConfig("AutoSelectRsr", true); f.Call("PrepareBocchiCombatStart"); f.RsrOffThrows = true;
+            f.Call("Stop", "test"); f.RsrPlayerAvailable = false; f.LoggedIn = false;
+            f.Set("nextRsrStopRetryAt", DateTime.MinValue); f.Call("RetryDirectRsrStop");
+            f.Assert((bool)f.Get("rsrControlOwned")! && f.RsrOffAttempts == 2 && f.RsrActive, "unavailable-player false reply was mistaken for successful Off");
         });
         Test("failed shard teleport retries without stopping the workflow", f => {
             f.Set("innerLeg", true); f.Set("currentCrystal", "3"); f.Set("shardTeleportAttempts", 1); f.Phase = "FirstWaitPlayers";
@@ -609,6 +633,7 @@ internal static class RegressionScenarios
         readonly object plugin;
         public readonly List<string> Logs = new();
         public readonly List<string> Commands = new();
+        public readonly List<int> RsrCalls = new();
         public readonly HashSet<int> Flags = new();
         public readonly List<object> WorldObjects = new();
         readonly List<IntPtr> nativeCoffers = new();
@@ -617,6 +642,14 @@ internal static class RegressionScenarios
         public bool ModernBocchi;
         public bool LegacyBocchiCommand;
         public bool RsrAvailable = true;
+        public bool RsrStatusAvailable = true;
+        public bool RsrActive;
+        public bool RsrPlayerAvailable = true;
+        public bool RsrInvocationThrows;
+        public bool RsrOffThrows;
+        public bool RsrIgnoresAuto;
+        public bool RotationCommandAvailable;
+        public int RsrOffAttempts;
         public bool CommandDispatchSucceeds = true;
         public Vector3 Position = new(882, 258.5f, 882);
         static readonly string TestRoot = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "artifacts", "regression-tmp"));
@@ -662,18 +695,38 @@ internal static class RegressionScenarios
             Service("playerState", (m, a) => m.Name == "get_IsLoaded" ? true : Default(m.ReturnType));
             Service("framework", (m, a) => Default(m.ReturnType));
             Service("commands", (m, a) => {
-                if (m.Name == "ProcessCommand") { Commands.Add((string)a![0]!); return CommandDispatchSucceeds; }
-                if (m.Name == "get_Commands" && ModernBocchi) {
+                if (m.Name == "ProcessCommand") {
+                    string command = (string)a![0]!;
+                    Commands.Add(command);
+                    if (CommandDispatchSucceeds && command.StartsWith("/rotation ")) RsrActive = command == "/rotation auto";
+                    return CommandDispatchSucceeds;
+                }
+                if (m.Name == "get_Commands" && (ModernBocchi || RotationCommandAvailable)) {
                     var map = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(m.ReturnType.GetGenericArguments()))!;
-                    map.Add("/bocchi", null);
+                    if (ModernBocchi) map.Add("/bocchi", null);
                     if (LegacyBocchiCommand) map.Add("/bocchiillegal", null);
+                    if (RotationCommandAvailable) map.Add("/rotation", null);
                     return Activator.CreateInstance(m.ReturnType, new object[] { map });
                 }
                 return Default(m.ReturnType);
             });
             Service("pluginInterface", (m, a) => m.Name == "GetIpcSubscriber"
-                ? Proxy(m.ReturnType, (gate, _) => gate.Name == "get_HasAction" ? RsrAvailable : Default(gate.ReturnType))
-                : Default(m.ReturnType));
+                ? Proxy(m.ReturnType, (gate, values) => {
+                    string name = (string)a![0]!;
+                    if (name == "RotationSolverReborn.AutorotationActive") {
+                        if (gate.Name == "get_HasFunction") return RsrStatusAvailable;
+                        if (gate.Name == "InvokeFunc") return RsrActive && RsrPlayerAvailable;
+                    }
+                    if (gate.Name == "get_HasAction") return RsrAvailable;
+                    if (gate.Name == "InvokeAction") {
+                        int mode = Convert.ToInt32(values![0]);
+                        if (mode == 0) RsrOffAttempts++;
+                        if (RsrInvocationThrows || (mode == 0 && RsrOffThrows)) throw new InvalidOperationException("simulated RSR IPC failure");
+                        RsrCalls.Add(mode);
+                        if (mode != 1 || !RsrIgnoresAuto) RsrActive = mode != 0;
+                    }
+                    return Default(gate.ReturnType);
+                }) : Default(m.ReturnType));
             Service("log", (m, a) => {
                 foreach (var value in a ?? Array.Empty<object?>()) {
                     if (value is string s) Logs.Add(s);

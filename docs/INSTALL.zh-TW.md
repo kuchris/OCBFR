@@ -1,6 +1,6 @@
 # OCBFR Global — 安裝及使用
 
-OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄，適用於 Dalamud API 15。版本 2.3.0.19（Global 20261010）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，保留現有設定。指令改為 `/ocbchest`、`/ocbstart`、`/ocbstop`，如有舊巨集請同步更新。English instructions are included in `README.en.md`.
+OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄，適用於 Dalamud API 15。版本 2.3.0.20（Global 20261010）；可用本包的 SHA256SUMS.txt 識別檔案。安裝檔仍使用 `OCNFarmer.dll`／`OCNFarmer.json`，保留現有設定。指令改為 `/ocbchest`、`/ocbstart`、`/ocbstop`，如有舊巨集請同步更新。English instructions are included in `README.en.md`.
 
 本插件提供繁體中文／English 介面，使用時需要另行安裝 Daily Routines、vnavmesh 及 BOCCHI。
 
@@ -61,8 +61,8 @@ https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/repo.json
 - Daily Routines 介面語言設為**簡體中文**。目前 OCBFR 使用 `内环`／`外环` 比對路線名稱；英文或日文路線名稱無法配對。
 - 在「蜃景幻界新月島助手」的尋寶設定開啟「自動開啟周圍寶箱」，使用模組的正常距離設定。
 - 在 BOCCHI 關閉 Auto Rotate Instance、Rotate When Population Low，讓 OCBFR 控制退本重入。
-- 如需自動選用 RSR，先載入 BOCCHI 和 Rotation Solver Reborn，再到 OCBFR「總覽 → 副本與戰鬥配置」勾選「自動選用 RSR（BOCCHI）」。預設不勾選。每次啟動戰鬥前，OCBFR 會透過 BOCCHI 設定指令選用 RSR，最多等候五秒確認；缺少插件或未收到確認便停止。RSR 的運作模式由 BOCCHI 控制；停止戰鬥會關閉 RSR，BOCCHI 的戰鬥循環選擇保留為 RSR。RSR 其他選項仍由你自行設定。
-- 新版 BOCCHI 使用 `/bocchi illegal on/off`。OCBFR 偵測到舊版 `/bocchiillegal` 指令仍有註冊時會保留舊版啟停指令，否則使用新版子指令。自動選用 RSR 需要支援 `config set` 及 RSR 整合的 BOCCHI；已離線檢查本機 4.2.0.17 的設定指令。
+- 如需由 OCBFR 控制 RSR，先載入 Rotation Solver Reborn，再到「總覽 → 副本與戰鬥配置」勾選「直接控制 RSR」。戰鬥階段切換 Auto；掃描、尋寶、購買、循環重設及停止時切換 Off。BOCCHI 繼續負責原有流程和移動。2.3.0.19 已勾選的 RSR 選項會沿用，無需重新勾選；新安裝預設不勾選。
+- 使用 RSR 的 `ChangeOperatingMode` IPC，並在可用時讀取 `AutorotationActive`。IPC 不可用時可直接改用 `/rotation auto`／`/rotation off`。戰鬥期間最多每秒檢查一次，只有 RSR 回報未啟用才重新開啟。缺少 RSR 或啟用失敗會停止流程；關閉失敗會顯示提示並再試兩次。如提示仍在，請手動輸入 `/rotation off`。啟停 BOCCHI 時保留已註冊的 `/bocchiillegal`，新版則使用 `/bocchi illegal`。
 - 在 OCBFR 選擇目標島及已解鎖的幻境戰鬥職業，例如「幻境白魔法師 / Phantom White Mage」。顯示名隨介面語言改變，實際切職業仍由遊戲內 `MKDSupportJob.NameEnglish` 提供名稱。
 
 ## 正常運行

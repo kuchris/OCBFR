@@ -2,7 +2,7 @@
   "Author": "kuchris",
   "Name": "OCBFR",
   "InternalName": "OCNFarmer",
-  "AssemblyVersion": "2.3.0.19",
+  "AssemblyVersion": "2.3.0.20",
   "Description": "OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄。支援繁體中文／English 介面。需要 Daily Routines、vnavmesh 與 BOCCHI。\n\nOCBFR automates Occult Crescent coffer scanning, treasure routes, currency purchases and re-entry, with loot tracking and a Traditional Chinese / English interface. Requires Daily Routines, vnavmesh and BOCCHI.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/kuchris/OCBFR",
@@ -21,6 +21,6 @@
   "LoadPriority": 0,
   "IconUrl": "https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/plugins/OCNFarmer/icon.png",
   "Punchline": "新月島尋寶自動化與戰利品記錄 / Occult Crescent treasure automation and loot tracking.",
-  "Changelog": "Global 2.3.0.19：新增自動選用 RSR（BOCCHI）選項，確認 BOCCHI 已選用 RSR 後才啟動戰鬥，並支援新版 BOCCHI 啟停指令。Adds optional automatic RSR selection with BOCCHI confirmation and support for modern BOCCHI start/stop commands.",
+  "Changelog": "Global 2.3.0.20：改由 OCBFR 直接控制 RSR，戰鬥時切換 Auto，掃描、尋寶、購買及停止時切換 Off。移除 BOCCHI 設定確認依賴，保留舊版 RSR 選項設定。OCBFR now controls RSR directly: Auto for combat and Off for scans, treasure, purchases and stop. Removes the BOCCHI config acknowledgement dependency and preserves the existing RSR option.",
   "AcceptsFeedback": true
 }
