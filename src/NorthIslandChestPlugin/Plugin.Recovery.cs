@@ -49,7 +49,7 @@ public sealed partial class Plugin
         if (!running || !IsIsland() || !IsPlayerMovable() || condition[ConditionFlag.InCombat] ||
             treasurePhase == TreasurePhase.LeaveDuty || treasurePhase == TreasurePhase.Reentry) return;
         log.Warning($"自动恢复：{reason}；地图={clientState.TerritoryType}，阶段={treasurePhase}，坐标={objects.LocalPlayer?.Position}", Array.Empty<object>());
-        Send("/bocchiillegal off");
+        SendBocchiEnabled(false);
         Send("/pdr ptreasure abort");
         Send("/vnav stop");
         if (config.TreasureModeSelection == TreasureMode.XszRun) Send("/xsz-occult-treasure stop");

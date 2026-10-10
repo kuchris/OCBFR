@@ -94,6 +94,8 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		// 舊設定檔若仍存中文名，載入時會因不在清單內而回退為預設值。
 		public string CombatJob { get; set; } = "Phantom White Mage";
 
+		public bool AutoSelectRsr { get; set; }
+
 		public string DiscardPreset { get; set; } = "";
 
 		public bool AutoPurchaseExpanded { get; set; } = true;
@@ -941,6 +943,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	public void Stop(string message = "已停止")
 	{
+		CancelBocchiCombatStart();
 		workflowProgressWatchdog.Reset();
 		shardTeleportAttempts = 0;
 		bool num = running || currencyBuyer.IsBusy;
@@ -957,7 +960,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		}
 		if (bocchiEnabled)
 		{
-			Send("/bocchiillegal off");
+			SendBocchiEnabled(false);
 		}
 		bocchiEnabled = false;
 		running = (currencyPurchaseMoveActive = (islandSwitchPending = (waitingForEntry = (entrySyncMessageSeen = (waitingForScan = (initialCurrencyCheckPending = false))))));
@@ -982,7 +985,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 	private void EmergencyStop(string message = "已紧急停止")
 	{
 		Stop(message);
-		Send("/bocchiillegal off");
+		SendBocchiEnabled(false);
 		Send((config.TreasureModeSelection == TreasureMode.XszRun) ? "/xsz-occult-treasure stop" : "/pdr ptreasure abort");
 		Send("/vnav stop");
 		bocchiEnabled = false;
@@ -1187,9 +1190,10 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			}
 			if (!IsIsland())
 			{
+				CancelBocchiCombatStart();
 				if (bocchiEnabled)
 				{
-					Send("/bocchiillegal off");
+					SendBocchiEnabled(false);
 				}
 				bocchiEnabled = false;
 				// [GLOBAL] 原本只設定 status 就 return，導致角色只要在副本外（一般世界／幻影村）
@@ -1246,14 +1250,9 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			if (pendingBocchiAt != DateTime.MinValue && DateTime.UtcNow >= pendingBocchiAt)
 			{
 				pendingBocchiAt = DateTime.MinValue;
-				Send("/bocchiillegal on");
-				if (!string.IsNullOrWhiteSpace(discardPreset))
-				{
-					Send("/pdrdiscard " + discardPreset.Trim());
-				}
-				bocchiEnabled = true;
-				status = "自动战斗中";
+				PrepareBocchiCombatStart();
 			}
+			AdvanceBocchiCombatStart();
 		}
 	}
 
@@ -1271,7 +1270,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			freelancerJobChangeRequested = false;
 			pendingBocchiAt = DateTime.MinValue;
-			Send("/bocchiillegal off");
+			SendBocchiEnabled(false);
 			Send("/vnav stop");
 			bocchiEnabled = false;
 			log.Debug($"开始{source}宝箱检测：下坐骑并切换自由人，等待就绪后使用魔寻宝 41651", Array.Empty<object>());
@@ -1502,6 +1501,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		//IL_0336: Unknown result type (might be due to invalid IL or missing references)
 		//IL_033d: Invalid comparison between Unknown and I4
 		string textValue = ((IMutableChatMessage)message).Message.TextValue;
+		AcceptBocchiRsrSelection(textValue, ((IMutableChatMessage)message).Sender?.TextValue);
 		bool cofferCountsUpdated = false;
 		// [GLOBAL] 被動寶箱計數同步。
 		// 即使插件不在自己的掃描狀態（例如玩家手動、或由 BOCCHI 施放魔尋寶），
@@ -1703,7 +1703,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		switch (treasurePhase)
 		{
 		case TreasurePhase.FirstMove:
-			Send("/bocchiillegal off");
+			SendBocchiEnabled(false);
 			bocchiEnabled = false;
 			treasurePhase = TreasurePhase.FirstMoveDelay;
 			BeginMovementWait(treasureMovementWait);
@@ -1935,6 +1935,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private void ResetIslandCycle()
 	{
+		CancelBocchiCombatStart();
 		workflowProgressWatchdog.Reset();
 		shardTeleportAttempts = 0;
 		runGeneration++;
@@ -1965,7 +1966,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private void PrepareUnexpectedIslandExit()
 	{
-		Send("/bocchiillegal off");
+		SendBocchiEnabled(false);
 		Send("/pdr ptreasure abort");
 		Send("/vnav stop");
 		ResetIslandCycle();
@@ -2123,9 +2124,10 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		{
 			return false;
 		}
+		CancelBocchiCombatStart();
 		if (bocchiEnabled)
 		{
-			Send("/bocchiillegal off");
+			SendBocchiEnabled(false);
 		}
 		bocchiEnabled = false;
 		Send("/vnav stop");
@@ -2150,9 +2152,10 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 
 	private void BeginCurrencyPurchasePreparation()
 	{
+		CancelBocchiCombatStart();
 		if (bocchiEnabled)
 		{
-			Send("/bocchiillegal off");
+			SendBocchiEnabled(false);
 		}
 		bocchiEnabled = false;
 		waitingForScan = false;
@@ -3557,6 +3560,20 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 		}
 		ImGui.SameLine(0f, 6f);
 		DrawInfoIcon("BCombatJobInfo", "注意：有些辅助职业的辅助技能可能与魔寻宝 CD 存在冲突，不接受因此所产生问题的反馈。默认选择的辅助白魔法师无此问题");
+		ImGui.TableNextRow((ImGuiTableRowFlags)0, ImGui.GetFrameHeight() + 8f);
+		ImGui.TableNextColumn();
+		ImGui.Text(UiText.Render("战斗循环"));
+		ImGui.TableNextColumn();
+		ImGui.BeginDisabled(running || currencyBuyer.IsBusy);
+		bool autoSelectRsr = config.AutoSelectRsr;
+		if (ImGui.Checkbox(UiText.Label("自动选用 RSR（BOCCHI）"), ref autoSelectRsr))
+		{
+			config.AutoSelectRsr = autoSelectRsr;
+			config.Save();
+		}
+		ImGui.EndDisabled();
+		ImGui.SameLine(0f, 6f);
+		DrawInfoIcon("BAutoSelectRsrInfo", "战斗开始前自动让 BOCCHI 选用 RSR；确认成功后才启动战斗。需要已加载 BOCCHI 和 RSR。停止时由 BOCCHI 关闭 RSR，战斗循环选择保留为 RSR。");
 		ImGui.TableNextRow((ImGuiTableRowFlags)0, ImGui.GetFrameHeight() + 8f);
 		ImGui.TableNextColumn();
 		ImGui.Text(UiText.Render("DR 自动丢弃预设"));

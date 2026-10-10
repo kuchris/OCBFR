@@ -1,4 +1,4 @@
-# OCBFR Global 2.3.0.15
+# OCBFR Global 2.3.0.19
 
 OCBFR is an Occult Crescent automation plugin for Dalamud API 15, with coffer scanning, treasure routes, currency purchases, re-entry and loot tracking. The DLL, manifest filename and internal ID remain `OCNFarmer` so existing settings continue to work. Commands are now `/ocbchest`, `/ocbstart` and `/ocbstop`; update existing macros accordingly.
 
@@ -55,6 +55,8 @@ Enable these Daily Routines modules using **Enable required DR modules** at the 
 - Keep **Daily Routines' UI language set to Simplified Chinese**. The established route commands use the route names `内环` and `外环`. OCBFR's UI language and the game client's language can differ from DR's UI language.
 - In DR's Occult Crescent helper, enable automatic opening of nearby treasure coffers and retain its normal distance settings.
 - Disable BOCCHI's automatic duty rotation and rotation when population is low. OCBFR controls exit and re-entry.
+- To use RSR automatically, load BOCCHI and Rotation Solver Reborn, then enable **Automatically select RSR (BOCCHI)** under Overview → Duty and combat configuration. This option is off by default. Before each combat start, OCBFR selects RSR through BOCCHI's config command and waits up to five seconds for confirmation. Missing plugins or failed confirmation stop the workflow. BOCCHI controls RSR's operating mode; stopping combat turns RSR off and leaves BOCCHI's rotation selection on RSR. RSR's other settings remain yours to configure.
+- Modern BOCCHI uses `/bocchi illegal on/off`; OCBFR retains `/bocchiillegal on/off` when that legacy command is registered and otherwise uses the modern subcommand. Automatic RSR selection requires a BOCCHI version with its `config set` command and RSR integration; the installed 4.2.0.17 command was checked offline.
 - Select the target island and an unlocked combat phantom job in OCBFR. Phantom White Mage is the default.
 
 ## Run and stop

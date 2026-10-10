@@ -231,6 +231,14 @@ for line in mapping.splitlines():
 english[' 次'] = ' runs'
 english['本次已开宝箱（铜＋银）：'] = 'Coffers opened this run (bronze + silver): '
 english.update({
+    '战斗循环': 'Combat rotation',
+    '自动选用 RSR（BOCCHI）': 'Automatically select RSR (BOCCHI)',
+    '战斗开始前自动让 BOCCHI 选用 RSR；确认成功后才启动战斗。需要已加载 BOCCHI 和 RSR。停止时由 BOCCHI 关闭 RSR，战斗循环选择保留为 RSR。': 'Select RSR in BOCCHI before combat starts, then wait for confirmation. BOCCHI and RSR must be loaded. BOCCHI turns RSR off when stopped; the combat rotation selection stays on RSR.',
+    '等待 BOCCHI 选用 RSR...': 'Waiting for BOCCHI to select RSR...',
+    '自动选用 RSR 需要已加载 BOCCHI 和 RSR，已停止': 'Automatic RSR selection needs loaded BOCCHI and RSR; stopped',
+    'BOCCHI 的 RSR 设置指令失败，已停止': 'BOCCHI RSR selection command failed; stopped',
+    'BOCCHI 未确认选用 RSR，已停止': 'BOCCHI did not confirm RSR selection; stopped',
+    'BOCCHI 启动指令失败，已停止': 'BOCCHI start command failed; stopped',
     '启用 DR 必要模块': 'Enable required DR modules',
     '禁用 DR 必要模块': 'Disable required DR modules',
     '控制台': 'WORKSPACE', '总览': 'Overview', '自动购买': 'Purchases',

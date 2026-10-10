@@ -1,6 +1,6 @@
 # Validation
 
-Current local build: **2.3.0.18**, built against Dalamud **15.0.3.6** on 2026-10-04. Adds a **Disable required DR modules** button beside Enable in the Traditional Chinese / English interface. It sends unload commands for the same six modules enabled by the existing button. Translation generation also retains the earlier statistics and recovery strings. The earlier in-game results below predate this addition, the 2.3.0.17 recovery changes and the 2.3.0.16 statistics changes.
+Current local build: **2.3.0.19**, built against Dalamud **15.0.3.6** on 2026-10-10. Adds the optional **Automatically select RSR (BOCCHI)** control in the Traditional Chinese / English interface. Before combat, it selects RSR using BOCCHI's config command, waits up to five seconds for confirmation, and stops on missing dependencies, failed dispatch or missing confirmation. Modern and legacy BOCCHI mode commands are selected according to their registered prefixes. The earlier in-game results below predate this addition, the 2.3.0.18 DR control, the 2.3.0.17 recovery changes and the 2.3.0.16 statistics changes.
 
 ## Checked in-game
 
@@ -16,7 +16,9 @@ Current local build: **2.3.0.18**, built against Dalamud **15.0.3.6** on 2026-10
 
 ## Offline verification
 
-`tools/Verify.ps1` prepares managed methods and runs state transitions with fake Dalamud services. The latest build passed **86 checks** and prepared **613 methods** without failures. Coverage includes scan sequencing, localized messages, thresholds, returns, history filtering, re-entry, settings migration and shop packet layouts. No OmenTools, GuerrillaNtp or TinyPinyin assembly references remain.
+`tools/Verify.ps1` prepares managed methods and runs state transitions with fake Dalamud services. The latest build passed **100 checks** and prepared **625 methods** without failures. Coverage includes scan sequencing, localized messages, thresholds, returns, history filtering, re-entry, settings migration and shop packet layouts. No OmenTools, GuerrillaNtp or TinyPinyin assembly references remain. The build completed with zero errors and 14 compiler warnings in the scan/UI methods.
+
+RSR checks exercise the actual framework start path, modern and legacy BOCCHI commands, successful and unrelated config messages, missing plugins, failed dispatch, timeout, stop and scan cancellation. Confirmation also accepts the user's configured Dalamud plugin chat channel (`GeneralChatType = 1`) while rejecting messages with a player sender. In an isolated in-memory configuration, the installed BOCCHI **4.2.0.17** `Ocelot.Services.Commands.ConfigCommand` accepted `combat_autorotation = RotationSolverReborn` and emitted the expected confirmation. This does not establish live RSR activation, combat actions, game UI layout or end-to-end stopping; those remain to be tested in-game.
 
 Recovery checks first reproduced two 2.3.0.16 failure paths: a shard teleport timing out and crystal navigation timing out both disabled the workflow. The fix keeps it running. Each shard teleport has the existing three-minute timeout and a maximum of three total attempts. Retries wait for combat/casting to finish. Exhausted attempts or crystal navigation timeout stop external routes and schedule leave/re-entry through the existing movement and entry handshake. Any captured loot is saved as a history record before resetting the interrupted cycle; the run's coffer count is retained. Repeated frames cannot issue duplicate recovery.
 
