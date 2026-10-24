@@ -19,7 +19,7 @@
   "LoadSync": false,
   "CanUnloadAsync": false,
   "LoadPriority": 0,
-  "IconUrl": "https://raw.githubusercontent.com/kuchris/DalamudPlugins/main/plugins/OCNFarmer/icon.png",
+  "IconUrl": "https://raw.githubusercontent.com/kuchris/OCBFR/main/images/icon.png",
   "Punchline": "新月島尋寶自動化與戰利品記錄 / Occult Crescent treasure automation and loot tracking.",
   "Changelog": "Global 2.3.0.20：改由 OCBFR 直接控制 RSR，戰鬥時切換 Auto，掃描、尋寶、購買及停止時切換 Off。移除 BOCCHI 設定確認依賴，保留舊版 RSR 選項設定。OCBFR now controls RSR directly: Auto for combat and Off for scans, treasure, purchases and stop. Removes the BOCCHI config acknowledgement dependency and preserves the existing RSR option.",
   "AcceptsFeedback": true
