@@ -50,6 +50,11 @@
     </Reference>
   </ItemGroup>
 
+  <!-- Keep the dev-plugin manifest beside the DLL for Dalamud discovery. -->
+  <ItemGroup>
+    <None Include="..\manifest\OCNFarmer.json" Link="OCNFarmer.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- Embedded presentation assets -->
   <ItemGroup>
     <EmbeddedResource Include="NorthIslandChestPlugin\UiTranslations.json" LogicalName="OCBFR.UiTranslations.json" />

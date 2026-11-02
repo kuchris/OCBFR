@@ -1,6 +1,6 @@
 # Validation
 
-Current local build: **2.3.0.20**, built against Dalamud **15.0.3.6** on 2026-10-10. OCBFR now controls RSR directly through its own IPC, with direct RSR commands as a fallback. The previous BOCCHI configuration command and five-second chat acknowledgement are removed. Existing RSR opt-in settings are retained. The earlier in-game results below predate this RSR integration.
+Current local build: **2.3.0.21**, built against Dalamud **15.0.3.9** on 2026-11-02. Compact view uses an auto-sized toolbar for start/stop, emergency stop, language and full view. Its dashboard cards and Ko-fi button are removed; status and coffer totals appear in a tooltip. Errors and RSR warnings remain visible when present. Builds copy the dev-plugin manifest beside the DLL. The earlier in-game results below predate these UI changes and the direct RSR integration.
 
 ## Checked in-game
 
@@ -16,7 +16,7 @@ Current local build: **2.3.0.20**, built against Dalamud **15.0.3.6** on 2026-10
 
 ## Offline verification
 
-`tools/Verify.ps1` prepares managed methods and runs state transitions with fake Dalamud services. The latest build passed **105 checks** and prepared **627 methods** without failures. Coverage includes scan sequencing, localized messages, thresholds, returns, history filtering, re-entry, settings migration and shop packet layouts. No OmenTools, GuerrillaNtp or TinyPinyin assembly references remain. The build completed with zero errors and 14 compiler warnings in the scan/UI methods.
+`tools/Verify.ps1` prepares managed methods and runs state transitions with fake Dalamud services. The latest build passed **105 checks** and prepared **629 methods** without failures. Coverage includes scan sequencing, localized messages, thresholds, returns, history filtering, re-entry, settings migration and shop packet layouts. No OmenTools, GuerrillaNtp or TinyPinyin assembly references remain. The build completed with zero errors and 14 compiler warnings in the scan/UI methods. The copied dev manifest matches the DLL identity and version. These checks do not render or operate the compact toolbar.
 
 Direct RSR checks exercise the actual framework combat-start path with legacy BOCCHI and no config acknowledgement, Auto/Off requests, status rejection, command fallback, scan/purchase/reset/stop ownership, bounded shutdown retries, plugin reload, unavailable player status and recovery after RSR self-disables. The original 2.3.0.19 failure was reproduced before the fix: no direct RSR request was made while waiting for an unsupported BOCCHI setting. The game log identifies the active BOCCHI as **3.3.44.0**, whereas the earlier configuration check used **4.2.0.17**. A separate isolated test uses the real Dalamud IPC channel to convert byte Auto=1 and Off=0 into the installed **RSR 7.5.6.21** enum and invoke matching delegates. It also checks the bool status getter signature. These are offline state/ABI checks; the new build still needs live Auto/Off, combat actions and UI verification.
 
@@ -32,6 +32,7 @@ These checks do not execute native game actions.
 
 ## Pending in-game checks
 
+- Compact toolbar appearance and controls in both UI languages and at different UI scales, including automatic sizing, tooltips, warnings and switching back to full view.
 - The adjacent Disable button in both UI languages, and unloading all six required Daily Routines modules. This addition has not been tested in-game.
 - Failed shard retry and leave/re-entry recovery, navigation recovery and the 30-minute fallback. These additions have only offline coverage.
 - Bronze/silver opening counts and statistics reset, including the new controls in both UI languages. No in-game verification of these additions has been performed yet.

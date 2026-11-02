@@ -27,6 +27,11 @@ public sealed partial class Plugin
     public void DrawStatus()
     {
         using var theme = new MonochromeUiScope();
+        if (config.SimplifiedUi)
+        {
+            DrawCompactToolbar();
+            return;
+        }
         DrawDashboardHeader();
         ImGui.Spacing();
         ImGui.Separator();
@@ -52,6 +57,36 @@ public sealed partial class Plugin
         if (!string.IsNullOrEmpty(rsrControlWarning))
             ImGui.TextWrapped(UiText.Render(rsrControlWarning));
         DrawDashboardActions();
+    }
+
+    private void DrawCompactToolbar()
+    {
+        ImGui.TextDisabled("v" + PluginVersion + "  /  kuchris");
+        ImGui.BeginGroup();
+        DrawRunButton();
+        ImGui.SameLine();
+        if (ImGui.Button(UiText.Label("紧急停止"), new Vector2(135f, 0f) * ImGuiHelpers.GlobalScale)) StopFromUser(emergency: true);
+        ImGui.SameLine();
+        DrawLanguageSelector();
+        ImGui.SameLine();
+        if (ImGui.Button(UiText.Label("完整界面###OCBFRViewToggle"))) ToggleMainUi();
+        ImGui.EndGroup();
+        float toolbarWidth = ImGui.GetItemRectSize().X;
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.PushTextWrapPos(360f * ImGuiHelpers.GlobalScale);
+            ImGui.TextWrapped(UiText.Render(status));
+            ImGui.Text(UiText.Render("本次已开宝箱（铜＋银）：") + cofferOpeningCounter.Count);
+            ImGui.PopTextWrapPos();
+            ImGui.EndTooltip();
+        }
+        ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + toolbarWidth);
+        if (!string.IsNullOrEmpty(treasureError))
+            ImGui.TextWrapped(UiText.Render("错误：") + UiText.Render(treasureError));
+        if (!string.IsNullOrEmpty(rsrControlWarning))
+            ImGui.TextWrapped(UiText.Render(rsrControlWarning));
+        ImGui.PopTextWrapPos();
     }
 
     private void DrawDashboardHeader()
@@ -179,6 +214,17 @@ public sealed partial class Plugin
         ImGui.TextDisabled(UiText.Render("本次已开宝箱（铜＋银）：") + cofferOpeningCounter.Count);
         ImGui.Separator();
         ImGui.Spacing();
+        DrawRunButton();
+        ImGui.SameLine();
+        if (ImGui.Button(UiText.Label("紧急停止"), new Vector2(135f, 0f) * ImGuiHelpers.GlobalScale)) StopFromUser(emergency: true);
+        ImGui.SameLine();
+        if (ImGui.Button(UiText.Label("寻宝记录###OCBFRHistoryFooter"), new Vector2(125f, 0f) * ImGuiHelpers.GlobalScale)) treasureHistoryWindow.IsOpen = true;
+        ImGui.SameLine();
+        if (ImGui.Button("Ko-fi###OCBFRSupport", new Vector2(65f, 0f) * ImGuiHelpers.GlobalScale)) OpenSponsorPage();
+    }
+
+    private void DrawRunButton()
+    {
         string primary = running ? "停止运行" : "开始运行";
         ImGui.BeginDisabled(!running && currencyBuyer.IsBusy);
         ImGui.PushStyleColor(ImGuiCol.Button, UiWhite);
@@ -193,12 +239,6 @@ public sealed partial class Plugin
             }
         }
         finally { ImGui.PopStyleColor(4); ImGui.EndDisabled(); }
-        ImGui.SameLine();
-        if (ImGui.Button(UiText.Label("紧急停止"), new Vector2(135f, 0f) * ImGuiHelpers.GlobalScale)) StopFromUser(emergency: true);
-        ImGui.SameLine();
-        if (ImGui.Button(UiText.Label("寻宝记录###OCBFRHistoryFooter"), new Vector2(125f, 0f) * ImGuiHelpers.GlobalScale)) treasureHistoryWindow.IsOpen = true;
-        ImGui.SameLine();
-        if (ImGui.Button("Ko-fi###OCBFRSupport", new Vector2(65f, 0f) * ImGuiHelpers.GlobalScale)) OpenSponsorPage();
     }
 }
 

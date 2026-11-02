@@ -173,10 +173,13 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 	private sealed class MainWindow : PersistentWindow
 	{
 		private bool titleBarSpacingPushed;
+		private readonly bool simplified;
 
 		public MainWindow(Plugin plugin, bool simplified = false)
-			: base(plugin, "OCBFR v" + PluginVersion + "###OCNFarmer" + (simplified ? "Simplified" : "Full"), simplified ? "Simplified" : "Full", simplified ? DefaultSimplifiedWindowSize : DefaultFullWindowSize, simplified ? new Vector2(520f, 330f) : new Vector2(760f, 580f))
+			: base(plugin, "OCBFR v" + PluginVersion + "###OCNFarmer" + (simplified ? "Simplified" : "Full"), simplified ? "Simplified" : "Full", simplified ? DefaultSimplifiedWindowSize : DefaultFullWindowSize, simplified ? null : new Vector2(760f, 580f))
 		{
+			this.simplified = simplified;
+			if (simplified) Flags |= ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoResize;
 		}
 
 		public override void PreDraw()
@@ -184,6 +187,12 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			base.PreDraw();
+			if (simplified)
+			{
+				// Restore the saved position, but let the toolbar determine its size.
+				Size = null;
+				ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(6f, 6f) * ImGuiHelpers.GlobalScale);
+			}
 			ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.045f, 0.045f, 0.045f, 0.98f));
 			ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.035f, 0.035f, 0.035f, 1f));
 			ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.075f, 0.075f, 0.075f, 1f));
@@ -202,6 +211,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			if (titleBarSpacingPushed)
 			{
 				ImGui.PopStyleColor(4);
+				if (simplified) ImGui.PopStyleVar();
 				titleBarSpacingPushed = false;
 			}
 		}
