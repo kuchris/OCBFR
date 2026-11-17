@@ -1,6 +1,6 @@
 # Validation
 
-Current local build: **2.3.0.21**, built against Dalamud **15.0.3.9** on 2026-11-02. Compact view uses an auto-sized toolbar for start/stop, emergency stop, language and full view. Its dashboard cards and Ko-fi button are removed; status and coffer totals appear in a tooltip. Errors and RSR warnings remain visible when present. Builds copy the dev-plugin manifest beside the DLL. The earlier in-game results below predate these UI changes and the direct RSR integration.
+Current local build: **2.3.0.22**, built against Dalamud **15.0.3.9** on 2026-11-17. The enable and disable buttons now use DR's `LeaveDutyCommand` module; the actual `/pdr leaveduty` command is unchanged. The build and offline regression checks pass; the user reported that the 2.3.0.22 DEV DLL works in-game, without specifying each action tested. The earlier in-game results below predate these changes and the direct RSR integration.
 
 ## Checked in-game
 
@@ -33,7 +33,7 @@ These checks do not execute native game actions.
 ## Pending in-game checks
 
 - Compact toolbar appearance and controls in both UI languages and at different UI scales, including automatic sizing, tooltips, warnings and switching back to full view.
-- The adjacent Disable button in both UI languages, and unloading all six required Daily Routines modules. This addition has not been tested in-game.
+- Verify both buttons for all six required Daily Routines modules, and `/pdr leaveduty` and exit/re-entry with the current DR module. The user reported the DEV DLL works, but did not specify which of these actions were tested.
 - Failed shard retry and leave/re-entry recovery, navigation recovery and the 30-minute fallback. These additions have only offline coverage.
 - Bronze/silver opening counts and statistics reset, including the new controls in both UI languages. No in-game verification of these additions has been performed yet.
 - South Horn workflows.

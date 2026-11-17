@@ -3674,7 +3674,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			Send("/pdr load BetterMKDSupportJobList");
 			Send("/pdr load PhantomJobSwitchCommand");
 			Send("/pdr load AutoCommenceDuty");
-			Send("/pdr load InstantLeaveDuty");
+			Send("/pdr load LeaveDutyCommand");
 			Send("/pdr load FieldEntryCommand");
 			status = "已发送一键开启 Daily Routines 模块指令";
 		}
@@ -3685,7 +3685,7 @@ public sealed partial class Plugin : IDalamudPlugin, IDisposable
 			Send("/pdr unload BetterMKDSupportJobList");
 			Send("/pdr unload PhantomJobSwitchCommand");
 			Send("/pdr unload AutoCommenceDuty");
-			Send("/pdr unload InstantLeaveDuty");
+			Send("/pdr unload LeaveDutyCommand");
 			Send("/pdr unload FieldEntryCommand");
 			status = "已发送一键关闭 Daily Routines 模块指令";
 		}

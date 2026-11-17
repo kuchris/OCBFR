@@ -2,7 +2,7 @@
   "Author": "kuchris",
   "Name": "OCBFR",
   "InternalName": "OCNFarmer",
-  "AssemblyVersion": "2.3.0.21",
+  "AssemblyVersion": "2.3.0.22",
   "Description": "OCBFR 是新月島尋寶自動化插件，提供寶箱掃描、內外環尋寶、錢幣兌換、退本重入及戰利品記錄。支援繁體中文／English 介面。需要 Daily Routines、vnavmesh 與 BOCCHI。\n\nOCBFR automates Occult Crescent coffer scanning, treasure routes, currency purchases and re-entry, with loot tracking and a Traditional Chinese / English interface. Requires Daily Routines, vnavmesh and BOCCHI.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/kuchris/OCBFR",
@@ -21,6 +21,6 @@
   "LoadPriority": 0,
   "IconUrl": "https://raw.githubusercontent.com/kuchris/OCBFR/main/images/icon.png",
   "Punchline": "新月島尋寶自動化與戰利品記錄 / Occult Crescent treasure automation and loot tracking.",
-  "Changelog": "Global 2.3.0.21：簡化介面改為自動縮放的窄條工具列，保留開始／停止、緊急停止、語言及完整介面按鈕，移除簡化介面的 Ko-fi 與資訊卡。狀態及開箱總數改以滑鼠提示顯示；編譯時自動複製 dev plugin manifest。Compact view now uses an auto-sized toolbar with start/stop, emergency stop, language and full-view controls. Removes compact-view Ko-fi and dashboard cards; status and coffer totals appear in a tooltip. Builds now copy the dev-plugin manifest beside the DLL.",
+  "Changelog": "Global 2.3.0.22：更新 DR 退本模組名稱，啟用／停用按鈕使用 LeaveDutyCommand。Updated the DR leave-duty module name to LeaveDutyCommand in the enable/disable buttons.",
   "AcceptsFeedback": true
 }
